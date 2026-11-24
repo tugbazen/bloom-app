@@ -1,0 +1,17 @@
+{
+  "name": "bloom-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Bloom - Kişisel yaşam, rutin, cilt bakımı, beslenme, egzersiz ve üniversite çalışma uygulaması (Web + Android)",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:check": "node scripts/build.mjs --check",
+    "dev": "node scripts/dev.mjs",
+    "test": "node tests/bloom.test.js",
+    "verify": "npm run build:check && npm test"
+  },
+  "license": "MIT"
+}
