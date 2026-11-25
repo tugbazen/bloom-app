@@ -9,6 +9,64 @@
   } catch (error) {
     // Continue to show onboarding if browser storage cannot be read.
   }
+
+  let userName = savedName;
+
+  function personalizeTextNode(node) {
+    if (!userName || node.nodeType !== Node.TEXT_NODE) return;
+
+    const parent = node.parentElement;
+    if (parent && /^(SCRIPT|STYLE|NOSCRIPT|TEXTAREA|INPUT)$/i.test(parent.tagName)) return;
+
+    const personalizedText = node.nodeValue.replace(/Tuğba|Tugba/g, userName);
+    if (personalizedText !== node.nodeValue) node.nodeValue = personalizedText;
+  }
+
+  function personalizeTitle() {
+    if (!userName) return;
+    const personalizedTitle = document.title.replace(/Tuğba|Tugba/g, userName);
+    if (personalizedTitle !== document.title) document.title = personalizedTitle;
+  }
+
+  function personalizeSubtree(root) {
+    if (!userName || !root) return;
+    if (root.nodeType === Node.TEXT_NODE) {
+      personalizeTextNode(root);
+      return;
+    }
+
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) personalizeTextNode(node);
+  }
+
+  function personalizePage() {
+    if (!userName) return;
+    personalizeSubtree(document.body);
+    personalizeTitle();
+  }
+
+  const observer = new MutationObserver((mutations) => {
+    if (!userName) return;
+    for (const mutation of mutations) {
+      if (mutation.type === "characterData") {
+        personalizeTextNode(mutation.target);
+      } else {
+        mutation.addedNodes.forEach(personalizeSubtree);
+      }
+    }
+    personalizeTitle();
+  });
+
+  if (document.documentElement) {
+    observer.observe(document.documentElement, {
+      childList: true,
+      characterData: true,
+      subtree: true
+    });
+  }
+  personalizePage();
+
   if (savedName) return;
 
   const styles = document.createElement("style");
@@ -138,6 +196,8 @@
       return;
     }
 
+    userName = name;
+    personalizePage();
     document.body.style.overflow = previousOverflow;
     screen.remove();
     styles.remove();
