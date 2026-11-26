@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="bloom-version" content="2.2.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -660,6 +664,8 @@ const BADGES = [
 "use strict";
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
+const APP_VERSION = "2.2.0";
+const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -752,17 +758,66 @@ function merge(d, p) {
   const o = Object.assign({}, d, p);
   ["settings","garden","xp","routines","skincare"].forEach(k => o[k] = Object.assign({}, d[k], p[k] || {}));
   if (o.settings.passGrade === undefined || o.settings.passGrade === null || isNaN(+o.settings.passGrade)) o.settings.passGrade = 60;
-  ["morning","evening"].forEach(t => { if (!Array.isArray(o.skincare[t])) o.skincare[t] = d.skincare[t]; });
+  if (!o.settings.aiModel) o.settings.aiModel = d.settings.aiModel;
+  if (!Array.isArray(o.settings.schoolDays)) o.settings.schoolDays = d.settings.schoolDays;
+  if (!Array.isArray(o.settings.meds)) o.settings.meds = [];
+  ["school","off","evening"].forEach(k => { if (!Array.isArray(o.routines[k]) || !o.routines[k].length) o.routines[k] = d.routines[k]; });
+  if (!o.skinRoutineMigrated) {
+    [["school", 3], ["evening", 2]].forEach(([rk, lvl]) => {
+      const list = o.routines[rk];
+      if (Array.isArray(list) && !list.some(x => /cilt bakım/i.test(x && x.text || ""))) {
+        const idx = list.findIndex(x => /diş/i.test(x && x.text || ""));
+        const item = r("Cilt bakımımı yap", lvl);
+        if (idx >= 0) list.splice(idx + 1, 0, item);
+        else list.push(item);
+      }
+    });
+    o.skinRoutineMigrated = true;
+  }
+  ["morning","evening"].forEach(t => {
+    if (!Array.isArray(o.skincare[t]) || !o.skincare[t].length) {
+      o.skincare[t] = d.skincare[t];
+    } else {
+      d.skincare[t].filter(x => x.fixed).forEach((fx, fi) => {
+        if (!o.skincare[t].some(x => x && (x.id === fx.id || x.step === fx.step))) {
+          o.skincare[t].splice(Math.min(fi, o.skincare[t].length), 0, Object.assign({}, fx));
+        }
+      });
+    }
+  });
   if (!o.exercise || typeof o.exercise !== "object") o.exercise = d.exercise;
   if (!o.exercise.plan || typeof o.exercise.plan !== "object") o.exercise.plan = d.exercise.plan;
   [1,2,3,4,5,6,7].forEach(i => { if (!Array.isArray(o.exercise.plan[i])) o.exercise.plan[i] = []; });
   if (!Array.isArray(o.exercise.logs)) o.exercise.logs = [];
   ["days","mealPlan","bonusWeeks"].forEach(k => { if (!o[k] || typeof o[k] !== "object") o[k] = {}; });
   ["meals","exams","grades","study","progress","qlog","courses","favorites","customFoods"].forEach(k => { if (!Array.isArray(o[k])) o[k] = d[k]; });
+  if (!o.clearedPresetCourses && Array.isArray(o.courses)) {
+    const usedCourseIds = new Set([
+      ...(o.exams || []).map(x => x && x.courseId),
+      ...(o.grades || []).map(x => x && x.courseId),
+      ...(o.study || []).map(x => x && x.courseId)
+    ].filter(Boolean));
+    o.courses = o.courses.filter(c => {
+      if (!c || !LEGACY_PRESET_COURSES.includes(c.name)) return true;
+      return (
+        usedCourseIds.has(c.id) ||
+        !!(c.instructor && c.instructor.trim()) ||
+        !!(c.examDate && c.examDate.trim()) ||
+        !!(c.desc && c.desc.trim()) ||
+        !!(c.notes && c.notes.trim()) ||
+        (Array.isArray(c.covered) && c.covered.length > 0) ||
+        (Array.isArray(c.todo) && c.todo.length > 0) ||
+        (Array.isArray(c.weeks) && c.weeks.length > 0) ||
+        (Array.isArray(c.review) && c.review.length > 0)
+      );
+    });
+    o.clearedPresetCourses = true;
+  }
   o.courses.forEach(c => {
     ["covered","todo","weeks","review"].forEach(f => { if (!Array.isArray(c[f])) c[f] = []; });
     if (c.ects === undefined || c.ects === null || isNaN(+c.ects) || +c.ects <= 0) c.ects = 3;
   });
+  o.appVersion = APP_VERSION;
   return o;
 }
 function save() {
@@ -2907,11 +2962,13 @@ function pageSettings() {
         <p class="small muted">Bahçen günün saatine göre otomatik aydınlanır ve kararır. Şu an: <b>${gardenThemeForTime().e} ${esc(gardenThemeForTime().n)}</b> (${nowTime()})</p>
       </div>
       <div class="card c12 tint-lav">
-        <h3>💾 Yedekleme & veri yönetimi</h3>
-        <p class="small muted mb">Tüm kişisel verilerin yalnızca bu cihazdaki tarayıcında (LocalStorage) saklanır. Yalnızca çevrimiçi besin arama veya Yapay Zeka kalori hesabı kullandığında ilgili yemek sorgusu/fotoğrafı gönderilir.</p>
+        <h3>💾 Yedekleme, güncelleme &amp; veri yönetimi<span class="sp"></span><span class="tag sage">Sürüm v${esc(APP_VERSION)}</span></h3>
+        <p class="small muted mb">Tüm kişisel verilerin yalnızca bu cihazdaki tarayıcında (LocalStorage) saklanır. Ana ekrana eklediğin PWA uygulamasında yeni güncellemeleri anında çekmek için verilerini kaybetmeden <b>Uygulamayı güncelle</b> butonunu kullanabilirsin.</p>
         <div class="row">
           <button class="btn" data-act="exportData">⬇️ JSON yedek indir</button>
           <button class="btn lav" data-act="importData">⬆️ Yedek dosyası yükle</button>
+          <button class="btn sage" data-act="forceUpdate">🔄 Uygulamayı güncelle</button>
+          <button class="btn soft" data-act="changeUserName">👤 İsmimi değiştir</button>
           <button class="btn soft" data-act="showWelcome">🌷 Açılış ekranını gör</button>
           <button class="btn danger" data-act="resetAll">🗑 Tüm verileri sil</button>
         </div>
@@ -3729,6 +3786,8 @@ document.addEventListener("click", ev => {
       toast("Yedek dosyası indirildi 💾"); break;
     }
     case "importData": $("#importFile").click(); break;
+    case "forceUpdate": forcePwaUpdate(); break;
+    case "changeUserName": if (typeof window.__bloomOpenOnboarding === "function") window.__bloomOpenOnboarding(); break;
     case "skinTab": UI.skinTab = ds.t === "evening" ? "evening" : "morning"; render(); break;
     case "skinEdit": UI.skinEdit = !UI.skinEdit; render(); break;
     case "skinToggle": {
@@ -4394,6 +4453,119 @@ function syncEarnedRewards() {
     save();
   } finally { silentAward = false; }
 }
+function isWebPwaEnv() {
+  if (typeof window === "undefined" || window.BloomAndroid) return false;
+  const loc = window.location;
+  if (!loc || !/^https?:$/i.test(loc.protocol || "")) return false;
+  if (loc.hostname === "appassets.androidplatform.net") return false;
+  return true;
+}
+function clearPwaCaches() {
+  if (typeof caches !== "undefined" && caches && typeof caches.keys === "function") {
+    return caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k)))).catch(() => {});
+  }
+  return Promise.resolve();
+}
+function reloadWithCacheBust(ver) {
+  save();
+  const loc = typeof window !== "undefined" && window.location;
+  if (!loc) return;
+  const pathPart = loc.pathname || "./";
+  const target = `${pathPart}?v=${encodeURIComponent(ver || APP_VERSION)}&t=${Date.now()}`;
+  if (typeof loc.replace === "function") loc.replace(target);
+  else if (typeof loc.reload === "function") loc.reload();
+}
+let pwaChecking = false;
+function checkForPwaUpdate(manual = false) {
+  if (!isWebPwaEnv() || typeof fetch !== "function" || pwaChecking) {
+    if (manual) toast(`Güncel sürüm kullanılıyor (v${APP_VERSION}) 🌷`);
+    return Promise.resolve(false);
+  }
+  pwaChecking = true;
+  const loc = window.location;
+  const base = (loc.pathname || "./").replace(/index5?\.html$/i, "");
+  const checkUrl = `${base}index5.html?_vcheck=${Date.now()}`;
+  return fetch(checkUrl, {
+    cache: "no-store",
+    headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache" }
+  })
+    .then(res => (res && res.ok ? res.text() : ""))
+    .then(html => {
+      pwaChecking = false;
+      if (!html) {
+        if (manual) { clearPwaCaches().then(() => reloadWithCacheBust(APP_VERSION)); }
+        return false;
+      }
+      const m = html.match(/<meta\s+name=["']bloom-version["']\s+content=["']([^"']+)["']/i);
+      const remoteVer = m ? m[1].trim() : "";
+      const lastLen = Number(localStorage.getItem("bloom_html_len") || 0);
+      const curLen = html.length;
+      const changed = (remoteVer && remoteVer !== APP_VERSION) || (lastLen > 0 && curLen > 0 && Math.abs(curLen - lastLen) > 32);
+      if (curLen > 0) {
+        try { localStorage.setItem("bloom_html_len", String(curLen)); } catch (e) {}
+      }
+      if (changed || manual) {
+        toast(changed ? `Yeni güncelleme bulundu (${remoteVer || "güncel"}), yükleniyor… 🌷` : "Önbellek temizleniyor ve en son sürüm yükleniyor… 🔄");
+        return clearPwaCaches().then(() => {
+          if (typeof navigator !== "undefined" && navigator.serviceWorker && typeof navigator.serviceWorker.getRegistrations === "function") {
+            return navigator.serviceWorker.getRegistrations().then(regs =>
+              Promise.all(regs.map(r => r.update().catch(() => {})))
+            ).catch(() => {});
+          }
+        }).then(() => {
+          setTimeout(() => reloadWithCacheBust(remoteVer || APP_VERSION), 350);
+          return true;
+        });
+      }
+      return false;
+    })
+    .catch(() => {
+      pwaChecking = false;
+      if (manual) toast("İnternet bağlantısı kontrol edilemedi; çevrimdışı sürüm aktif 🌿");
+      return false;
+    });
+}
+function forcePwaUpdate() {
+  save();
+  if (!isWebPwaEnv()) {
+    toast(`Uygulama güncel (Sürüm v${APP_VERSION}) 🌷`);
+    render();
+    return;
+  }
+  checkForPwaUpdate(true);
+}
+function registerPwaServiceWorker() {
+  if (!isWebPwaEnv() || typeof navigator === "undefined" || !navigator.serviceWorker) return;
+  try {
+    let refreshing = false;
+    const triggerReload = () => {
+      if (refreshing) return;
+      refreshing = true;
+      reloadWithCacheBust(APP_VERSION);
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", triggerReload);
+    navigator.serviceWorker.addEventListener("message", ev => {
+      if (ev && ev.data && ev.data.type === "BLOOM_SW_UPDATED" && ev.data.version !== APP_VERSION) {
+        triggerReload();
+      }
+    });
+    navigator.serviceWorker.register("sw.js", { updateViaCache: "none" })
+      .then(reg => {
+        if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
+        reg.addEventListener("updatefound", () => {
+          const nw = reg.installing;
+          if (!nw) return;
+          nw.addEventListener("statechange", () => {
+            if (nw.state === "installed" && navigator.serviceWorker.controller) {
+              nw.postMessage({ type: "SKIP_WAITING" });
+            }
+          });
+        });
+        reg.update().catch(() => {});
+      })
+      .catch(() => {});
+  } catch (e) {}
+}
 function checkGardenTime() {
   const now = new Date(), ph = gardenThemeForTime(now).k, hr = now.getHours();
   if (UI.gardenPhase !== ph || UI.gardenHour !== hr) {
@@ -4403,14 +4575,20 @@ function checkGardenTime() {
 }
 function init() {
   S = load();
+  save();
   syncEarnedRewards();
   UI.curDay = today(); UI.nutDate = today(); UI.jDate = today();
   const now = new Date(); UI.calY = now.getFullYear(); UI.calM = now.getMonth();
   UI.gardenPhase = gardenThemeForTime(now).k; UI.gardenHour = now.getHours();
   render();
   if (shouldShowWelcome(today())) showWelcome();
+  registerPwaServiceWorker();
+  checkForPwaUpdate(false);
   setInterval(() => { checkDayRollover(); checkGardenTime(); checkReminder(); }, 30000);
-  document.addEventListener("visibilitychange", () => { if (!document.hidden) { checkDayRollover(); checkGardenTime(); } });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) { checkDayRollover(); checkGardenTime(); checkForPwaUpdate(false); } });
+  if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("pageshow", ev => { if (ev && ev.persisted) { checkDayRollover(); checkGardenTime(); checkForPwaUpdate(false); } });
+  }
 }
 window.__bloomBack = function() {
   if ($("#modal")) { closeModal(); return "handled"; }
@@ -4421,11 +4599,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-<script>
-if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
-}
-</script>
-  <script src="onboarding.js"></script>
+  <script src="onboarding.js?v=2.2.0"></script>
 </body>
 </html>
