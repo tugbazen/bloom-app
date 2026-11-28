@@ -431,6 +431,7 @@
     const age = Math.max(10, Math.min(99, Number(ageNum) || 21));
     const g = gender || "female";
     const isMale = g === "male";
+    const isOther = g === "other";
     const ex = (id, name, type, min, sets = "", note = "") => ({ id, name, type, min, sets, note });
 
     let exLabel = "18–24 Yaş · Pilates, Sıkılaşma & Kardiyo Dengesi";
@@ -529,6 +530,45 @@
         6: [ex("ex_50_6", "Hafta sonu doğa / sahil yürüyüşü", "yuruyus", 35, "", "Keyifli hafta sonu zindeliği")],
         7: []
       };
+    }
+
+    if (isOther) {
+      const ageLabel = age <= 17 ? "10–17" : age <= 24 ? "18–24" : age <= 34 ? "25–34" : age <= 49 ? "35–49" : "50+";
+      exLabel = `${ageLabel} Yaş · Dengeli Kuvvet, Kardiyo & Mobilite Programı`;
+      if (age <= 17) {
+        weeklyGoalMin = 180;
+        plan = {
+          1: [ex("ex_10n_1", "Keyifli yürüyüş & dinamik ısınma", "yuruyus", 30, "", "Rahat konuşma temposunda hareket")],
+          2: [ex("ex_10n_2", "Vücut ağırlığıyla temel kuvvet & koordinasyon", "direnc", 20, "2x10", "Tekniğe odaklan; gerekirse bir yetişkinle")],
+          3: [ex("ex_10n_3", "Boyun, sırt & bacak mobilitesi", "esneme", 20, "", "Okul aralarında kısa hareket molaları")],
+          4: [ex("ex_10n_4", "Bisiklet, dans veya takım oyunu", "kardiyo", 30, "", "Eğlenceli ve seçtiğin bir aktivite")],
+          5: [ex("ex_10n_5", "Denge & tüm vücut esnetme", "esneme", 20, "", "Ağrısız, rahat aralıkta hareket et")],
+          6: [ex("ex_10n_6", "Açık hava yürüyüşü, yüzme veya oyun", "yuzme", 40, "", "Aileyle ya da arkadaşlarla aktif zaman")],
+          7: []
+        };
+      } else if (age <= 49) {
+        weeklyGoalMin = 150;
+        plan = {
+          1: [ex("ex_adn_1", "Tüm vücut kuvvet & core", "direnc", 30, "3x10", "Kontrollü tekrarlar ve rahat tempo")],
+          2: [ex("ex_adn_2", "Tempolu yürüyüş veya bisiklet", "yuruyus", 30, "", "Konuşmayı sürdürebileceğin tempo")],
+          3: [ex("ex_adn_3", "Omuz, sırt & kalça mobilitesi", "esneme", 20, "", "Masa başı aralarında nazikçe açıl")],
+          4: [ex("ex_adn_4", "Alt vücut kuvvet & denge", "direnc", 30, "3x10", "Vücut ağırlığı veya hafif direnç")],
+          5: [ex("ex_adn_5", "Yoga, esneme & nefes", "yoga", 20, "", "Toparlanma ve rahat hareket")],
+          6: [ex("ex_adn_6", "Yürüyüş, yüzme veya keyifli kardiyo", "yuzme", 35, "", "Sevdiğin aktiviteyi seç")],
+          7: []
+        };
+      } else {
+        weeklyGoalMin = 140;
+        plan = {
+          1: [ex("ex_50n_1", "Eklem dostu yürüyüş", "yuruyus", 25, "", "Rahat nefes temposu")],
+          2: [ex("ex_50n_2", "Hafif kuvvet & denge", "direnc", 20, "2x10", "Destek alarak veya sandalyeyle")],
+          3: [ex("ex_50n_3", "Boyun, bel & kalça mobilitesi", "esneme", 15, "", "Ağrısız hareket aralığında")],
+          4: [ex("ex_50n_4", "Yürüyüş veya su egzersizi", "yuzme", 25, "", "Düşük darbeli, rahat tempo")],
+          5: [ex("ex_50n_5", "Denge, esneme & nefes", "yoga", 15, "", "Gerekirse sabit bir destek kullan")],
+          6: [ex("ex_50n_6", "Keyifli açık hava yürüyüşü", "yuruyus", 30, "", "Kendi enerjine göre kısaltabilirsin")],
+          7: []
+        };
+      }
     }
 
     return {

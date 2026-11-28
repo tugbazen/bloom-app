@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.7.0">
+<meta name="bloom-version" content="2.7.1">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -712,7 +712,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.7.0";
+const APP_VERSION = "2.7.1";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -814,7 +814,10 @@ function defaults() {
         6: [exItem("ex_p6","Keyifli yürüyüş / yüzme","yuruyus",35,"","Hafta sonu taze hava")],
         7: []
       },
-      logs: []
+      logs: [],
+      presetAge: null,
+      presetLabel: "",
+      presetGoalMin: null
     },
     favorites: [], customFoods: [], bonusWeeks: {}, seenLevel: 1
   };
@@ -876,6 +879,9 @@ function merge(d, p) {
   if (!o.exercise.plan || typeof o.exercise.plan !== "object") o.exercise.plan = d.exercise.plan;
   [1,2,3,4,5,6,7].forEach(i => { if (!Array.isArray(o.exercise.plan[i])) o.exercise.plan[i] = []; });
   if (!Array.isArray(o.exercise.logs)) o.exercise.logs = [];
+  if (!Number.isFinite(Number(o.exercise.presetAge)) || !o.exercise.presetAge) o.exercise.presetAge = null;
+  if (typeof o.exercise.presetLabel !== "string") o.exercise.presetLabel = "";
+  if (!Number.isFinite(Number(o.exercise.presetGoalMin)) || !o.exercise.presetGoalMin) o.exercise.presetGoalMin = null;
   ["days","mealPlan","bonusWeeks"].forEach(k => { if (!o[k] || typeof o[k] !== "object") o[k] = {}; });
   ["meals","exams","grades","study","progress","qlog","courses","favorites","customFoods"].forEach(k => { if (!Array.isArray(o[k])) o[k] = d[k]; });
   if (!o.clearedPresetCourses && Array.isArray(o.courses)) {
@@ -3512,9 +3518,11 @@ const EX_PRESETS = {
 const exType = k => {
   const base = EX_TYPES[k] || EX_TYPES.yuruyus;
   const isMale = curProfileInfo().gender === "male";
-  if (!isMale) return base;
   const maleIcons = { yuruyus: "🚶‍♂️", pilates: "🤸‍♂️", yoga: "🧘‍♂️", esneme: "🌿", direnc: "🏋️‍♂️", yuzme: "🏊‍♂️", kardiyo: "🏃‍♂️", bisiklet: "🚴‍♂️" };
-  return Object.assign({}, base, { e: maleIcons[k] || base.e });
+  const isOther = curProfileInfo().gender === "other";
+  const neutralIcons = { yuruyus: "🚶", pilates: "🧘", yoga: "🧘", esneme: "🌿", direnc: "💪", yuzme: "🏊", kardiyo: "🏃", bisiklet: "🚴" };
+  const icon = isMale ? maleIcons[k] : isOther ? neutralIcons[k] : base.e;
+  return icon ? Object.assign({}, base, { e: icon }) : base;
 };
 const exKcal = (type, min) => Math.round((+min || 0) * exType(type).kcalMin);
 const exLogsOn = k => (S.exercise.logs || []).filter(l => l.date === k);
@@ -3540,12 +3548,13 @@ function pageExercise() {
   const activeDays = wd.filter(dk => weekLogs.some(l => l.date === dk)).length;
   const weekBurn = weekLogs.reduce((a, l) => a + exKcal(l.type, l.min), 0);
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const presetAge = S.exercise.presetAge || prof.age;
+  const activeGk = S.exercise.presetAge ? ageGroupKeyFor(presetAge) : S.exercise.presetLabel ? "" : prof.groupKey || ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
-  const exBadge = prof.exLabel || `${activeGk} Yaş Egzersiz Programı`;
-  const targetMin = +prof.weeklyGoalMin || 150;
+  const exBadge = S.exercise.presetLabel || prof.exLabel || `${activeGk} Yaş Egzersiz Programı`;
+  const targetMin = +S.exercise.presetGoalMin || +prof.weeklyGoalMin || 150;
   const goalPct = Math.min(100, Math.round(weekMin / targetMin * 100));
-  const headEmoji = prof.gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
+  const headEmoji = prof.gender === "male" ? "🏋️‍♂️" : prof.gender === "other" ? "🏃" : "🧘‍♀️";
   return `<div class="page-head"><div><h1>Egzersizim ${headEmoji}</h1><p>Yaşına ve cinsiyetine göre haftalık egzersiz programın hazır; günlük hareketini kaydet ve tablonda gör.</p></div>
       <div class="row" style="gap:8px"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn soft" data-act="exPlanForm">+ Programa ekle</button><button class="btn" data-act="exLogForm">+ Egzersiz kaydet</button></div></div>
     <div class="card mb tint-sage">
@@ -3558,8 +3567,8 @@ function pageExercise() {
       <div class="row between mt small"><span class="muted">Haftalık hareket hedefi (${targetMin} dk · ${esc(exBadge)})</span><b>%${goalPct}</b></div>
       <div class="progress sage thin mt-s"><i style="width:${goalPct}%"></i></div>
       <div class="divider"></div>
-      <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre haftalık egzersiz programı seç (${esc(exBadge)} · ${gLabel})</div>
-      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre haftalık planı tek dokunuşla yükle · ${gLabel}</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="exLoadAgePreset" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "today" ? "active" : ""}" data-act="exTab" data-t="today">☀️ Bugün</div>
@@ -3651,8 +3660,8 @@ function exWeekView(ws) {
 }
 function exPlanView() {
   return `<div class="card mb tint-pink">
-      <h3>✨ Hazır haftalık program şablonları</h3>
-      <p class="small muted mb">İstersen tek dokunuşla bir program yükleyip kendi temposuna göre gün gün düzenleyebilirsin.</p>
+      <h3>✨ Genel hazır haftalık program şablonları</h3>
+      <p class="small muted mb">Yaşına ve cinsiyet profiline göre önerilen plan yukarıdaki yaş çiplerinden yüklenir. Bu genel şablonları da kendi temposuna göre düzenleyebilirsin.</p>
       <div class="row" style="gap:8px">${Object.entries(EX_PRESETS).map(([k2, o]) => `<button class="btn soft sm" data-act="exLoadPreset" data-k="${k2}">${o.e} ${esc(o.n)}</button>`).join("")}</div>
     </div>
     <div class="grid">${[1,2,3,4,5,6,7].map(d1 => {
@@ -3670,19 +3679,19 @@ function exLogFormHTML(item = {}) {
   const tp = item.type || "yuruyus";
   return `<form data-form="exLog" class="form-grid"><input type="hidden" name="id" value="${esc(item.id || "")}"><input type="hidden" name="planId" value="${esc(item.planId || "")}">
     <div class="field full"><label>Egzersiz adı *</label><input name="name" list="exNameList" required maxlength="80" value="${esc(item.name || "")}" placeholder="örn. Tempolu yürüyüş, Mat pilates"><datalist id="exNameList">${EX_NAME_SUGGESTIONS.map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></div>
-    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${o.e} ${o.t}</option>`).join("")}</select></div>
+    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${exType(k2).e} ${o.t}</option>`).join("")}</select></div>
     <div class="field"><label>Tarih *</label><input type="date" name="date" required value="${esc(item.date || today())}"></div>
     <div class="field"><label>Süre (dakika) *</label><input type="number" name="min" min="1" max="600" required value="${esc(item.min ?? 25)}"></div>
     <div class="field"><label>Set / tekrar (isteğe bağlı)</label><input name="sets" maxlength="40" value="${esc(item.sets || "")}" placeholder="örn. 3x12"></div>
     <div class="field full"><label>Nasıl hissettirdi?</label><select name="feel"><option value="">Seçilmedi</option>${Object.entries(EX_FEELS).map(([k2, v]) => `<option value="${k2}" ${item.feel === k2 ? "selected" : ""}>${v}</option>`).join("")}</select></div>
     <div class="field full"><label>Not</label><input name="note" maxlength="140" value="${esc(item.note || "")}" placeholder="örn. Bacaklarım çok hafifledi"></div>
-    <div class="full modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Kaydet 🧘‍♀️</button></div></form>`;
+    <div class="full modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Kaydet ${exType(tp).e}</button></div></form>`;
 }
 function exPlanFormHTML(dayIdx = 1, item = {}) {
   const tp = item.type || "yuruyus", dVal = +dayIdx || 1;
   return `<form data-form="exPlan" class="form-grid"><input type="hidden" name="id" value="${esc(item.id || "")}"><input type="hidden" name="origDay" value="${dVal}">
     <div class="field"><label>Gün *</label><select name="day">${[1,2,3,4,5,6,7].map(i => `<option value="${i}" ${dVal === i ? "selected" : ""}>${TR_DAYS[i % 7]}</option>`).join("")}</select></div>
-    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${o.e} ${o.t}</option>`).join("")}</select></div>
+    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${exType(k2).e} ${o.t}</option>`).join("")}</select></div>
     <div class="field full"><label>Egzersiz adı *</label><input name="name" list="exPlanNames" required maxlength="80" value="${esc(item.name || "")}" placeholder="örn. Pilates & alt beden"><datalist id="exPlanNames">${EX_NAME_SUGGESTIONS.map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></div>
     <div class="field"><label>Hedef süre (dakika) *</label><input type="number" name="min" min="1" max="600" required value="${esc(item.min ?? 25)}"></div>
     <div class="field"><label>Set / tekrar</label><input name="sets" maxlength="40" value="${esc(item.sets || "")}" placeholder="örn. 3x12"></div>
@@ -4262,8 +4271,34 @@ document.addEventListener("click", ev => {
         const np = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
         [1,2,3,4,5,6,7].forEach(i => np[i] = (pr.plan[i] || []).map(x => exItem(uid(), x.name, x.type, x.min, x.sets || "", x.note || "")));
         S.exercise.plan = np;
+        S.exercise.presetAge = null;
+        S.exercise.presetLabel = pr.n;
+        S.exercise.presetGoalMin = 150;
         save(); render(); toast(`${pr.e} "${pr.n}" programı yüklendi!`);
       }, "Programı yükle");
+      break;
+    }
+    case "exLoadAgePreset": {
+      const targetAge = Math.max(10, Math.min(99, Number(ds.age) || 21));
+      const prof = curProfileInfo();
+      if (typeof window.__bloomGetRecommendedExercise !== "function") {
+        toast("Kişiselleştirilmiş egzersiz planı şu anda yüklenemiyor.");
+        break;
+      }
+      const rec = window.__bloomGetRecommendedExercise(targetAge, prof.gender || "other");
+      if (!rec || !rec.plan) {
+        toast("Bu yaş grubu için egzersiz planı oluşturulamadı.");
+        break;
+      }
+      confirmBox(`"${rec.exLabel}" planı yüklensin mi? Mevcut haftalık egzersiz planın yenilenecek; geçmiş kayıtların korunur.`, () => {
+        const np = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+        [1,2,3,4,5,6,7].forEach(i => np[i] = (rec.plan[i] || []).map(x => exItem(uid(), x.name, x.type, x.min, x.sets || "", x.note || "")));
+        S.exercise.plan = np;
+        S.exercise.presetAge = targetAge;
+        S.exercise.presetLabel = rec.exLabel || `${ageGroupKeyFor(targetAge)} Yaş Egzersiz Programı`;
+        S.exercise.presetGoalMin = +rec.weeklyGoalMin || 150;
+        save(); render(); toast(`💪 "${S.exercise.presetLabel}" yüklendi!`);
+      }, "Egzersiz planını yükle");
       break;
     }
     case "saveCustomFood": {
@@ -5053,6 +5088,9 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
         S.exercise.plan[d1] = exRec.plan[d1].map(x => Object.assign({}, x));
       }
     });
+    S.exercise.presetAge = Number(profile.age) || null;
+    S.exercise.presetLabel = exRec.exLabel || "";
+    S.exercise.presetGoalMin = +exRec.weeklyGoalMin || null;
   }
   save();
   render();
@@ -5069,6 +5107,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.7.0"></script>
+  <script src="onboarding.js?v=2.7.1"></script>
 </body>
 </html>
