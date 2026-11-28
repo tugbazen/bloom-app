@@ -312,13 +312,23 @@
 
   window.__bloomGetRecommendedRoutines = getRecommendedRoutines;
 
-  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+) ve cinsiyet için sabah/akşam cilt bakım rutinleri
+  const SKIN_TYPE_LABELS = { normal: "Normal", dry: "Kuru", oily: "Yağlı", combo: "Karma", sensitive: "Hassas" };
+  const SKIN_SENS_LABELS = { low: "Düşük hassasiyet", medium: "Orta hassasiyet", high: "Yüksek hassasiyet" };
+  const SKIN_PRIO_LABELS = { balance: "Genel denge", hydration: "Yoğun nem & bariyer", acne: "Gözenek & akne eğilimi", antiaging: "Çizgi & elastikiyet", spot: "Leke & ton eşitleme" };
+
+  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+), cinsiyet ve isteğe bağlı cilt profili için sabah/akşam cilt bakım rutinleri
   // Erkek seçildiğinde hiçbir yaş grubunda "Makyaj temizleme" yer almaz.
-  function getRecommendedSkincare(ageNum, gender) {
+  function getRecommendedSkincare(ageNum, gender, skinProfile = null) {
     const age = Math.max(10, Math.min(99, Number(ageNum) || 21));
     const g = gender || "female";
     const isFemale = g === "female";
     const isMale = g === "male";
+    const sp = skinProfile && typeof skinProfile === "object" ? skinProfile : {};
+    const skinType = sp.skinType || "";
+    const sensitivity = sp.sensitivity || "";
+    const priority = sp.priority || "";
+    const allergies = (sp.allergies || "").trim();
+    const hasCustomSkinProfile = !!(skinType || sensitivity || priority || allergies);
     const sk = (id, step, product, note, icon, fixed = false) => ({ id, step, product, note, icon, fixed });
 
     let skinLabel = "18–24 Yaş · Nem, Işıltı & Gözenek Dengesi";
@@ -417,8 +427,68 @@
       ];
     }
 
+    // İsteğe bağlı cilt profiline (cilt tipi, hassasiyet, öncelik, alerji) göre uyarlama
+    const isHighSens = sensitivity === "high" || skinType === "sensitive";
+    const isOily = skinType === "oily" || priority === "acne";
+    const isDry = skinType === "dry" || priority === "hydration";
+    const allergyLow = allergies.toLocaleLowerCase("tr-TR");
+
+    const adaptList = (list) => list.map(it => {
+      const next = Object.assign({}, it);
+      const txt = (next.step + " " + next.product).toLocaleLowerCase("tr-TR");
+      if (isHighSens && (/retinol|aha|bha|salisilik|c vitamini/i.test(txt))) {
+        if (/retinol|aha|bha|salisilik/i.test(txt)) {
+          next.product = "Parfümsüz Centella, Panthenol veya %0.5 Bakuchiol yatıştırıcı bakım";
+          next.note = "Yüksek hassasiyet seçimin nedeniyle sert aktifler yerine nazik bariyer desteği önerildi";
+        } else if (/c vitamini/i.test(txt)) {
+          next.product = "Nazik Peptit & Panthenol antioksidan serum (parfümsüz)";
+          next.note = "Hassas ciltte batma riskini azaltmak için asidik C vitamini yerine nazik alternatif";
+        }
+      }
+      if (isOily && next.id === "sk_m_moist") {
+        next.product = "Yağsız (oil-free), komedojenik olmayan su bazlı jel nemlendirici";
+        next.note = "Yağlı/akne eğilimli cilt profiline göre hafif dokulu nemlendirme";
+      } else if (isDry && next.id === "sk_m_moist") {
+        next.product = "Seramid, skualen ve hyaluronik asit içeren yoğun bariyer krem";
+        next.note = "Kuru/nem ihtiyacı olan cilt profiline göre bariyer koruyucu doku";
+      }
+      if (isDry && next.id === "sk_m_wash") {
+        next.product = "Köpürmeyen, sülfatsız süt veya krem yüz temizleyici";
+        next.note = "Cilt lipidlerini kurutmadan nazik temizlik";
+      }
+      if (priority === "spot" && next.id === "sk_m_serum" && !isHighSens) {
+        next.product = "Niacinamide (%5) + Azelaik / C Vitamini ton eşitleyici serum";
+        next.note = "Leke ve ton eşitleme önceliğine göre SPF ile birlikte destek";
+      }
+      if (allergies && allergyLow.split(/[,\s;]+/).filter(w => w.length >= 3).some(w => txt.includes(w))) {
+        next.note = `⚠️ Alerji notunda (${allergies}) geçen içerikle çakışabilir — kullanmadan önce içeriği kontrol et veya düzenle.`;
+      }
+      return next;
+    });
+
+    morning = adaptList(morning);
+    evening = adaptList(evening);
+
+    const gText = isFemale ? "Kadın" : isMale ? "Erkek" : "Kişisel";
+    let whyNote = "";
+    if (hasCustomSkinProfile) {
+      const parts = [`${age} yaş`, gText];
+      if (skinType && SKIN_TYPE_LABELS[skinType]) parts.push(`${SKIN_TYPE_LABELS[skinType]} cilt`);
+      if (sensitivity && SKIN_SENS_LABELS[sensitivity]) parts.push(SKIN_SENS_LABELS[sensitivity]);
+      if (priority && SKIN_PRIO_LABELS[priority]) parts.push(`Öncelik: ${SKIN_PRIO_LABELS[priority]}`);
+      if (allergies) parts.push(`Hassasiyet/Alerji notu: ${allergies}`);
+      whyNote = `Bu adımlar girdiğin ${parts.join(" · ")} bilgilerine göre uyarlandı.`;
+      if (isHighSens) whyNote += " Hassasiyet nedeniyle sert asitler/retinol yerine yatıştırıcı bariyer alternatifleri seçildi.";
+    } else {
+      whyNote = `Şu an yalnızca yaş (${age}) ve cinsiyet (${gText}) bilgine göre genel bir başlangıç şablonu gösteriliyor. Cilt tipin, hassasiyetin veya alerjilerin farklıysa "🧬 Cilt Profilim" üzerinden kişiselleştirebilirsin.`;
+    }
+    const disclaimer = "Bu öneriler genel bakım rehberidir; dermatolojik tanı veya tıbbi tedavi yerine geçmez. Alerji, egzama, aktif akne tedavisi veya gebelik/emzirme durumunda dermatoloğunun önerisi önceliklidir.";
+
     return {
-      skinLabel,
+      skinLabel: hasCustomSkinProfile && skinType && SKIN_TYPE_LABELS[skinType] ? `${skinLabel} · ${SKIN_TYPE_LABELS[skinType]} Cilt` : skinLabel,
+      whyNote,
+      disclaimer,
+      hasCustomSkinProfile,
       morning,
       evening
     };
@@ -736,8 +806,48 @@
               <button type="button" class="bo-gender-btn ${initGender === "other" ? "on" : ""}" data-gender="other">✨ Belirtme</button>
             </div>
           </div>
+          <details class="bo-field" style="background:#fffdf8;border:1px solid #f5dce8;border-radius:14px;padding:10px 12px">
+            <summary style="cursor:pointer;font-size:13px;font-weight:700;color:#7a5468">🧬 İsteğe bağlı: Cilt Profili (daha uygun bakım için)</summary>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+              <div>
+                <label class="bo-lbl" for="boSkinType">Cilt tipi</label>
+                <select id="boSkinType" class="bo-inp" style="padding:9px 10px;font-size:14px">
+                  <option value="">Belirtmek istemiyorum</option>
+                  <option value="normal" ${(curProf?.skinProfile?.skinType === "normal") ? "selected" : ""}>Normal</option>
+                  <option value="dry" ${(curProf?.skinProfile?.skinType === "dry") ? "selected" : ""}>Kuru</option>
+                  <option value="oily" ${(curProf?.skinProfile?.skinType === "oily") ? "selected" : ""}>Yağlı</option>
+                  <option value="combo" ${(curProf?.skinProfile?.skinType === "combo") ? "selected" : ""}>Karma</option>
+                  <option value="sensitive" ${(curProf?.skinProfile?.skinType === "sensitive") ? "selected" : ""}>Hassas</option>
+                </select>
+              </div>
+              <div>
+                <label class="bo-lbl" for="boSensitivity">Hassasiyet</label>
+                <select id="boSensitivity" class="bo-inp" style="padding:9px 10px;font-size:14px">
+                  <option value="">Belirtmek istemiyorum</option>
+                  <option value="low" ${(curProf?.skinProfile?.sensitivity === "low") ? "selected" : ""}>Düşük</option>
+                  <option value="medium" ${(curProf?.skinProfile?.sensitivity === "medium") ? "selected" : ""}>Orta</option>
+                  <option value="high" ${(curProf?.skinProfile?.sensitivity === "high") ? "selected" : ""}>Yüksek</option>
+                </select>
+              </div>
+              <div style="grid-column:1/-1">
+                <label class="bo-lbl" for="boSkinPrio">Öncelik</label>
+                <select id="boSkinPrio" class="bo-inp" style="padding:9px 10px;font-size:14px">
+                  <option value="">Genel denge</option>
+                  <option value="hydration" ${(curProf?.skinProfile?.priority === "hydration") ? "selected" : ""}>Yoğun nem &amp; bariyer</option>
+                  <option value="acne" ${(curProf?.skinProfile?.priority === "acne") ? "selected" : ""}>Gözenek &amp; akne eğilimi</option>
+                  <option value="spot" ${(curProf?.skinProfile?.priority === "spot") ? "selected" : ""}>Leke &amp; ton eşitleme</option>
+                  <option value="antiaging" ${(curProf?.skinProfile?.priority === "antiaging") ? "selected" : ""}>Çizgi &amp; elastikiyet</option>
+                </select>
+              </div>
+              <div style="grid-column:1/-1">
+                <label class="bo-lbl" for="boAllergies">Bilinen alerji / kaçınılan içerik (varsa)</label>
+                <input id="boAllergies" class="bo-inp" style="padding:9px 10px;font-size:14px" maxlength="100" placeholder="örn. parfüm, retinol, C vitamini" value="${escHtml(curProf?.skinProfile?.allergies || "")}">
+              </div>
+            </div>
+          </details>
           <div class="bo-preview-badge" id="boPreviewBadge">
             ✨ Günlük rutin: <b>${escHtml(initRec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(initSkRec.skinLabel)}</b><br>💪 Egzersiz: <b>${escHtml(initExRec.exLabel)}</b>
+            <div style="font-size:11.5px;color:#8a5f75;margin-top:6px">🛡️ Öneriler genel başlangıç şablonudur; tıbbi/dermatolojik tavsiye değildir, istediğin adımı değiştirebilirsin.</div>
           </div>
           <div class="bloom-onboarding__error" id="bloom-onboarding-error" aria-live="polite"></div>
           <div class="bo-foot">
@@ -755,18 +865,32 @@
     const form = screen.querySelector("#bloom-onboarding-form");
     const nameInp = screen.querySelector("#bloom-onboarding-name");
     const ageInp = screen.querySelector("#bloom-onboarding-age");
+    const skinTypeInp = screen.querySelector("#boSkinType");
+    const sensInp = screen.querySelector("#boSensitivity");
+    const prioInp = screen.querySelector("#boSkinPrio");
+    const allergyInp = screen.querySelector("#boAllergies");
     const badgeEl = screen.querySelector("#boPreviewBadge");
     const errorEl = screen.querySelector("#bloom-onboarding-error");
     let curGender = initGender;
 
+    function readSkinProf() {
+      return {
+        skinType: skinTypeInp ? skinTypeInp.value : "",
+        sensitivity: sensInp ? sensInp.value : "",
+        priority: prioInp ? prioInp.value : "",
+        allergies: allergyInp ? allergyInp.value.trim() : ""
+      };
+    }
+
     function updateBadge() {
       const rec = getRecommendedRoutines(ageInp.value, curGender);
-      const skRec = getRecommendedSkincare(ageInp.value, curGender);
+      const skRec = getRecommendedSkincare(ageInp.value, curGender, readSkinProf());
       const exRec = getRecommendedExercise(ageInp.value, curGender);
-      badgeEl.innerHTML = `✨ Günlük rutin: <b>${escHtml(rec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(skRec.skinLabel)}</b><br>💪 Egzersiz: <b>${escHtml(exRec.exLabel)}</b>`;
+      badgeEl.innerHTML = `✨ Günlük rutin: <b>${escHtml(rec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(skRec.skinLabel)}</b><br>💪 Egzersiz: <b>${escHtml(exRec.exLabel)}</b><div style="font-size:11.5px;color:#8a5f75;margin-top:6px">🛡️ Öneriler genel başlangıç şablonudur; tıbbi/dermatolojik tavsiye değildir, istediğin adımı değiştirebilirsin.</div>`;
     }
 
     ageInp.addEventListener("input", updateBadge);
+    [skinTypeInp, sensInp, prioInp, allergyInp].forEach(el => { if (el) el.addEventListener("change", updateBadge); });
 
     screen.addEventListener("click", (ev) => {
       const gBtn = ev.target.closest("[data-gender]");
@@ -800,19 +924,22 @@
         return;
       }
 
+      const skinProfile = readSkinProf();
       const rec = getRecommendedRoutines(age, curGender);
-      const skRec = getRecommendedSkincare(age, curGender);
+      const skRec = getRecommendedSkincare(age, curGender, skinProfile);
       const exRec = getRecommendedExercise(age, curGender);
       const profile = {
         name,
         age,
         gender: curGender,
+        skinProfile,
         groupKey: rec.groupKey,
         groupLabel: rec.groupLabel,
         schoolTitle: rec.schoolTitle,
         offTitle: rec.offTitle,
         eveningTitle: rec.eveningTitle,
         skinLabel: skRec.skinLabel,
+        skinWhy: skRec.whyNote,
         exLabel: exRec.exLabel,
         weeklyGoalMin: exRec.weeklyGoalMin,
         skinApplied: true,
