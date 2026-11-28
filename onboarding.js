@@ -438,9 +438,11 @@
       const txt = (next.step + " " + next.product).toLocaleLowerCase("tr-TR");
       if (isHighSens && (/retinol|aha|bha|salisilik|c vitamini/i.test(txt))) {
         if (/retinol|aha|bha|salisilik/i.test(txt)) {
+          if (/retinol/i.test(next.step)) next.step = next.step.replace(/retinol\s*\/?\s*/gi, "Nazik ").trim();
           next.product = "Parfümsüz Centella, Panthenol veya %0.5 Bakuchiol yatıştırıcı bakım";
           next.note = "Yüksek hassasiyet seçimin nedeniyle sert aktifler yerine nazik bariyer desteği önerildi";
         } else if (/c vitamini/i.test(txt)) {
+          if (/c vitamini/i.test(next.step)) next.step = next.step.replace(/c vitamini\s*\+?\s*/gi, "Nazik ").trim();
           next.product = "Nazik Peptit & Panthenol antioksidan serum (parfümsüz)";
           next.note = "Hassas ciltte batma riskini azaltmak için asidik C vitamini yerine nazik alternatif";
         }

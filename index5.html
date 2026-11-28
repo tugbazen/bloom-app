@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.9.0">
+<meta name="bloom-version" content="2.10.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -23,9 +23,13 @@
 :root{
   --bg:#FFF8FA; --pink1:#FCEAF1; --pink2:#F5DCE8; --pink3:#E8BFD1; --rose:#D68BAA; --dusty:#C78BA0;
   --sage:#E7EEE5; --sage2:#B9CDB3; --sage3:#8DB585; --lav:#F3EDF8; --lav2:#D9CCEB; --cream:#FFF6EC; --ivory:#FFFDF8;
-  --text:#523b47; --muted:#705865; --line:rgba(216,166,188,.55); --water:#A9D6EC;
+  --text:#5B4450; --muted:#A08896; --line:rgba(232,191,209,.5); --water:#A9D6EC;
   --shadow:0 6px 24px rgba(214,139,170,.12); --shadow-h:0 12px 32px rgba(214,139,170,.2);
   --r:22px; --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'Quicksand','Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+[data-palette="rose"]{
+  --bg:#FFF7FA; --pink1:#FDE7F0; --pink2:#F4D4E4; --pink3:#E4B4CB; --rose:#C96E96; --dusty:#B87490;
+  --text:#4E3642; --muted:#6D5361; --line:rgba(216,166,188,.58);
 }
 [data-palette="sage"]{
   --bg:#F6FAF5; --pink1:#E8F2E5; --pink2:#D6E8D1; --pink3:#B4D1AC; --rose:#5F8C58; --dusty:#739D6C;
@@ -368,7 +372,7 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
 
 /* ---------- FX ---------- */
 #toasts{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;width:max-content;max-width:92vw}
-.toast{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-h);padding:10px 18px;border-radius:999px;font-weight:700;color:#7a5468;animation:toastIn .4s cubic-bezier(.2,.9,.3,1.3);font-size:14px;text-align:center}
+.toast{background:#fff;border:1px solid var(--line);box-shadow:var(--shadow-h);padding:10px 18px;border-radius:999px;font-weight:700;color:#7a5468;animation:toastIn .4s cubic-bezier(.2,.9,.3,1.3);font-size:14px;text-align:center;pointer-events:auto;display:inline-flex;align-items:center;gap:10px}
 .toast.out{animation:fadeOut .4s forwards}
 .xp-float{position:fixed;z-index:410;pointer-events:none;font-weight:800;color:var(--rose);font-size:18px;text-shadow:0 2px 0 #fff;animation:xpUp 1.4s ease-out forwards;font-family:var(--serif)}
 .confetti{position:fixed;z-index:420;pointer-events:none;width:8px;height:8px;border-radius:2px;animation:confetti 1s ease-out forwards}
@@ -838,7 +842,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.9.0";
+const APP_VERSION = "2.10.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -873,7 +877,7 @@ const exItem = (id, name, type = "yuruyus", min = 25, sets = "", note = "") => (
 function defaults() {
   return {
     version: 1, created: today(),
-    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", palette: "rose", darkMode: false, notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
+    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", palette: "soft", darkMode: false, notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
     routines: {
       school: [
         r("Uyan & 1 büyük bardak su iç",1,"07:30"),
@@ -1153,8 +1157,25 @@ function checkMilestones() {
 }
 
 /* ---------------- EFEKTLER ---------------- */
-function toast(msg, ms = 2600) {
-  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+let __undoAction = null;
+function toast(msg, ms = 2600, undoFn = null) {
+  const t = document.createElement("div"); t.className = "toast";
+  const span = document.createElement("span"); span.textContent = msg;
+  t.appendChild(span);
+  if (typeof undoFn === "function") {
+    __undoAction = undoFn;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "btn sm soft";
+    btn.style.padding = "3px 10px";
+    btn.textContent = "↩️ Geri Al";
+    btn.addEventListener("click", () => {
+      if (__undoAction) { const fn = __undoAction; __undoAction = null; fn(); }
+      t.remove();
+    });
+    t.appendChild(btn);
+    ms = Math.max(ms, 4800);
+  }
   $("#toasts").appendChild(t);
   setTimeout(() => { t.classList.add("out"); setTimeout(() => t.remove(), 400); }, ms);
 }
@@ -1609,50 +1630,68 @@ function homeToday() {
   const nextSkinStep = (activeSkinTab === "evening" ? skE : skM).find(x => !skChecks[x.id]) || null;
   const prof = curProfileInfo();
   const msg = st.pct >= 100 ? "Bugünkü her şey tamam! Kendinle gurur duy. 🌸" : st.pct >= 60 ? "Harika gidiyorsun, az kaldı! ✨" : st.pct >= 25 ? "Güzel bir başlangıç, adım adım. 🌿" : "Küçük bir adımla başlamaya ne dersin? 🌱";
-  return `<div class="grid">
+  const exIcon = prof.gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
+  const hasExamSoon = !!ex;
+  return `<div class="card mb" style="padding:12px 16px">
+      <div class="row" style="gap:8px;justify-content:space-between">
+        <span class="lbl">⚡ Hızlı İşlemler</span>
+        <div class="row" style="gap:6px">
+          <button type="button" class="btn water sm" data-act="addWater" data-ml="200">+200 ml Su</button>
+          <button type="button" class="btn sage sm" data-act="mealForm">+ Öğün</button>
+          <button type="button" class="btn soft sm" data-act="exLogForm">${exIcon} + Egzersiz</button>
+          <button type="button" class="btn lav sm" data-act="go" data-page="skincare">🧴 Cilt Bakımı</button>
+          <button type="button" class="btn soft sm" data-act="goStudyTimer">⏱ Odak</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid">
     <div class="card c4 tint-pink"><h3>✨ Günlük ilerleme</h3>
       <div class="row" style="gap:18px;flex-wrap:nowrap"><div class="ring">${ringSVG(st.pct)}<div class="ring-txt"><b>%${st.pct}</b><span class="tiny muted">tamamlandı</span></div></div>
       <div class="stack" style="gap:6px"><div><b style="font-size:20px;font-family:var(--serif)">${st.done}</b> <span class="muted">/ ${st.total} görev</span></div><div class="small muted">${st.total - st.done} görev kaldı</div><div class="small">${msg}</div></div></div>
       <div class="divider"></div><div class="row between small"><b>Seviye ${L.level}</b><span class="muted">${S.xp.total} XP · bu hafta ${weekXP(weekStart(k))} XP</span></div><div class="progress thin mt-s"><i style="width:${L.pct}%"></i></div></div>
-    <div class="card c8"><h3>🌷 Günün kalan görevleri<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Tüm rutinler →</span></h3>
+    <div class="card c8"><h3>🌷 Sıradaki Adımların<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Tüm rutinler →</span></h3>
       ${remaining.length || goalsLeft.length || !st.wDone ? `<div class="check-list">
         ${!st.wDone ? `<div class="check-item" data-act="go" data-page="water"><span class="cbox" style="border-color:#a9d6ec">💧</span><span class="ct">Su hedefi: ${fmtMl(wt)} / ${fmtMl(S.settings.waterGoal)}</span><span class="time">su ekle</span></div>` : ""}
-        ${goalsLeft.slice(0, 3).map(g => checkRow({id: g.id, text: "🎯 " + g.text, done: false, act: "toggleGoal", attrs: `data-k="${k}"`})).join("")}
-        ${remaining.slice(0, 7).map(t => checkRow({id: t.id, text: t.text, time: t.time || t.list, done: false, isNext: t.id === nextId})).join("")}
-        ${remaining.length > 7 ? `<div class="small muted" style="padding:6px 10px">+${remaining.length - 7} görev daha · <span class="card-link" data-act="go" data-page="routines">gör</span></div>` : ""}</div>`
+        ${goalsLeft.slice(0, 2).map(g => checkRow({id: g.id, text: "🎯 " + g.text, done: false, act: "toggleGoal", attrs: `data-k="${k}"`})).join("")}
+        ${remaining.slice(0, 4).map(t => checkRow({id: t.id, text: t.text, time: t.time || t.list, done: false, isNext: t.id === nextId})).join("")}
+        ${remaining.length > 4 ? `<div class="small muted" style="padding:6px 10px">+${remaining.length - 4} görev daha · <span class="card-link" data-act="go" data-page="routines">tümünü gör →</span></div>` : ""}</div>`
         : emptyBox("🌸", "Bugünkü tüm görevlerin tamam! Bu güzel enerjiyi kendine ayır.")}</div>
     <div class="card c4" data-widget="water"><h3>💧 Su<span class="sp"></span><span class="card-link" data-act="go" data-page="water">Detay →</span></h3>
       <div class="row" style="gap:16px;flex-wrap:nowrap">${glassHTML(k, true)}<div class="stack" style="gap:8px"><div><b style="font-family:var(--serif);font-size:22px;color:#4f8bab">${fmtMl(wt)}</b><div class="small muted">hedef ${fmtMl(S.settings.waterGoal)}</div></div>
       <div class="water-btns"><button class="btn water sm" data-act="addWater" data-ml="200">+200 ml</button><button class="btn water sm" data-act="addWater" data-ml="300">+300 ml</button></div></div></div></div>
-    <div class="card c4" data-widget="goals"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
     <div class="card c4 tint-lav" data-widget="routines"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
       <div class="small row between"><b>${isSchool(k) ? dayTypeMeta().activeChip + " Sabah" : dayTypeMeta().offChip + " Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam &amp; Uyku Rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
-      ${nxt ? `<div class="tiny mt" style="color:#7a3354"><b>⏰ Sıradaki:</b> ${esc(nxt.task.text)}${nxt.task.time ? ` (${esc(nxt.task.time)})` : ""}</div>` : `<div class="tiny muted mt">✨ Bugünkü tüm rutin adımları tamam!</div>`}
-      <div class="small muted mt-s">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? dayTypeMeta().activeChip : dayTypeMeta().offChip}</div></div>
+      ${nxt ? `<div class="tiny mt" style="color:var(--rose)"><b>⏰ Sıradaki:</b> ${esc(nxt.task.text)}${nxt.task.time ? ` (${esc(nxt.task.time)})` : ""}</div>` : `<div class="tiny muted mt">✨ Bugünkü tüm rutin adımları tamam!</div>`}
+      <div class="small muted mt-s">${MODES[d.mode].e} ${MODES[d.mode].t}</div></div>
     <div class="card c4 tint-pink" data-widget="skincare"><h3>🧴 Cilt bakımım<span class="sp"></span><span class="card-link" data-act="go" data-page="skincare">Aç →</span></h3>
       <div class="small row between"><b>☀️ Sabah Cilt Bakımı</b><span class="muted">${skMDone}/${skM.length}</span></div><div class="progress mt-s lav"><i style="width:${skM.length ? skMDone / skM.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam Cilt Bakımı</b><span class="muted">${skEDone}/${skE.length}</span></div><div class="progress mt-s"><i style="width:${skE.length ? skEDone / skE.length * 100 : 0}%"></i></div>
       ${nextSkinStep ? `<div class="row between mt" style="gap:6px;flex-wrap:nowrap"><div class="tiny" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>Sıradaki:</b> ${esc(nextSkinStep.icon || "🧴")} ${esc(nextSkinStep.step)}</div><button class="btn sm soft" data-act="skinToggle" data-tab="${activeSkinTab}" data-id="${nextSkinStep.id}" style="flex-shrink:0">✓ Yaptım</button></div>` : `<div class="tiny muted mt">✨ Sabah ve akşam cilt bakımın tamamlandı!</div>`}
       <div class="tiny muted mt-s">${esc(prof.skinLabel || "Yaşa & cinsiyete özel cilt bakımı")}</div></div>
-    <div class="card c4 tint-sage" data-widget="nutrition"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
+    <div class="card c6 tint-sage" data-widget="nutrition"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
       <div class="stats"><div class="stat"><b>${meals.length}</b><span>öğün</span></div><div class="stat"><b>${veg}</b><span>sebzeli öğün</span></div>${meals.reduce((a, m) => a + (+m.cal || 0), 0) ? `<div class="stat"><b>${meals.reduce((a, m) => a + (+m.cal || 0), 0)}</b><span>kcal</span></div>` : ""}</div>
       <div class="small mt"><b class="muted">Protein:</b> ${prot.length ? esc(prot.slice(0, 4).join(", ")) : "<span class='muted'>henüz yok</span>"}</div>
       <div class="row mt"><button class="btn sage sm" data-act="mealForm">+ Öğün ekle</button><button class="btn ghost sm" data-act="suggestQuick">Bugün ne yesem? ✨</button></div></div>
-    <div class="card c4 tint-cream" data-widget="study"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
-      <div class="stats"><div class="stat"><b>${sm}</b><span>dk bugün</span></div><div class="stat"><b>${S.study.filter(s => s.date >= weekStart(k)).reduce((a, s) => a + (+s.minutes || 0), 0)}</b><span>dk bu hafta</span></div></div>
-      ${ex ? `<div class="row mt" style="flex-wrap:nowrap">${countdown(ex.date)}<div class="small"><b>${esc(ex.name)}</b><div class="muted">${esc(courseName(ex.courseId))}</div></div></div>` : `<div class="small muted mt">Yaklaşan sınav yok 🌿</div>`}
-      <div class="row mt"><button class="btn lav sm" data-act="studyForm">+ Çalışma kaydı</button></div></div>
-    <div class="card c4" data-widget="movement"><h3>👟 Hareket</h3>${moveBlock(k)}</div>
-    <div class="card c6 lift" data-widget="journey"><h3>🌿 My Journey<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Yolculuğumu gör →</span></h3>
-      <div class="garden-mini" data-act="go" data-page="garden">${gardenSVG()}</div>
-      <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">Seviye ${L.level} · ${S.xp.total} XP</span></div>
-      <div class="journey-note small mt-s">Bu hafta kendin için ${caredForDays} gün küçük adımlar attın. Bahçen ve alışkanlıkların senin temponda büyüyor.</div>
-      <div class="progress thin sage mt-s"><i style="width:${gi.pct}%"></i></div><div class="tiny muted mt-s">Bugünkü büyüme ${dayR(k).growth}/${DAILY_GROWTH} · 💧 ${Math.floor(S.garden.bank / 250)} damla</div></div>
-    <div class="card c6 tint-lav lift" data-widget="reading"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
-      <h4 style="font-size:19px;margin-bottom:8px">${esc(rd.title)}</h4><p class="read-prev">${esc(rd.p[0])}</p>
-      <div class="row mt"><button class="btn sm" data-act="readOpen" data-id="${rd.id}">Oku 🌷</button><button class="btn soft sm" data-act="readMore">Bir tane daha oku</button>
-      <button class="btn icon sm soft" data-act="fav" data-id="${rd.id}" title="Favorilere ekle">${S.favorites.includes(rd.id) ? "💗" : "🤍"}</button></div></div>
+    <div class="card c6" data-widget="movement"><h3>👟 Hareket &amp; Günlük Hedefler</h3>${moveBlock(k)}</div>
+    <details class="card c12" ${hasExamSoon ? "open" : ""}>
+      <summary style="cursor:pointer;font-family:var(--serif);font-size:17px;font-weight:600;list-style:none;display:flex;align-items:center;justify-content:space-between">
+        <span>🌿 Bahçem (${gi.e} ${gi.name}), Okul &amp; Bugünün Sayfası</span>
+        <span class="card-link">Aç / Kapat ▾</span>
+      </summary>
+      <div class="grid mt">
+        <div class="card c4 tint-cream" style="box-shadow:none"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
+          <div class="stats"><div class="stat"><b>${sm}</b><span>dk bugün</span></div><div class="stat"><b>${S.study.filter(s => s.date >= weekStart(k)).reduce((a, s) => a + (+s.minutes || 0), 0)}</b><span>dk bu hafta</span></div></div>
+          ${ex ? `<div class="row mt" style="flex-wrap:nowrap">${countdown(ex.date)}<div class="small"><b>${esc(ex.name)}</b><div class="muted">${esc(courseName(ex.courseId))}</div></div></div>` : `<div class="small muted mt">Yaklaşan sınav yok 🌿</div>`}
+          <div class="row mt"><button class="btn lav sm" data-act="studyForm">+ Çalışma kaydı</button></div></div>
+        <div class="card c4 lift" style="box-shadow:none"><h3>🌳 Bahçemden<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Git →</span></h3>
+          <div class="garden-mini" data-act="go" data-page="garden">${gardenSVG()}</div>
+          <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">💧 ${Math.floor(S.garden.bank / 250)} damla</span></div></div>
+        <div class="card c4 tint-lav lift" style="box-shadow:none"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
+          <h4 style="font-size:17px;margin-bottom:6px">${esc(rd.title)}</h4><p class="read-prev">${esc(rd.p[0])}</p>
+          <div class="row mt"><button class="btn sm" data-act="readOpen" data-id="${rd.id}">Oku 🌷</button><button class="btn soft sm" data-act="readMore">Diğer</button></div></div>
+      </div>
+    </details>
   </div>`;
 }
 function goalsBlock(k) {
@@ -3203,7 +3242,7 @@ function pageProgress() {
       <div class="card c12 tint-pink">
         <h3>🎨 Renk Paleti &amp; Gece Modu</h3>
         <div class="row between">
-          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "rose") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
+          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "soft") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
           <button type="button" class="btn ${s.darkMode ? "lav" : "soft"}" data-act="toggleDarkMode">${s.darkMode ? "☀️ Gündüz Moduna Geç" : "🌙 Yumuşak Gece Modu"}</button>
         </div>
       </div>
@@ -4220,14 +4259,23 @@ document.addEventListener("click", ev => {
     }
     case "delGoal": {
       ev.stopPropagation();
-      const d = day(ds.k || today()); d.goals = (d.goals || []).filter(g => g.id !== ds.id); save(); render(); break;
+      const gk = ds.k || today(), d = day(gk);
+      const idx = (d.goals || []).findIndex(g => g.id === ds.id);
+      if (idx < 0) break;
+      const removed = d.goals.splice(idx, 1)[0];
+      save(); render();
+      toast("Hedef silindi", 4800, () => { d.goals.splice(idx, 0, removed); save(); render(); });
+      break;
     }
 
     case "addWater": addWater(ds.ml, el); break;
     case "delWater": {
-      const d = day(today()), removed = d.water.splice(+ds.i, 1)[0];
-      S.garden.bank = Math.max(0, S.garden.bank - (removed ? (+removed.ml || 0) : 0));
-      save(); render(); toast("Kayıt silindi"); break;
+      const d = day(today()), idx = +ds.i, removed = d.water.splice(idx, 1)[0];
+      const ml = removed ? (+removed.ml || 0) : 0;
+      S.garden.bank = Math.max(0, S.garden.bank - ml);
+      save(); render();
+      if (removed) toast("Su kaydı silindi", 4800, () => { d.water.splice(idx, 0, removed); S.garden.bank += ml; save(); render(); });
+      break;
     }
     case "quickMove": {
       const k = today(), d = day(k); d.move = d.move || {min: 0, steps: 0}; d.move.min = (+d.move.min || 0) + (+ds.n || 0);
@@ -4289,13 +4337,22 @@ document.addEventListener("click", ev => {
       if (idx >= 0 && to >= 0 && to < arr.length) { [arr[idx], arr[to]] = [arr[to], arr[idx]]; save(); render(); }
       break;
     }
-    case "rDel": ev.stopPropagation(); S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
+    case "rDel": {
+      ev.stopPropagation();
+      const arr = S.routines[ds.list]; if (!arr) break;
+      const idx = arr.findIndex(x => x.id === ds.id);
+      if (idx < 0) break;
+      const removed = arr.splice(idx, 1)[0];
+      save(); render();
+      toast("Rutin adımı silindi", 4800, () => { arr.splice(idx, 0, removed); save(); render(); });
+      break;
+    }
     case "setPalette": S.settings.palette = ds.p || "rose"; save(); render(); toast("Tema paleti güncellendi 🎨"); break;
     case "toggleDarkMode": S.settings.darkMode = !S.settings.darkMode; save(); render(); break;
     case "skinProfileForm": openModal("🧬 Cilt Profilim (İsteğe bağlı)", skinProfileFormHTML()); break;
     case "applyAgeRoutine": {
       const prof = curProfileInfo();
-      const targetAge = +prof.age || +ds.age || 21;
+      const targetAge = +ds.age || +prof.age || 21;
       const gender = prof.gender || "female";
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
@@ -5358,7 +5415,6 @@ function checkGardenTime() {
 }
 function init() {
   S = load();
-  syncExercisePlanWithProfile(curProfileInfo());
   save();
   syncEarnedRewards();
   restoreTimer();
@@ -5387,7 +5443,6 @@ window.__bloomGetRoutines = function() {
 window.__bloomApplySkincareProfile = function(profile, skRec) {
   if (!S) S = load();
   S.profile = Object.assign({}, S.profile || {}, profile || {});
-  syncExercisePlanWithProfile(S.profile);
   if (skRec && Array.isArray(skRec.morning) && skRec.morning.length) {
     S.skincare.morning = skRec.morning.map(x => Object.assign({}, x));
   }
@@ -5412,7 +5467,6 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   profile.exerciseApplied = true;
   profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
-  syncExercisePlanWithProfile(profile);
   const mapItems = (items, prevList) => {
     const prev = Array.isArray(prevList) ? prevList : [];
     return (items || []).map(it => {
@@ -5447,12 +5501,15 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
       }
     });
   }
-  save();
-  render();
-  const welcomeHeading = $("#welcomeScreen h1");
-  if (welcomeHeading) welcomeHeading.textContent = `Hoş geldin${profile.name ? ` ${profile.name}` : ""} 🌿`;
   if (!silent) {
+    day(today()).welcomeSeen = true;
+    const ws = $("#welcomeScreen"); if (ws) ws.remove();
+    save();
+    render();
     toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri, cilt bakımı ve egzersiz programı yüklendi! 🌷`);
+  } else {
+    save();
+    render();
   }
 };
 window.__bloomBack = function() {
@@ -5465,6 +5522,6 @@ window.__bloomBack = function() {
 applyTheme(selectedTheme());
 init();
 </script>
-  <script src="onboarding.js?v=2.9.0"></script>
+  <script src="onboarding.js?v=2.10.0"></script>
 </body>
 </html>
