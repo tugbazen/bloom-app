@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.6.2">
+<meta name="bloom-version" content="2.7.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -712,7 +712,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.6.2";
+const APP_VERSION = "2.7.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -3509,7 +3509,13 @@ const EX_PRESETS = {
     }
   }
 };
-const exType = k => EX_TYPES[k] || EX_TYPES.yuruyus;
+const exType = k => {
+  const base = EX_TYPES[k] || EX_TYPES.yuruyus;
+  const isMale = curProfileInfo().gender === "male";
+  if (!isMale) return base;
+  const maleIcons = { yuruyus: "🚶‍♂️", pilates: "🤸‍♂️", yoga: "🧘‍♂️", esneme: "🌿", direnc: "🏋️‍♂️", yuzme: "🏊‍♂️", kardiyo: "🏃‍♂️", bisiklet: "🚴‍♂️" };
+  return Object.assign({}, base, { e: maleIcons[k] || base.e });
+};
 const exKcal = (type, min) => Math.round((+min || 0) * exType(type).kcalMin);
 const exLogsOn = k => (S.exercise.logs || []).filter(l => l.date === k);
 function logExerciseEntry({name, type = "yuruyus", min = 20, sets = "", feel = "", note = "", date = today(), planId = ""}, pos = null) {
@@ -3533,9 +3539,15 @@ function pageExercise() {
   const weekMin = weekLogs.reduce((a, l) => a + (+l.min || 0), 0);
   const activeDays = wd.filter(dk => weekLogs.some(l => l.date === dk)).length;
   const weekBurn = weekLogs.reduce((a, l) => a + exKcal(l.type, l.min), 0);
-  const goalPct = Math.min(100, Math.round(weekMin / 150 * 100));
-  return `<div class="page-head"><div><h1>Egzersizim 🧘‍♀️</h1><p>Haftalık programını oluştur, günlük hareketini kaydet ve haftalık tablonda gör.</p></div>
-      <div class="row" style="gap:8px"><button class="btn soft" data-act="exPlanForm">+ Programa ekle</button><button class="btn" data-act="exLogForm">+ Egzersiz kaydet</button></div></div>
+  const prof = curProfileInfo();
+  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
+  const exBadge = prof.exLabel || `${activeGk} Yaş Egzersiz Programı`;
+  const targetMin = +prof.weeklyGoalMin || 150;
+  const goalPct = Math.min(100, Math.round(weekMin / targetMin * 100));
+  const headEmoji = prof.gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
+  return `<div class="page-head"><div><h1>Egzersizim ${headEmoji}</h1><p>Yaşına ve cinsiyetine göre haftalık egzersiz programın hazır; günlük hareketini kaydet ve tablonda gör.</p></div>
+      <div class="row" style="gap:8px"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn soft" data-act="exPlanForm">+ Programa ekle</button><button class="btn" data-act="exLogForm">+ Egzersiz kaydet</button></div></div>
     <div class="card mb tint-sage">
       <div class="stats">
         <div class="stat"><b>${todayMin} dk</b><span>bugün hareket</span></div>
@@ -3543,8 +3555,11 @@ function pageExercise() {
         <div class="stat"><b>${activeDays}/7</b><span>aktif gün</span></div>
         <div class="stat"><b>~${weekBurn}</b><span>tahmini kcal 🌿</span></div>
       </div>
-      <div class="row between mt small"><span class="muted">Haftalık nazik akış hedefi (150 dk)</span><b>%${goalPct}</b></div>
+      <div class="row between mt small"><span class="muted">Haftalık hareket hedefi (${targetMin} dk · ${esc(exBadge)})</span><b>%${goalPct}</b></div>
       <div class="progress sage thin mt-s"><i style="width:${goalPct}%"></i></div>
+      <div class="divider"></div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre haftalık egzersiz programı seç (${esc(exBadge)} · ${gLabel})</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "today" ? "active" : ""}" data-act="exTab" data-t="today">☀️ Bugün</div>
@@ -3948,6 +3963,7 @@ document.addEventListener("click", ev => {
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
         const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
         const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender) : null;
+        const exRec = typeof window.__bloomGetRecommendedExercise === "function" ? window.__bloomGetRecommendedExercise(targetAge, gender) : null;
         const nextProf = {
           name,
           age: targetAge,
@@ -3958,12 +3974,15 @@ document.addEventListener("click", ev => {
           offTitle: rec.offTitle,
           eveningTitle: rec.eveningTitle,
           skinLabel: skRec ? skRec.skinLabel : "",
+          exLabel: exRec ? exRec.exLabel : "",
+          weeklyGoalMin: exRec ? exRec.weeklyGoalMin : 150,
           skinApplied: true,
+          exerciseApplied: true,
           distinctDayRoutinesV1: true,
           updatedAt: Date.now()
         };
         try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
-        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec);
+        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec, false, exRec);
       }
       break;
     }
@@ -4986,13 +5005,19 @@ window.__bloomApplySkincareProfile = function(profile, skRec) {
   save();
   render();
 };
-window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec, silent = false) {
+window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec, silent = false, exRec = null) {
   if (!S) S = load();
   if (!skRec && typeof window.__bloomGetRecommendedSkincare === "function") {
     skRec = window.__bloomGetRecommendedSkincare(profile.age, profile.gender);
   }
+  if (!exRec && typeof window.__bloomGetRecommendedExercise === "function") {
+    exRec = window.__bloomGetRecommendedExercise(profile.age, profile.gender);
+  }
   if (skRec && skRec.skinLabel) profile.skinLabel = skRec.skinLabel;
+  if (exRec && exRec.exLabel) profile.exLabel = exRec.exLabel;
+  if (exRec && exRec.weeklyGoalMin) profile.weeklyGoalMin = exRec.weeklyGoalMin;
   profile.skinApplied = true;
+  profile.exerciseApplied = true;
   profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
   const mapItems = (items, prevList) => {
@@ -5022,10 +5047,17 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   if (skRec && Array.isArray(skRec.evening) && skRec.evening.length) {
     S.skincare.evening = skRec.evening.map(x => Object.assign({}, x));
   }
+  if (exRec && exRec.plan && typeof exRec.plan === "object") {
+    [1,2,3,4,5,6,7].forEach(d1 => {
+      if (Array.isArray(exRec.plan[d1])) {
+        S.exercise.plan[d1] = exRec.plan[d1].map(x => Object.assign({}, x));
+      }
+    });
+  }
   save();
   render();
   if (!silent) {
-    toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) okul günü, boş gün ve cilt bakım rutinleri yüklendi! 🌷`);
+    toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri, cilt bakımı ve egzersiz programı yüklendi! 🌷`);
   }
 };
 window.__bloomBack = function() {
@@ -5037,6 +5069,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.6.0"></script>
+  <script src="onboarding.js?v=2.7.0"></script>
 </body>
 </html>
