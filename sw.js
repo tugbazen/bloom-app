@@ -1,4 +1,4 @@
-const APP_VERSION = '2.6.2';
+const APP_VERSION = '2.7.0';
 const CACHE = 'bloom-v' + APP_VERSION;
 const ASSETS = [
   './',
