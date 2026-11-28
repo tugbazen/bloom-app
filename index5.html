@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.8.0">
+<meta name="bloom-version" content="2.9.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -23,10 +23,43 @@
 :root{
   --bg:#FFF8FA; --pink1:#FCEAF1; --pink2:#F5DCE8; --pink3:#E8BFD1; --rose:#D68BAA; --dusty:#C78BA0;
   --sage:#E7EEE5; --sage2:#B9CDB3; --sage3:#8DB585; --lav:#F3EDF8; --lav2:#D9CCEB; --cream:#FFF6EC; --ivory:#FFFDF8;
-  --text:#5B4450; --muted:#A08896; --line:rgba(232,191,209,.5); --water:#A9D6EC;
+  --text:#523b47; --muted:#705865; --line:rgba(216,166,188,.55); --water:#A9D6EC;
   --shadow:0 6px 24px rgba(214,139,170,.12); --shadow-h:0 12px 32px rgba(214,139,170,.2);
   --r:22px; --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'Quicksand','Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
 }
+[data-palette="sage"]{
+  --bg:#F6FAF5; --pink1:#E8F2E5; --pink2:#D6E8D1; --pink3:#B4D1AC; --rose:#5F8C58; --dusty:#739D6C;
+  --lav:#EEF4F1; --lav2:#CDE0D6; --cream:#FAF6EC; --ivory:#FCFEFB; --text:#354738; --muted:#566B59; --line:rgba(141,181,133,.45);
+}
+[data-palette="ocean"]{
+  --bg:#F5FAFD; --pink1:#E6F2FA; --pink2:#D2E8F6; --pink3:#A9D0EA; --rose:#4281A4; --dusty:#5C93B2;
+  --lav:#EDF2FB; --lav2:#CDD8F0; --cream:#FBF8EF; --ivory:#FAFDFF; --text:#304556; --muted:#536A7C; --line:rgba(134,193,223,.5);
+}
+[data-palette="earth"]{
+  --bg:#FDF9F4; --pink1:#F8ECE0; --pink2:#F0DBC7; --pink3:#DEC0A4; --rose:#B87148; --dusty:#C28460;
+  --lav:#F5EFEA; --lav2:#DFD3C8; --cream:#FFF7EA; --ivory:#FFFDF9; --text:#4C3A31; --muted:#6D574C; --line:rgba(201,158,139,.5);
+}
+[data-dark="1"]{
+  --bg:#1B161A; --pink1:#2A2128; --pink2:#362A33; --pink3:#5A4352; --rose:#E39AB8; --dusty:#C98BA4;
+  --sage:#222D25; --sage2:#3B5140; --sage3:#8DB585; --lav:#262130; --lav2:#423855; --cream:#2B241E; --ivory:#231D22;
+  --text:#F3EAF0; --muted:#BFAAB7; --line:rgba(216,166,188,.22);
+  --shadow:0 8px 26px rgba(0,0,0,.38); --shadow-h:0 12px 34px rgba(0,0,0,.5);
+}
+[data-dark="1"][data-palette="sage"]{ --bg:#141A16; --pink1:#1E2921; --pink2:#28372C; --pink3:#435B49; --rose:#8DC385; --ivory:#1B221D; --text:#EAF2EC; --muted:#A9BEB0; }
+[data-dark="1"][data-palette="ocean"]{ --bg:#121920; --pink1:#1B2733; --pink2:#243444; --pink3:#3B566E; --rose:#7EC4E8; --ivory:#18212A; --text:#EBF3F9; --muted:#A7BCCB; }
+[data-dark="1"][data-palette="earth"]{ --bg:#1C1613; --pink1:#2A211C; --pink2:#372B24; --pink3:#5A463A; --rose:#E29E75; --ivory:#231C18; --text:#F5EDE8; --muted:#C1AEA3; }
+[data-dark="1"] body::before{opacity:.14}
+[data-dark="1"] .sidebar,[data-dark="1"] .bottom-nav,[data-dark="1"] .topbar{background:rgba(27,22,26,.92)}
+[data-dark="1"] .card,[data-dark="1"] .modal,[data-dark="1"] .more-sheet,[data-dark="1"] .wday,[data-dark="1"] .cday,[data-dark="1"] .skin-step,[data-dark="1"] .ex-row,[data-dark="1"] .item-card,[data-dark="1"] .chip,[data-dark="1"] .toast,[data-dark="1"] .teach-box,[data-dark="1"] .ai-setup,[data-dark="1"] .food-item{background:#261F25;color:var(--text)}
+[data-dark="1"] .card.tint-pink,[data-dark="1"] .hero,[data-dark="1"] .modal-head{background:linear-gradient(150deg,#261F25,var(--pink1))}
+[data-dark="1"] .card.tint-lav{background:linear-gradient(150deg,#261F25,var(--lav))}
+[data-dark="1"] .card.tint-sage{background:linear-gradient(150deg,#261F25,var(--sage))}
+[data-dark="1"] .card.tint-cream{background:linear-gradient(150deg,#261F25,var(--cream))}
+[data-dark="1"] h1,[data-dark="1"] h2,[data-dark="1"] h3,[data-dark="1"] h4,[data-dark="1"] .stat b,[data-dark="1"] .ring .ring-txt b,[data-dark="1"] .cal-row b,[data-dark="1"] .timer-big,[data-dark="1"] .nav-item.active{color:var(--text)}
+[data-dark="1"] .note-soft,[data-dark="1"] .cal-studio{background:rgba(255,255,255,.05);color:var(--text)}
+[data-dark="1"] .btn.soft{background:var(--pink2);color:var(--text)}
+[data-dark="1"] .tab.active{background:var(--pink2);color:var(--text)}
+[data-dark="1"] .cbox{background:#1B161A}
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
 body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
@@ -471,6 +504,7 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
   <div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
   <div class="row" style="gap:6px">
     <button class="btn lav sm hidden" id="topTimerBtn" data-act="goStudyTimer" title="Aktif odak sayacı">⏱ 00:00</button>
+    <button class="btn icon soft" data-act="toggleDarkMode" title="Gece / Gündüz modu" aria-label="Gece modu">🌙</button>
     <button class="btn icon soft" data-act="go" data-page="water" title="Su takibi" aria-label="Su takibi">💧</button>
     <button class="btn icon soft" data-act="go" data-page="skincare" title="Cilt Bakım Rutini" aria-label="Cilt Bakım Rutini">🧴</button>
     <button class="btn icon soft" data-act="toggleMoreNav" title="Tüm sayfalar" aria-label="Tüm sayfalar">⋯</button>
@@ -728,7 +762,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.8.0";
+const APP_VERSION = "2.9.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -763,7 +797,7 @@ const exItem = (id, name, type = "yuruyus", min = 25, sets = "", note = "") => (
 function defaults() {
   return {
     version: 1, created: today(),
-    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
+    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", palette: "rose", darkMode: false, notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
     routines: {
       school: [
         r("Uyan & 1 büyük bardak su iç",1,"07:30"),
@@ -1267,8 +1301,27 @@ function renderNav() {
   if (tb) tb.classList.toggle("hidden", !UI.timer);
   renderMoreNavSheet();
 }
+const PALETTES = [
+  {k:"rose", e:"🌸", n:"Gül & Lavanta", c1:"#FCEAF1", c2:"#D68BAA"},
+  {k:"sage", e:"🌿", n:"Adaçayı & Orman", c1:"#E8F2E5", c2:"#5F8C58"},
+  {k:"ocean", e:"🌊", n:"Okyanus & Dingin", c1:"#E6F2FA", c2:"#4281A4"},
+  {k:"earth", e:"☀️", n:"Sıcak Toprak", c1:"#F8ECE0", c2:"#B87148"}
+];
+function applyTheme() {
+  const pal = (S && S.settings && S.settings.palette) || "rose";
+  const dark = !!(S && S.settings && S.settings.darkMode);
+  const root = document.documentElement;
+  if (pal === "rose") root.removeAttribute("data-palette");
+  else root.setAttribute("data-palette", pal);
+  if (dark) root.setAttribute("data-dark", "1");
+  else root.removeAttribute("data-dark");
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute("content", dark ? "#1B161A" : (PALETTES.find(p => p.k === pal)?.c1 || "#FCEAF1"));
+  $$('[data-act="toggleDarkMode"]').forEach(b => { b.textContent = dark ? "☀️" : "🌙"; });
+}
 let lastPage = null;
 function render() {
+  applyTheme();
   const fn = PAGES[UI.page] || PAGES.home;
   const v = $("#view"); v.innerHTML = fn();
   if (lastPage !== UI.page) { v.classList.remove("view-anim"); void v.offsetWidth; v.classList.add("view-anim"); window.scrollTo({top: 0}); lastPage = UI.page; }
@@ -2997,6 +3050,13 @@ function pageProgress() {
       <span class="small muted">Tüm alanlar isteğe bağlıdır</span>
     </div>
     <div class="grid">
+      <div class="card c12 tint-pink">
+        <h3>🎨 Renk Paleti &amp; Gece Modu</h3>
+        <div class="row between">
+          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "rose") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
+          <button type="button" class="btn ${s.darkMode ? "lav" : "soft"}" data-act="toggleDarkMode">${s.darkMode ? "☀️ Gündüz Moduna Geç" : "🌙 Yumuşak Gece Modu"}</button>
+        </div>
+      </div>
       <div class="card c6"><h3>⚖️ Kilo eğilimi <span class="tiny muted" style="font-family:var(--sans)">(kg · isteğe bağlı)</span></h3>
         ${lineChart(series((d, p) => p && p.weight ? +p.weight : null), {color: "#D68BAA", fmt: v => v + " kg", empty: "Kilo eğilimi için en az 2 kayıt gerekli 🌱"})}
         <p class="tiny muted mt-s">Günlük oynamalar yerine uzun vadeli eğilime odaklan.</p></div>
@@ -3192,6 +3252,13 @@ function pageSettings() {
   const s = S.settings, dt = dayTypeMeta();
   return `<div class="page-head"><div><h1>Ayarlar ⚙️</h1><p>Uygulamayı kendi düzenine göre kişiselleştir.</p></div></div>
     <div class="grid">
+      <div class="card c12 tint-pink">
+        <h3>🎨 Renk Paleti &amp; Gece Modu</h3>
+        <div class="row between">
+          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "rose") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
+          <button type="button" class="btn ${s.darkMode ? "lav" : "soft"}" data-act="toggleDarkMode">${s.darkMode ? "☀️ Gündüz Moduna Geç" : "🌙 Yumuşak Gece Modu"}</button>
+        </div>
+      </div>
       <div class="card c6">
         <h3>${esc(dt.settingsHeading)}</h3>
         <p class="small muted mb">${esc(dt.settingsDesc)}</p>
@@ -3426,10 +3493,15 @@ function pageSkincare() {
   const prof = curProfileInfo();
   const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
-  const skinBadge = prof.skinLabel || `${activeGk} Yaş Cilt Bakımı`;
+  const skRecInfo = typeof window.__bloomGetRecommendedSkincare === "function"
+    ? window.__bloomGetRecommendedSkincare(prof.age || 21, prof.gender || "female", prof.skinProfile || null)
+    : null;
+  const skinBadge = prof.skinLabel || (skRecInfo && skRecInfo.skinLabel) || `${activeGk} Yaş Cilt Bakımı`;
+  const whyText = prof.skinWhy || (skRecInfo && skRecInfo.whyNote) || "Bu adımlar yaş ve cinsiyet bilgine göre genel başlangıç şablonu olarak hazırlanmıştır.";
+  const disclaimerText = (skRecInfo && skRecInfo.disclaimer) || "Bu öneriler genel bakım rehberidir; dermatolojik tanı veya tıbbi tedavi yerine geçmez.";
 
-  return `<div class="page-head"><div><h1>Cilt Bakım Rutini 🧴</h1><p>Yaşına ve cinsiyetine göre sabah/akşam cilt bakım sıran hazır; istediğin ürünü ekleyip çıkarabilirsin.</p></div>
-      <div class="row" style="gap:8px"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.skinEdit ? "" : "soft"}" data-act="skinEdit">${UI.skinEdit ? "✓ Düzenlemeyi bitir" : "✏️ Sırayı düzenle"}</button><button class="btn" data-act="skinForm">+ Ürün ekle</button></div></div>
+  return `<div class="page-head"><div><h1>Cilt Bakım Rutini 🧴</h1><p>Yaş, cinsiyet ve isteğe bağlı cilt profiline göre hazırlanan bakım sıran; dilediğin ürünü ekleyip çıkarabilirsin.</p></div>
+      <div class="row" style="gap:8px"><button class="btn lav" data-act="skinProfileForm">🧬 Cilt Profilim (İsteğe bağlı)</button><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.skinEdit ? "" : "soft"}" data-act="skinEdit">${UI.skinEdit ? "✓ Düzenlemeyi bitir" : "✏️ Sırayı düzenle"}</button><button class="btn" data-act="skinForm">+ Ürün ekle</button></div></div>
     <div class="card mb tint-pink">
       <div class="stats">
         <div class="stat"><b>${mDone}/${mList.length}</b><span>☀️ sabah rutini</span></div>
@@ -3438,6 +3510,8 @@ function pageSkincare() {
       <div class="divider"></div>
       <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre cilt bakım rutini seç (${esc(skinBadge)} · ${gLabel})</div>
       <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="note-soft mt"><b>💡 Neden bu adımlar önerildi?</b> ${esc(whyText)}</div>
+      <div class="tiny muted mt-s">🛡️ <b>Sınırlar &amp; Güven Notu:</b> ${esc(disclaimerText)}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "morning" ? "active" : ""}" data-act="skinTab" data-t="morning">☀️ Sabah Rutini (${mDone}/${mList.length})</div>
@@ -3481,6 +3555,37 @@ function pageSkincare() {
     </div>`;
 }
 
+function skinProfileFormHTML() {
+  const prof = curProfileInfo();
+  const sp = prof.skinProfile || {};
+  return `<form data-form="skinProfile" class="form-grid">
+    <p class="small muted full">Tüm alanlar isteğe bağlıdır. Bilgilerin yalnızca bu cihazda saklanır; seçimine göre aktif içerikler ve hassasiyet uyarıları otomatik uyarlanır.</p>
+    <div class="field"><label>Cilt tipi</label><select name="skinType">
+      <option value="">Belirtmek istemiyorum</option>
+      <option value="normal" ${sp.skinType === "normal" ? "selected" : ""}>Normal</option>
+      <option value="dry" ${sp.skinType === "dry" ? "selected" : ""}>Kuru</option>
+      <option value="oily" ${sp.skinType === "oily" ? "selected" : ""}>Yağlı</option>
+      <option value="combo" ${sp.skinType === "combo" ? "selected" : ""}>Karma</option>
+      <option value="sensitive" ${sp.skinType === "sensitive" ? "selected" : ""}>Hassas</option>
+    </select></div>
+    <div class="field"><label>Hassasiyet düzeyi</label><select name="sensitivity">
+      <option value="">Belirtmek istemiyorum</option>
+      <option value="low" ${sp.sensitivity === "low" ? "selected" : ""}>Düşük</option>
+      <option value="medium" ${sp.sensitivity === "medium" ? "selected" : ""}>Orta</option>
+      <option value="high" ${sp.sensitivity === "high" ? "selected" : ""}>Yüksek</option>
+    </select></div>
+    <div class="field full"><label>Bakım önceliği</label><select name="priority">
+      <option value="">Genel denge</option>
+      <option value="hydration" ${sp.priority === "hydration" ? "selected" : ""}>Yoğun nem &amp; bariyer</option>
+      <option value="acne" ${sp.priority === "acne" ? "selected" : ""}>Gözenek &amp; akne eğilimi</option>
+      <option value="spot" ${sp.priority === "spot" ? "selected" : ""}>Leke &amp; ton eşitleme</option>
+      <option value="antiaging" ${sp.priority === "antiaging" ? "selected" : ""}>Çizgi &amp; elastikiyet</option>
+    </select></div>
+    <div class="field full"><label>Bilinen alerji / kaçınılan içerik</label><input name="allergies" maxlength="100" value="${esc(sp.allergies || "")}" placeholder="örn. parfüm, retinol, C vitamini"></div>
+    <div class="tiny muted full">🛡️ Not: Bu rehber tıbbi tanı yerine geçmez; dermatolojik rahatsızlık veya tedavi sürecinde hekim önerisi esastır.</div>
+    <div class="full modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Cilt Profilini Uygula 🧴</button></div>
+  </form>`;
+}
 function skinFormHTML(tab = "morning", item = {}) {
   const isEdit = !!item.id;
   const icon = item.icon || "🧴";
@@ -4020,6 +4125,9 @@ document.addEventListener("click", ev => {
       break;
     }
     case "rDel": ev.stopPropagation(); S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
+    case "setPalette": S.settings.palette = ds.p || "rose"; save(); render(); toast("Tema paleti güncellendi 🎨"); break;
+    case "toggleDarkMode": S.settings.darkMode = !S.settings.darkMode; save(); render(); break;
+    case "skinProfileForm": openModal("🧬 Cilt Profilim (İsteğe bağlı)", skinProfileFormHTML()); break;
     case "applyAgeRoutine": {
       const targetAge = +ds.age || 21;
       const prof = curProfileInfo();
@@ -4027,18 +4135,20 @@ document.addEventListener("click", ev => {
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
         const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
-        const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender) : null;
+        const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender, prof.skinProfile || null) : null;
         const exRec = typeof window.__bloomGetRecommendedExercise === "function" ? window.__bloomGetRecommendedExercise(targetAge, gender) : null;
         const nextProf = {
           name,
           age: targetAge,
           gender,
+          skinProfile: prof.skinProfile || null,
           groupKey: rec.groupKey,
           groupLabel: rec.groupLabel,
           schoolTitle: rec.schoolTitle,
           offTitle: rec.offTitle,
           eveningTitle: rec.eveningTitle,
           skinLabel: skRec ? skRec.skinLabel : "",
+          skinWhy: skRec ? skRec.whyNote : "",
           exLabel: exRec ? exRec.exLabel : "",
           weeklyGoalMin: exRec ? exRec.weeklyGoalMin : 150,
           skinApplied: true,
@@ -4658,6 +4768,32 @@ document.addEventListener("submit", ev => {
       const v = Math.max(1, Math.min(100, +fd.get("passGrade") || 60));
       S.settings.passGrade = v; save(); render(); toast(`Geçme notun ${v} olarak kaydedildi 🎯`); break;
     }
+    case "skinProfile": {
+      const prof = curProfileInfo();
+      const skinProfile = {
+        skinType: fd.get("skinType") || "",
+        sensitivity: fd.get("sensitivity") || "",
+        priority: fd.get("priority") || "",
+        allergies: (fd.get("allergies") || "").trim()
+      };
+      const skRec = typeof window.__bloomGetRecommendedSkincare === "function"
+        ? window.__bloomGetRecommendedSkincare(prof.age || 21, prof.gender || "female", skinProfile)
+        : null;
+      const nextProf = Object.assign({}, prof, {
+        skinProfile,
+        skinLabel: skRec ? skRec.skinLabel : prof.skinLabel,
+        skinWhy: skRec ? skRec.whyNote : "",
+        skinApplied: true,
+        updatedAt: Date.now()
+      });
+      try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
+      if (skRec && typeof window.__bloomApplySkincareProfile === "function") {
+        window.__bloomApplySkincareProfile(nextProf, skRec);
+      }
+      closeModal();
+      toast("Cilt profilin ve bakım rutinin güncellendi 🧴✨");
+      break;
+    }
     case "skinItem": {
       const id = (fd.get("id") || "").trim();
       const origTab = fd.get("origTab") === "evening" ? "evening" : "morning";
@@ -5134,6 +5270,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.8.0"></script>
+  <script src="onboarding.js?v=2.9.0"></script>
 </body>
 </html>
