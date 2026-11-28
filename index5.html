@@ -18,7 +18,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B7%3C/text%3E%3C/svg%3E">
 <!-- Yazı tipleri yalnızca görünüm içindir; çevrimdışıyken sistem yazı tiplerine geçilir. Hiçbir kullanıcı verisi dışarı gönderilmez. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Quicksand:wght@400;500;600;700&family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#FFF8FA; --pink1:#FCEAF1; --pink2:#F5DCE8; --pink3:#E8BFD1; --rose:#D68BAA; --dusty:#C78BA0;
@@ -48,7 +48,7 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:600;color:#6a4659;letter-spacin
 .brand .logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--pink2),var(--lav));display:grid;place-items:center;font-size:22px;box-shadow:var(--shadow)}
 .brand b{font-family:var(--serif);font-size:24px;color:var(--rose);display:block;line-height:1}
 .brand span{font-size:12px;color:var(--muted)}
-.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;cursor:pointer;font-weight:600;color:#7a6070;transition:background .2s,color .2s,transform .2s;user-select:none}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;cursor:pointer;font-weight:600;color:#7a6070;transition:background .2s,color .2s,transform .2s;user-select:none;border:0;width:100%;text-align:left;background:transparent}
 .nav-item .ni{font-size:18px;width:24px;text-align:center}
 .nav-item:hover{background:var(--pink1);transform:translateX(2px)}
 .nav-item.active{background:linear-gradient(135deg,var(--pink2),var(--lav));color:#8a4766;box-shadow:0 4px 14px rgba(214,139,170,.18)}
@@ -58,7 +58,7 @@ h1,h2,h3,h4{font-family:var(--serif);font-weight:600;color:#6a4659;letter-spacin
 .topbar{display:none;position:sticky;top:0;z-index:25;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(255,248,250,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .topbar .brand{padding:0}.topbar .brand .logo{width:34px;height:34px;font-size:18px;border-radius:11px}.topbar .brand b{font-size:20px}
 .bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;z-index:30;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));justify-content:space-around}
-.bn{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10.5px;font-weight:700;color:var(--muted);padding:5px 2px;border-radius:12px;flex:1;cursor:pointer;transition:color .2s,background .2s;min-width:0}
+.bn{display:flex;flex-direction:column;align-items:center;gap:1px;font-size:10.5px;font-weight:700;color:var(--muted);padding:5px 2px;border-radius:12px;flex:1;cursor:pointer;transition:color .2s,background .2s;min-width:0;border:0;background:transparent}
 .bn .ni{font-size:20px;transition:transform .25s}
 .bn.active{color:var(--rose);background:var(--pink1)} .bn.active .ni{transform:translateY(-2px) scale(1.1)}
 .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:18px}
@@ -463,6 +463,82 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
   .topbar .brand span{font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Theme picker and dashboard personalization */
+.theme-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.theme-option{display:flex;align-items:center;gap:12px;text-align:left;width:100%;min-height:76px;padding:13px;border:1.5px solid var(--line);border-radius:16px;background:var(--ivory);cursor:pointer}
+.theme-option:hover{border-color:var(--rose)}
+.theme-option[aria-pressed="true"]{border-color:var(--rose);box-shadow:0 0 0 2px rgba(214,139,170,.18)}
+.theme-swatch{display:flex;width:44px;height:44px;flex-shrink:0;align-items:center;justify-content:center;gap:4px;border-radius:14px}
+.theme-swatch i{width:9px;height:23px;border-radius:9px;background:var(--swatch)}
+.theme-option-copy{display:flex;min-width:0;flex-direction:column}
+.theme-option-copy b{font-size:14px}
+.theme-option-copy small{color:var(--muted);font-size:11px}
+.dashboard-tools{display:flex;justify-content:flex-end;margin:-5px 0 12px}
+.dashboard-tools .btn{min-height:40px}
+.dashboard-widget-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--ivory);cursor:pointer}
+.dashboard-widget-row input{width:18px;height:18px;accent-color:var(--rose)}
+.dashboard-widget-row span{flex:1}
+.journey-note{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.72);color:var(--muted)}
+.btn:focus-visible,.nav-item:focus-visible,.bn:focus-visible,.tab:focus-visible,.chip:focus-visible,.card-link:focus-visible,.theme-option:focus-visible{outline:3px solid rgba(214,139,170,.45);outline-offset:2px}
+/* Soft Living theme; the original Bloom palette remains the default. */
+body[data-theme="soft"]{
+  --bg:#F8F6F1; --pink1:#F4EEE8; --pink2:#EAE1D7; --pink3:#D8B8B2; --rose:#8B7163; --dusty:#A68D80;
+  --sage:#E8EDE5; --sage2:#A5B39F; --sage3:#74866D; --lav:#F0EFF5; --lav2:#B9B5D1; --cream:#F6F1E9; --ivory:#FFFEFC;
+  --text:#403A35; --muted:#837970; --line:rgba(182,164,147,.26); --water:#A9D6EC;
+  --shadow:0 8px 26px rgba(64,58,53,.055); --shadow-h:0 12px 32px rgba(64,58,53,.09);
+  --r:20px; --serif:'DM Serif Display',Georgia,'Times New Roman',serif; --sans:'Manrope','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+body[data-theme="soft"]::before{background:radial-gradient(520px 360px at 100% 0,rgba(185,181,209,.12),transparent 72%),radial-gradient(480px 360px at 0 42%,rgba(234,225,215,.36),transparent 72%)}
+body[data-theme="soft"] .sidebar{background:rgba(255,254,252,.94);border-right-color:var(--line)}
+body[data-theme="soft"] .brand .logo{background:var(--pink1);box-shadow:none}
+body[data-theme="soft"] .brand b,body[data-theme="soft"] .topbar .brand b{color:var(--text)}
+body[data-theme="soft"] .nav-item:hover{background:var(--pink1);transform:translateX(2px)}
+body[data-theme="soft"] .nav-item.active{background:var(--pink1);color:var(--text);box-shadow:inset 3px 0 var(--rose)}
+body[data-theme="soft"] .side-level{background:var(--cream)}
+body[data-theme="soft"] .topbar{background:rgba(248,246,241,.94)}
+body[data-theme="soft"] .bottom-nav{background:rgba(255,254,252,.97);box-shadow:0 -8px 24px rgba(64,58,53,.04)}
+body[data-theme="soft"] .bn.active{color:var(--text);background:var(--pink1)}
+body[data-theme="soft"] .bn.active .ni{transform:translateY(-1px)}
+body[data-theme="soft"] .page-head h1,body[data-theme="soft"] .hero h1,body[data-theme="soft"] .welcome-card h1{color:var(--text)}
+body[data-theme="soft"] .card{background:var(--ivory);border-color:var(--line);box-shadow:var(--shadow)}
+body[data-theme="soft"] .card.tint-pink{background:linear-gradient(145deg,#FFFEFC,#F4EEE8)}
+body[data-theme="soft"] .card.tint-lav{background:linear-gradient(145deg,#FFFEFC,#F0EFF5)}
+body[data-theme="soft"] .card.tint-sage{background:linear-gradient(145deg,#FFFEFC,#E8EDE5)}
+body[data-theme="soft"] .card.tint-cream{background:linear-gradient(145deg,#FFFEFC,#F6F1E9)}
+body[data-theme="soft"] .hero{background:linear-gradient(125deg,#FFFEFC 0%,#F2ECE5 72%,#EEEAF2 100%);border-color:rgba(182,164,147,.3)}
+body[data-theme="soft"] .hero .motto,body[data-theme="soft"] .welcome-card .lead{color:var(--rose)}
+body[data-theme="soft"] .btn{background:var(--rose);color:#fff;box-shadow:0 4px 12px rgba(64,58,53,.12)}
+body[data-theme="soft"] .btn:hover{box-shadow:0 6px 16px rgba(64,58,53,.16)}
+body[data-theme="soft"] .btn.soft{background:var(--pink1);color:#66574D}
+body[data-theme="soft"] .btn.lav{background:#ECEAF3;color:#625E79}
+body[data-theme="soft"] .btn.sage{background:#E8EDE5;color:#51604B}
+body[data-theme="soft"] .btn.water{background:#E6F1F5;color:#426F82;box-shadow:none}
+body[data-theme="soft"] .btn.ghost{color:var(--rose);border-color:var(--pink3)}
+body[data-theme="soft"] .chip{border-color:var(--pink2);color:#6E6259}
+body[data-theme="soft"] .chip.on{background:#EAE1D7;border-color:transparent;color:var(--text);box-shadow:none}
+body[data-theme="soft"] .tabs{background:var(--pink1)}
+body[data-theme="soft"] .tab{color:#81756C}
+body[data-theme="soft"] .tab.active{color:var(--text);box-shadow:0 2px 8px rgba(64,58,53,.09)}
+body[data-theme="soft"] .card-link{color:var(--rose)}
+body[data-theme="soft"] input,body[data-theme="soft"] select,body[data-theme="soft"] textarea{border-color:var(--pink2);background:var(--ivory)}
+body[data-theme="soft"] input:focus,body[data-theme="soft"] select:focus,body[data-theme="soft"] textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(139,113,99,.13)}
+body[data-theme="soft"] .progress{background:#EEE9E2}
+body[data-theme="soft"] .progress i{background:var(--rose)}
+body[data-theme="soft"] .progress.lav i{background:var(--lav2)}
+body[data-theme="soft"] .progress.sage i{background:var(--sage2)}
+body[data-theme="soft"] .ring circle:last-child{stroke:var(--rose)}
+body[data-theme="soft"] .welcome{background:rgba(248,246,241,.92)}
+body[data-theme="soft"] .welcome-card{background:var(--ivory);border-color:var(--line);box-shadow:0 24px 70px rgba(64,58,53,.12)}
+.dashboard-tools{display:flex;justify-content:flex-end;margin:-5px 0 12px}
+.dashboard-tools .btn{min-height:40px}
+@media(max-width:680px){
+  .dashboard-tools{margin:0 0 10px}
+  .dashboard-tools .btn{width:100%;min-height:44px}
+  .theme-options{grid-template-columns:1fr}
+  body[data-theme="soft"] .hero{background:linear-gradient(150deg,#FFFEFC,#F2ECE5)}
+  body[data-theme="soft"] .bottom-nav{padding-top:7px}
+}
 </style>
 </head>
 <body>
@@ -839,6 +915,37 @@ function newCourse(name, ects = 3) { return {id: uid(), name, ects: Math.max(0.5
 
 /* ---------------- DURUM ---------------- */
 let S;
+const THEME_STORAGE_KEY = "bloom_visual_theme_v1";
+const AVAILABLE_THEMES = {
+  classic: {label: "Bloom Klasik", themeColor: "#FCEAF1"},
+  soft: {label: "Soft Living", themeColor: "#F8F6F1"}
+};
+function selectedTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return Object.prototype.hasOwnProperty.call(AVAILABLE_THEMES, saved) ? saved : "classic";
+  } catch (e) {
+    return "classic";
+  }
+}
+function applyTheme(theme) {
+  const active = Object.prototype.hasOwnProperty.call(AVAILABLE_THEMES, theme) ? theme : "classic";
+  document.body.dataset.theme = active;
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = AVAILABLE_THEMES[active].themeColor;
+}
+function chooseTheme(theme) {
+  if (!Object.prototype.hasOwnProperty.call(AVAILABLE_THEMES, theme)) return;
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch (e) {
+    toast("Tema tercihin kaydedilemedi. Tarayıcı depolama alanını kontrol edip yeniden dene.");
+    return;
+  }
+  applyTheme(theme);
+  render();
+  toast(`${AVAILABLE_THEMES[theme].label} teması uygulandı ✨`);
+}
 const UI = {page: "home", homeTab: "today", nutTab: "day", nutDate: null, schoolTab: "courses", course: null, courseTab: "general",
   calY: null, calM: null, jDate: null, routineTab: "active", routineEdit: false, skinTab: "morning", skinEdit: false, exTab: "today", exWeek: null, gardenPhase: null, gardenHour: null, readOff: 0, curDay: null, suggest: null, timer: null, showQ: true, photo: null, welcomeShown: false, foodResList: [], foodSearchTimer: null, moreNav: false};
 
@@ -1253,15 +1360,15 @@ function renderNav() {
   const exIcon = curProfileInfo().gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
   $("#sidebar").innerHTML = `<div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
     ${UI.timer ? `<button class="btn lav sm mb-s" id="sideTimerBtn" data-act="goStudyTimer" style="margin:0 8px 8px;justify-content:center">⏱ Odak sayacı: 00:00</button>` : ""}
-    ${NAV.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" role="button" tabindex="0" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span>${n.t}</div>`).join("")}
+    ${NAV.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span>${n.t}</button>`).join("")}
     <div class="nav-sep"></div>
-    ${NAV_EXTRA.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" role="button" tabindex="0" data-act="go" data-page="${n.p}"><span class="ni">${n.p === "exercise" ? exIcon : n.e}</span>${n.t}</div>`).join("")}
+    ${NAV_EXTRA.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.p === "exercise" ? exIcon : n.e}</span>${n.t}</button>`).join("")}
     <div class="side-level"><div class="row between"><b style="font-family:var(--serif);color:#8a4766">Seviye ${L.level}</b><span class="tiny muted">${S.xp.total} XP</span></div>
       <div class="progress thin mt-s"><i style="width:${L.pct}%"></i></div><div class="tiny muted mt-s">Sonraki seviyeye ${L.toNext} XP 🌸</div>
       <div class="tiny muted mt-s">${stageInfo().e} ${stageInfo().name}</div></div>`;
   const isMoreActive = NAV_MOBILE_MORE.some(n => n.p === UI.page);
-  $("#bottomNav").innerHTML = NAV_MOBILE_MAIN.map(n => `<div class="bn ${UI.page === n.p ? "active" : ""}" role="button" tabindex="0" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span><span>${n.t}</span></div>`).join("")
-    + `<div class="bn ${isMoreActive || UI.moreNav ? "active" : ""}" role="button" tabindex="0" data-act="toggleMoreNav"><span class="ni">⋯</span><span>Menü</span></div>`;
+  $("#bottomNav").innerHTML = NAV_MOBILE_MAIN.map(n => `<button type="button" class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span><span>${n.t}</span></button>`).join("")
+    + `<button type="button" class="bn ${isMoreActive || UI.moreNav ? "active" : ""}" data-act="toggleMoreNav"><span class="ni" aria-hidden="true">⋯</span><span>Menü</span></button>`;
   $$('.topbar [data-act="go"]').forEach(b => b.classList.toggle("active", b.dataset.page === UI.page));
   const tb = $("#topTimerBtn");
   if (tb) tb.classList.toggle("hidden", !UI.timer);
@@ -1271,6 +1378,10 @@ let lastPage = null;
 function render() {
   const fn = PAGES[UI.page] || PAGES.home;
   const v = $("#view"); v.innerHTML = fn();
+  if (UI.page === "home" && UI.homeTab === "today") {
+    const hidden = new Set(hiddenDashboardWidgets());
+    v.querySelectorAll("[data-widget]").forEach(widget => { widget.hidden = hidden.has(widget.dataset.widget); });
+  }
   if (lastPage !== UI.page) { v.classList.remove("view-anim"); void v.offsetWidth; v.classList.add("view-anim"); window.scrollTo({top: 0}); lastPage = UI.page; }
   renderNav();
   if (UI.timer) updateTimer();
@@ -1312,6 +1423,34 @@ function studyMin(k) { return S.study.filter(s => s.date === k).reduce((a, s) =>
 function mealsOn(k) { return S.meals.filter(m => m.date === k).sort((a, b) => (a.time || "").localeCompare(b.time || "")); }
 
 /* ---------------- ANA SAYFA ---------------- */
+const DASHBOARD_WIDGET_KEY = "bloom_dashboard_widgets_v1";
+const DASHBOARD_WIDGETS = [
+  {id: "water", label: "Su takibi"},
+  {id: "goals", label: "Günlük hedefler"},
+  {id: "routines", label: "Rutinlerim"},
+  {id: "skincare", label: "Cilt bakımı"},
+  {id: "nutrition", label: "Beslenme özeti"},
+  {id: "study", label: "Ders çalışma"},
+  {id: "movement", label: "Hareket ve adımlar"},
+  {id: "journey", label: "My Journey ve bahçe"},
+  {id: "reading", label: "Bugünün sayfası"}
+];
+function hiddenDashboardWidgets() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DASHBOARD_WIDGET_KEY) || "[]");
+    return Array.isArray(stored) ? stored.filter(id => DASHBOARD_WIDGETS.some(widget => widget.id === id)) : [];
+  } catch (e) {
+    return [];
+  }
+}
+function openDashboardSettings() {
+  const hidden = new Set(hiddenDashboardWidgets());
+  openModal("Ana sayfanı düzenle", `<p class="small muted mb">Görmek istediğin alanları seç. Görevler ve günlük ilerleme her zaman görünür kalır; seçimin bu cihazda saklanır.</p>
+    <form data-form="dashboardWidgets" class="stack">
+      ${DASHBOARD_WIDGETS.map(widget => `<label class="dashboard-widget-row"><input type="checkbox" name="visible" value="${widget.id}" ${hidden.has(widget.id) ? "" : "checked"}><span>${widget.label}</span></label>`).join("")}
+      <div class="modal-foot"><button type="button" class="btn soft" data-act="closeModal">İptal</button><button type="submit" class="btn">Görünümü kaydet</button></div>
+    </form>`, {wide: true});
+}
 function curProfileInfo() {
   if (S && S.profile && S.profile.age) return S.profile;
   try {
@@ -1371,13 +1510,14 @@ function dayTypeMeta() {
   };
 }
 function pageHome() {
-  const k = today(), d = dayR(k), h = new Date().getHours(), dt = dayTypeMeta();
+  const k = today(), d = dayR(k), h = new Date().getHours(), dt = dayTypeMeta(), prof = curProfileInfo();
+  const name = (prof.name || (localStorage.getItem("bloom_user_name") || "").trim()).trim();
   const greet = h < 6 ? "İyi geceler" : h < 12 ? "Günaydın" : h < 18 ? "İyi günler" : "İyi akşamlar";
   const sunday = dow1(k) === 7;
   const soon = examsUpcoming(7);
   return `<section class="card hero">
       <span class="deco" style="right:24px;top:14px">🌸</span><span class="deco" style="right:90px;bottom:16px;animation-delay:-2s">🦋</span><span class="deco" style="right:180px;top:20px;animation-delay:-4s;font-size:16px">✨</span>
-      <div class="hero-grid"><div style="flex:1;min-width:240px"><div class="muted small" style="font-weight:700">${fmtLong(k)}</div><h1>${greet} Tuğba 🌷</h1>
+      <div class="hero-grid"><div style="flex:1;min-width:240px"><div class="muted small" style="font-weight:700">${fmtLong(k)}</div><h1>${greet}${name ? ` ${esc(name)}` : ""} 🌿</h1>
       <p class="motto">“${esc(motivation(k))}”</p></div>
       <div><div class="lbl" style="margin-bottom:6px">Bugün nasıl hissediyorsun?</div>${moodPicker(k)}</div></div>
       <div class="mode-row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}
@@ -1387,11 +1527,13 @@ function pageHome() {
     </section>
     ${sunday ? `<div class="banner" data-act="weekReport"><span class="bi">🌷</span><div class="grow"><b>Haftalık değerlendirmen hazır</b><div class="small muted">Bu hafta kendin için yaptığın küçük şeylere bir bakalım.</div></div><span class="card-link">Aç →</span></div>` : ""}
     ${soon.length ? `<div class="banner" data-act="go" data-page="school" style="background:linear-gradient(120deg,#fff4e2,var(--pink1))"><span class="bi">📅</span><div class="grow"><b>Yaklaşan sınav: ${esc(soon[0].name)}</b><div class="small muted">${esc(courseName(soon[0].courseId))} · ${fmtLong(soon[0].date)}</div></div>${countdown(soon[0].date)}</div>` : ""}
+    ${UI.homeTab === "today" ? `<div class="dashboard-tools"><button type="button" class="btn soft sm" data-act="dashboardCustomize" aria-label="Ana sayfada gösterilen kartları düzenle">☷ Ana sayfamı düzenle</button></div>` : ""}
     <div class="tabs">${[["today","Bugün"],["tomorrow","Yarın"],["week","Bu hafta"],["cal","Takvim"]].map(([t, l]) => `<div class="tab ${UI.homeTab === t ? "active" : ""}" data-act="homeTab" data-t="${t}">${l}</div>`).join("")}</div>
     ${({today: homeToday, tomorrow: homeTomorrow, week: homeWeek, cal: () => `<div class="card">${calendarHTML("day")}</div>`})[UI.homeTab]()}`;
 }
 function homeToday() {
   const k = today(), d = dayR(k), st = dayStats(k), L = levelInfo(), gi = stageInfo();
+  const caredForDays = weekDays(weekStart(k)).filter(day => day <= k && dayStats(day).done > 0).length;
   const nxt = nextRoutineTaskFor(k);
   const nextId = nxt && nxt.task ? nxt.task.id : null;
   const remaining = [...st.m.map(t => ({...t, list: "Sabah"})), ...st.e.map(t => ({...t, list: "Akşam"}))].filter(t => !d.checks[t.id]);
@@ -1419,34 +1561,35 @@ function homeToday() {
         ${remaining.slice(0, 7).map(t => checkRow({id: t.id, text: t.text, time: t.time || t.list, done: false, isNext: t.id === nextId})).join("")}
         ${remaining.length > 7 ? `<div class="small muted" style="padding:6px 10px">+${remaining.length - 7} görev daha · <span class="card-link" data-act="go" data-page="routines">gör</span></div>` : ""}</div>`
         : emptyBox("🌸", "Bugünkü tüm görevlerin tamam! Bu güzel enerjiyi kendine ayır.")}</div>
-    <div class="card c4"><h3>💧 Su<span class="sp"></span><span class="card-link" data-act="go" data-page="water">Detay →</span></h3>
+    <div class="card c4" data-widget="water"><h3>💧 Su<span class="sp"></span><span class="card-link" data-act="go" data-page="water">Detay →</span></h3>
       <div class="row" style="gap:16px;flex-wrap:nowrap">${glassHTML(k, true)}<div class="stack" style="gap:8px"><div><b style="font-family:var(--serif);font-size:22px;color:#4f8bab">${fmtMl(wt)}</b><div class="small muted">hedef ${fmtMl(S.settings.waterGoal)}</div></div>
       <div class="water-btns"><button class="btn water sm" data-act="addWater" data-ml="200">+200 ml</button><button class="btn water sm" data-act="addWater" data-ml="300">+300 ml</button></div></div></div></div>
-    <div class="card c4"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
-    <div class="card c4 tint-lav"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
+    <div class="card c4" data-widget="goals"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
+    <div class="card c4 tint-lav" data-widget="routines"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
       <div class="small row between"><b>${isSchool(k) ? dayTypeMeta().activeChip + " Sabah" : dayTypeMeta().offChip + " Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam &amp; Uyku Rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
       ${nxt ? `<div class="tiny mt" style="color:#7a3354"><b>⏰ Sıradaki:</b> ${esc(nxt.task.text)}${nxt.task.time ? ` (${esc(nxt.task.time)})` : ""}</div>` : `<div class="tiny muted mt">✨ Bugünkü tüm rutin adımları tamam!</div>`}
       <div class="small muted mt-s">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? dayTypeMeta().activeChip : dayTypeMeta().offChip}</div></div>
-    <div class="card c4 tint-pink"><h3>🧴 Cilt bakımım<span class="sp"></span><span class="card-link" data-act="go" data-page="skincare">Aç →</span></h3>
+    <div class="card c4 tint-pink" data-widget="skincare"><h3>🧴 Cilt bakımım<span class="sp"></span><span class="card-link" data-act="go" data-page="skincare">Aç →</span></h3>
       <div class="small row between"><b>☀️ Sabah Cilt Bakımı</b><span class="muted">${skMDone}/${skM.length}</span></div><div class="progress mt-s lav"><i style="width:${skM.length ? skMDone / skM.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam Cilt Bakımı</b><span class="muted">${skEDone}/${skE.length}</span></div><div class="progress mt-s"><i style="width:${skE.length ? skEDone / skE.length * 100 : 0}%"></i></div>
       ${nextSkinStep ? `<div class="row between mt" style="gap:6px;flex-wrap:nowrap"><div class="tiny" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>Sıradaki:</b> ${esc(nextSkinStep.icon || "🧴")} ${esc(nextSkinStep.step)}</div><button class="btn sm soft" data-act="skinToggle" data-tab="${activeSkinTab}" data-id="${nextSkinStep.id}" style="flex-shrink:0">✓ Yaptım</button></div>` : `<div class="tiny muted mt">✨ Sabah ve akşam cilt bakımın tamamlandı!</div>`}
       <div class="tiny muted mt-s">${esc(prof.skinLabel || "Yaşa & cinsiyete özel cilt bakımı")}</div></div>
-    <div class="card c4 tint-sage"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
+    <div class="card c4 tint-sage" data-widget="nutrition"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
       <div class="stats"><div class="stat"><b>${meals.length}</b><span>öğün</span></div><div class="stat"><b>${veg}</b><span>sebzeli öğün</span></div>${meals.reduce((a, m) => a + (+m.cal || 0), 0) ? `<div class="stat"><b>${meals.reduce((a, m) => a + (+m.cal || 0), 0)}</b><span>kcal</span></div>` : ""}</div>
       <div class="small mt"><b class="muted">Protein:</b> ${prot.length ? esc(prot.slice(0, 4).join(", ")) : "<span class='muted'>henüz yok</span>"}</div>
       <div class="row mt"><button class="btn sage sm" data-act="mealForm">+ Öğün ekle</button><button class="btn ghost sm" data-act="suggestQuick">Bugün ne yesem? ✨</button></div></div>
-    <div class="card c4 tint-cream"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
+    <div class="card c4 tint-cream" data-widget="study"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
       <div class="stats"><div class="stat"><b>${sm}</b><span>dk bugün</span></div><div class="stat"><b>${S.study.filter(s => s.date >= weekStart(k)).reduce((a, s) => a + (+s.minutes || 0), 0)}</b><span>dk bu hafta</span></div></div>
       ${ex ? `<div class="row mt" style="flex-wrap:nowrap">${countdown(ex.date)}<div class="small"><b>${esc(ex.name)}</b><div class="muted">${esc(courseName(ex.courseId))}</div></div></div>` : `<div class="small muted mt">Yaklaşan sınav yok 🌿</div>`}
       <div class="row mt"><button class="btn lav sm" data-act="studyForm">+ Çalışma kaydı</button></div></div>
-    <div class="card c4"><h3>👟 Hareket</h3>${moveBlock(k)}</div>
-    <div class="card c6 lift"><h3>🌳 Bahçemden<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Bahçeme git →</span></h3>
+    <div class="card c4" data-widget="movement"><h3>👟 Hareket</h3>${moveBlock(k)}</div>
+    <div class="card c6 lift" data-widget="journey"><h3>🌿 My Journey<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Yolculuğumu gör →</span></h3>
       <div class="garden-mini" data-act="go" data-page="garden">${gardenSVG()}</div>
-      <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">Bugünkü büyüme ${dayR(k).growth}/${DAILY_GROWTH} · 💧 ${Math.floor(S.garden.bank / 250)} damla</span></div>
-      <div class="progress thin sage mt-s"><i style="width:${gi.pct}%"></i></div></div>
-    <div class="card c6 tint-lav lift"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
+      <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">Seviye ${L.level} · ${S.xp.total} XP</span></div>
+      <div class="journey-note small mt-s">Bu hafta kendin için ${caredForDays} gün küçük adımlar attın. Bahçen ve alışkanlıkların senin temponda büyüyor.</div>
+      <div class="progress thin sage mt-s"><i style="width:${gi.pct}%"></i></div><div class="tiny muted mt-s">Bugünkü büyüme ${dayR(k).growth}/${DAILY_GROWTH} · 💧 ${Math.floor(S.garden.bank / 250)} damla</div></div>
+    <div class="card c6 tint-lav lift" data-widget="reading"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
       <h4 style="font-size:19px;margin-bottom:8px">${esc(rd.title)}</h4><p class="read-prev">${esc(rd.p[0])}</p>
       <div class="row mt"><button class="btn sm" data-act="readOpen" data-id="${rd.id}">Oku 🌷</button><button class="btn soft sm" data-act="readMore">Bir tane daha oku</button>
       <button class="btn icon sm soft" data-act="fav" data-id="${rd.id}" title="Favorilere ekle">${S.favorites.includes(rd.id) ? "💗" : "🤍"}</button></div></div>
@@ -1518,7 +1661,7 @@ function pageRoutines() {
   const altKey = schoolActive ? "off" : "school";
   const altList = filterMode(S.routines[altKey] || [], k);
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
   const schoolHeading = prof.schoolTitle || `${dt.activeChip} Sabah Rutini (${activeGk} Yaş)`;
   const offHeading = prof.offTitle || `${dt.offChip} Rutini (${activeGk} Yaş)`;
@@ -1576,7 +1719,7 @@ function pageRoutines() {
 const LVL_LABEL = {1: "Her gün (dinlenme gününde de)", 2: "Yoğun günde de göster", 3: "Sadece normal günde"};
 function routineEditor() {
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const schoolTitle = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
   const offTitle = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
   const eveningTitle = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
@@ -3189,9 +3332,23 @@ function openWeekReport(ws = weekStart(today())) {
 
 /* ---------------- AYARLAR ---------------- */
 function pageSettings() {
-  const s = S.settings, dt = dayTypeMeta();
+  const s = S.settings, dt = dayTypeMeta(), theme = selectedTheme();
   return `<div class="page-head"><div><h1>Ayarlar ⚙️</h1><p>Uygulamayı kendi düzenine göre kişiselleştir.</p></div></div>
     <div class="grid">
+      <div class="card c12">
+        <h3>🎨 Temalar</h3>
+        <p class="small muted mb">Bloom'un görünümünü istediğin zaman değiştirebilirsin. Tema seçimin yalnızca bu cihazda saklanır; günlük verilerin ve yedeklerin etkilenmez.</p>
+        <div class="theme-options" role="group" aria-label="Uygulama teması">
+          <button type="button" class="theme-option" data-act="setTheme" data-theme-choice="classic" aria-pressed="${theme === "classic"}">
+            <span class="theme-swatch" style="background:#FCEAF1" aria-hidden="true"><i style="--swatch:#D68BAA"></i><i style="--swatch:#D9CCEB"></i><i style="--swatch:#B9CDB3"></i></span>
+            <span class="theme-option-copy"><b>Bloom Klasik</b><small>Orijinal pembe ve pastel görünüm</small></span>
+          </button>
+          <button type="button" class="theme-option" data-act="setTheme" data-theme-choice="soft" aria-pressed="${theme === "soft"}">
+            <span class="theme-swatch" style="background:#F8F6F1" aria-hidden="true"><i style="--swatch:#B6A493"></i><i style="--swatch:#A5B39F"></i><i style="--swatch:#B9B5D1"></i></span>
+            <span class="theme-option-copy"><b>Soft Living</b><small>Sakin bej, adaçayı ve lavanta tonları</small></span>
+          </button>
+        </div>
+      </div>
       <div class="card c6">
         <h3>${esc(dt.settingsHeading)}</h3>
         <p class="small muted mb">${esc(dt.settingsDesc)}</p>
@@ -3424,7 +3581,7 @@ function pageSkincare() {
   const doneCount = tab === "evening" ? eDone : mDone;
   const pct = list.length ? Math.round(doneCount / list.length * 100) : 0;
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
   const skinBadge = prof.skinLabel || `${activeGk} Yaş Cilt Bakımı`;
 
@@ -3437,7 +3594,7 @@ function pageSkincare() {
       </div>
       <div class="divider"></div>
       <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre cilt bakım rutini seç (${esc(skinBadge)} · ${gLabel})</div>
-      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.filter(g => g.k === activeGk).map(g => `<span class="chip on" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "morning" ? "active" : ""}" data-act="skinTab" data-t="morning">☀️ Sabah Rutini (${mDone}/${mList.length})</div>
@@ -3511,13 +3668,13 @@ function skinFormHTML(tab = "morning", item = {}) {
 
 /* ---------------- EGZERSİZ ---------------- */
 const EX_TYPES = {
-  yuruyus:{t:"Yürüyüş",e:"🚶‍♀️",kcalMin:4.5,cls:"sage"},
-  pilates:{t:"Pilates",e:"🧘‍♀️",kcalMin:4.0,cls:"lav"},
+  yuruyus:{t:"Yürüyüş",e:"🚶",kcalMin:4.5,cls:"sage"},
+  pilates:{t:"Pilates",e:"🧘",kcalMin:4.0,cls:"lav"},
   yoga:{t:"Yoga",e:"🪷",kcalMin:3.0,cls:"lav"},
   esneme:{t:"Esneme & Mobilite",e:"🌿",kcalMin:2.5,cls:"sage"},
   direnc:{t:"Direnç / Kuvvet",e:"💪",kcalMin:5.0,cls:""},
-  yuzme:{t:"Yüzme / Havuz",e:"🏊‍♀️",kcalMin:6.5,cls:"blue"},
-  kardiyo:{t:"Dans / Kardiyo",e:"💃",kcalMin:6.5,cls:""},
+  yuzme:{t:"Yüzme / Havuz",e:"🏊",kcalMin:6.5,cls:"blue"},
+  kardiyo:{t:"Kardiyo",e:"🏃",kcalMin:6.5,cls:""},
   bisiklet:{t:"Bisiklet",e:"🚲",kcalMin:6.0,cls:"cream"}
 };
 const EX_FEELS = {enerjik:"⚡ Enerjik",rahat:"🌸 Rahatlamış",guclu:"💪 Güçlü",hafif:"🌿 Hafifledim",yorgun:"☁️ Yorgun ama iyi"};
@@ -3530,7 +3687,7 @@ const EX_QUICK = [
   {name:"Yüzme / su yürüyüşü",type:"yuzme",min:30}
 ];
 const EX_NAME_SUGGESTIONS = ["Tempolu yürüyüş","Pilates & alt beden","Yumuşak esneme","Yoga & mobilite","Bant ile direnç","Yüzme / havuz yürüyüşü","Bisiklet","Evde dans / hafif kardiyo","Bacak kaldırma & dolaşım akışı"];
-const EX_PRESETS = {
+const LEGACY_EXERCISE_PRESETS = {
   soft: {
     n:"Lipödem Dostu & Yumuşak Akış", e:"🌷",
     d:"Dolaşımı destekleyen, eklemleri yormayan yürüyüş, yüzme ve nazik pilates dengesi.",
@@ -3545,7 +3702,7 @@ const EX_PRESETS = {
     }
   },
   balanced: {
-    n:"Dengeli Pilates & Yürüyüş", e:"🧘‍♀️",
+    n:"Dengeli Pilates & Yürüyüş", e:"🧘",
     d:"Kuvvet, esneklik ve günlük hareketi bir araya getiren haftalık düzen.",
     plan: {
       1:[{name:"Pilates full body",type:"pilates",min:30,sets:"",note:"Duruş & sıkılaşma"}],
@@ -3571,6 +3728,10 @@ const EX_PRESETS = {
     }
   }
 };
+function exerciseIcon() {
+  const g = (curProfileInfo().gender || "female");
+  return g === "female" ? "🧘‍♀️" : g === "male" ? "🏋️‍♂️" : "🧘";
+}
 const exType = k => {
   const base = EX_TYPES[k] || EX_TYPES.yuruyus;
   const isMale = curProfileInfo().gender === "male";
@@ -3587,7 +3748,7 @@ function logExerciseEntry({name, type = "yuruyus", min = 20, sets = "", feel = "
   const d = day(date);
   d.move = d.move || {min: 0, steps: 0};
   d.move.min = (+d.move.min || 0) + min;
-  award("ex_" + item.id, 10, "Egzersiz 🧘‍♀️", 4, date, pos);
+  award("ex_" + item.id, 10, `Egzersiz ${exerciseIcon()}`, 4, date, pos);
   if (d.move.min > 0 && award("move_any", 5, "Hareket başlangıcı 🌿", 3, date, pos)) S.garden.leaves = (S.garden.leaves || 0) + 1;
   if (d.move.min >= 20 && award("move", 20, "Hareket 👟", 6, date, pos)) S.garden.leaves = (S.garden.leaves || 0) + 2;
   checkWeekBonus();
@@ -3671,7 +3832,7 @@ function exTodayView() {
             <button class="btn icon sm danger" data-act="exLogDel" data-id="${l.id}" title="Sil">🗑</button>
           </div>
         </div>`;
-      }).join("")}</div>` : emptyBox("🧘‍♀️", "Bugün henüz egzersiz kaydı eklemedin. Kısa bir yürüyüş veya esneme bile harika bir başlangıç!", `<button class="btn sm" data-act="exLogForm" data-k="${k}">+ Egzersiz kaydet</button>`)}
+      }).join("")}</div>` : emptyBox(exerciseIcon(), "Bugün henüz egzersiz kaydı eklemedin. Kısa bir yürüyüş veya esneme bile harika bir başlangıç!", `<button class="btn sm" data-act="exLogForm" data-k="${k}">+ Egzersiz kaydet</button>`)}
     </div>
   </div>`;
 }
@@ -3712,10 +3873,18 @@ function exWeekView(ws) {
     </div>`;
 }
 function exPlanView() {
+  const prof = curProfileInfo();
+  const age = prof.age || 21, gender = normalizedExerciseGender(prof.gender);
+  const ageGroup = ageGroupKeyFor(age);
+  const genderLabel = gender === "female" ? "Kadın" : gender === "male" ? "Erkek" : "Belirtme";
   return `<div class="card mb tint-pink">
-      <h3>✨ Hazır haftalık program şablonları</h3>
-      <p class="small muted mb">İstersen tek dokunuşla bir program yükleyip kendi temposuna göre gün gün düzenleyebilirsin.</p>
-      <div class="row" style="gap:8px">${Object.entries(EX_PRESETS).map(([k2, o]) => `<button class="btn soft sm" data-act="exLoadPreset" data-k="${k2}">${o.e} ${esc(o.n)}</button>`).join("")}</div>
+      <h3>✨ Yaşına ve cinsiyetine uygun haftalık programlar</h3>
+      <p class="small muted mb">Profilin: ${ageGroup} yaş · ${genderLabel}. İstediğin şablonu seçebilir, ardından gün gün düzenleyebilirsin.</p>
+      <div class="row" style="gap:8px">${Object.entries(EXERCISE_PRESET_STYLES).map(([style, meta]) => {
+        const preset = exercisePresetForProfile(age, gender, style);
+        return `<button class="btn ${style === "balanced" ? "sage" : "soft"} sm" data-act="exLoadPreset" data-k="${style}">${meta.e} ${esc(preset.n)}</button>`;
+      }).join("")}</div>
+      <p class="tiny muted mt-s">${esc(exercisePresetForProfile(age, gender).d)}</p>
     </div>
     <div class="grid">${[1,2,3,4,5,6,7].map(d1 => {
       const list = S.exercise.plan[d1] || [];
@@ -3732,19 +3901,19 @@ function exLogFormHTML(item = {}) {
   const tp = item.type || "yuruyus";
   return `<form data-form="exLog" class="form-grid"><input type="hidden" name="id" value="${esc(item.id || "")}"><input type="hidden" name="planId" value="${esc(item.planId || "")}">
     <div class="field full"><label>Egzersiz adı *</label><input name="name" list="exNameList" required maxlength="80" value="${esc(item.name || "")}" placeholder="örn. Tempolu yürüyüş, Mat pilates"><datalist id="exNameList">${EX_NAME_SUGGESTIONS.map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></div>
-    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${o.e} ${o.t}</option>`).join("")}</select></div>
+    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${exType(k2).e} ${o.t}</option>`).join("")}</select></div>
     <div class="field"><label>Tarih *</label><input type="date" name="date" required value="${esc(item.date || today())}"></div>
     <div class="field"><label>Süre (dakika) *</label><input type="number" name="min" min="1" max="600" required value="${esc(item.min ?? 25)}"></div>
     <div class="field"><label>Set / tekrar (isteğe bağlı)</label><input name="sets" maxlength="40" value="${esc(item.sets || "")}" placeholder="örn. 3x12"></div>
     <div class="field full"><label>Nasıl hissettirdi?</label><select name="feel"><option value="">Seçilmedi</option>${Object.entries(EX_FEELS).map(([k2, v]) => `<option value="${k2}" ${item.feel === k2 ? "selected" : ""}>${v}</option>`).join("")}</select></div>
     <div class="field full"><label>Not</label><input name="note" maxlength="140" value="${esc(item.note || "")}" placeholder="örn. Bacaklarım çok hafifledi"></div>
-    <div class="full modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Kaydet 🧘‍♀️</button></div></form>`;
+    <div class="full modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Kaydet ${exerciseIcon()}</button></div></form>`;
 }
 function exPlanFormHTML(dayIdx = 1, item = {}) {
   const tp = item.type || "yuruyus", dVal = +dayIdx || 1;
   return `<form data-form="exPlan" class="form-grid"><input type="hidden" name="id" value="${esc(item.id || "")}"><input type="hidden" name="origDay" value="${dVal}">
     <div class="field"><label>Gün *</label><select name="day">${[1,2,3,4,5,6,7].map(i => `<option value="${i}" ${dVal === i ? "selected" : ""}>${TR_DAYS[i % 7]}</option>`).join("")}</select></div>
-    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${o.e} ${o.t}</option>`).join("")}</select></div>
+    <div class="field"><label>Tür</label><select name="type">${Object.entries(EX_TYPES).map(([k2, o]) => `<option value="${k2}" ${tp === k2 ? "selected" : ""}>${exType(k2).e} ${o.t}</option>`).join("")}</select></div>
     <div class="field full"><label>Egzersiz adı *</label><input name="name" list="exPlanNames" required maxlength="80" value="${esc(item.name || "")}" placeholder="örn. Pilates & alt beden"><datalist id="exPlanNames">${EX_NAME_SUGGESTIONS.map(n => `<option value="${esc(n)}"></option>`).join("")}</datalist></div>
     <div class="field"><label>Hedef süre (dakika) *</label><input type="number" name="min" min="1" max="600" required value="${esc(item.min ?? 25)}"></div>
     <div class="field"><label>Set / tekrar</label><input name="sets" maxlength="40" value="${esc(item.sets || "")}" placeholder="örn. 3x12"></div>
@@ -3772,7 +3941,8 @@ function shouldShowWelcome(k = today()) {
 }
 function showWelcome() {
   const ex = $("#welcomeScreen"); if (ex) ex.remove();
-  const k = today(), w = document.createElement("div");
+  const k = today(), w = document.createElement("div"), prof = curProfileInfo();
+  const name = (prof.name || (localStorage.getItem("bloom_user_name") || "").trim()).trim();
   w.className = "welcome"; w.id = "welcomeScreen";
   w.innerHTML = `<div class="welcome-card">
     <span class="wfloat" style="top:16px;left:22px">🌸</span>
@@ -3780,7 +3950,7 @@ function showWelcome() {
     <span class="wfloat" style="bottom:20px;left:28px;animation-delay:-4s">🌿</span>
     <span class="wfloat" style="bottom:24px;right:26px;animation-delay:-1s">✨</span>
     <div class="small muted" style="font-weight:700">${fmtLong(k)}</div>
-    <h1>Hoş geldin Tuğba 🌷</h1>
+    <h1>Hoş geldin${name ? ` ${esc(name)}` : ""} 🌿</h1>
     <p class="lead">Bugün kendin için küçük bir şey yapmaya ne dersin?</p>
     <p class="wtext">Burası kendin için kurduğun küçük dünya.<br>Burada mükemmel olmak zorunda değilsin.<br>Burada sadece büyümek, öğrenmek, iyileşmek ve kendine yeniden dönmek var.<br>Haydi, bugün birlikte küçük bir şey yapalım. 🌱</p>
     <p class="en">“Perfect days are not required. Small steps are enough.”</p>
@@ -3928,6 +4098,8 @@ document.addEventListener("click", ev => {
     case "setSchool": { const k = ds.k || today(); day(k).school = ds.v === "1"; save(); render(); break; }
     case "weekReport": openWeekReport(ds.ws || weekStart(today())); break;
     case "homeTab": UI.homeTab = ds.t; render(); break;
+    case "dashboardCustomize": openDashboardSettings(); break;
+    case "setTheme": chooseTheme(ds.themeChoice); break;
 
     case "toggleTask": {
       const k = today(), d = day(k), id = ds.id;
@@ -4021,8 +4193,8 @@ document.addEventListener("click", ev => {
     }
     case "rDel": ev.stopPropagation(); S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
     case "applyAgeRoutine": {
-      const targetAge = +ds.age || 21;
       const prof = curProfileInfo();
+      const targetAge = +prof.age || +ds.age || 21;
       const gender = prof.gender || "female";
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
@@ -4278,7 +4450,7 @@ document.addEventListener("click", ev => {
     case "exWeekNav": { const dir = +ds.dir; UI.exWeek = dir === 0 ? weekStart(today()) : addDays(UI.exWeek || weekStart(today()), dir); render(); break; }
     case "exLogForm": {
       const item = ds.id ? ((S.exercise.logs || []).find(x => x.id === ds.id) || {}) : {date: ds.k || today()};
-      openModal(ds.id ? "Egzersizi düzenle 🧘‍♀️" : "Egzersiz kaydet 🧘‍♀️", exLogFormHTML(item));
+      openModal(ds.id ? `Egzersizi düzenle ${exerciseIcon()}` : `Egzersiz kaydet ${exerciseIcon()}`, exLogFormHTML(item));
       break;
     }
     case "exLogDel": {
@@ -4318,17 +4490,29 @@ document.addEventListener("click", ev => {
     case "exPlanDel": {
       const dIdx = +ds.day || 1;
       S.exercise.plan[dIdx] = (S.exercise.plan[dIdx] || []).filter(x => x.id !== ds.id);
+      S.exercise.profileKey = "custom";
       save(); render(); toast("Programdan kaldırıldı");
       break;
     }
     case "exLoadPreset": {
-      const pr = EX_PRESETS[ds.k]; if (!pr) break;
+      const prof = curProfileInfo();
+      const pr = EXERCISE_PRESET_STYLES[ds.k] && exercisePresetForProfile(prof.age || 21, prof.gender, ds.k);
+      if (!pr) break;
       confirmBox(`"${pr.n}" haftalık egzersiz programı yüklensin mi? Mevcut programın yenilenecek (geçmiş kayıtların korunur).`, () => {
-        const np = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
-        [1,2,3,4,5,6,7].forEach(i => np[i] = (pr.plan[i] || []).map(x => exItem(uid(), x.name, x.type, x.min, x.sets || "", x.note || "")));
-        S.exercise.plan = np;
+        S.exercise.plan = createExercisePlan(pr);
+        S.exercise.profileKey = `auto:${exerciseProfileKey(prof)}:${ds.k}`;
         save(); render(); toast(`${pr.e} "${pr.n}" programı yüklendi!`);
       }, "Programı yükle");
+      break;
+    }
+    case "exLoadAgePreset": {
+      const prof = curProfileInfo();
+      const pr = exercisePresetForProfile(prof.age || 21, prof.gender);
+      confirmBox(`"${pr.n}" haftalık egzersiz programı yüklensin mi? Mevcut programın yenilenecek (geçmiş kayıtların korunur).`, () => {
+        S.exercise.plan = createExercisePlan(pr);
+        S.exercise.profileKey = `auto:${exerciseProfileKey(prof)}:balanced`;
+        save(); render(); toast(`${pr.e} "${pr.n}" programı yüklendi!`);
+      }, "Yaşıma uygun programı yükle");
       break;
     }
     case "saveCustomFood": {
@@ -4490,6 +4674,17 @@ document.addEventListener("submit", ev => {
   const fd = new FormData(form), type = form.dataset.form, k = fd.get("k") || today();
 
   switch (type) {
+    case "dashboardWidgets": {
+      const visible = new Set(fd.getAll("visible"));
+      const hidden = DASHBOARD_WIDGETS.filter(widget => !visible.has(widget.id)).map(widget => widget.id);
+      try {
+        localStorage.setItem(DASHBOARD_WIDGET_KEY, JSON.stringify(hidden));
+      } catch (e) {
+        toast("Ana sayfa düzeni bu cihazda kaydedilemedi. Depolama alanını kontrol edip yeniden dene.");
+        break;
+      }
+      closeModal(); render(); toast("Ana sayfa düzenin kaydedildi 🌿"); break;
+    }
     case "addGoal": {
       const text = (fd.get("text") || "").trim(); if (!text) return;
       day(k).goals.push({id: uid(), text, done: false}); save(); render(); toast("Hedef eklendi 🎯"); break;
@@ -4703,10 +4898,10 @@ document.addEventListener("submit", ev => {
           Object.assign(ex, data);
           const newD = day(date); newD.move = newD.move || {min: 0, steps: 0}; newD.move.min = (+newD.move.min || 0) + min;
         }
-        toast("Egzersiz kaydı güncellendi 🧘‍♀️");
+        toast(`Egzersiz kaydı güncellendi ${exerciseIcon()}`);
       } else {
         logExerciseEntry(data);
-        toast(`"${name}" kaydedildi (+${min} dk) 🧘‍♀️🌱`);
+        toast(`"${name}" kaydedildi (+${min} dk) ${exerciseIcon()}🌱`);
       }
       save(); closeModal(); render();
       break;
@@ -4719,6 +4914,7 @@ document.addEventListener("submit", ev => {
       if (!name) break;
       const min = Math.max(1, Math.round(+fd.get("min") || 25));
       const data = {name, type: fd.get("type") || "yuruyus", min, sets: (fd.get("sets") || "").trim(), note: (fd.get("note") || "").trim()};
+      S.exercise.profileKey = "custom";
       S.exercise.plan[dIdx] = S.exercise.plan[dIdx] || [];
       if (id) {
         const src = S.exercise.plan[origDay] || [], idx = src.findIndex(x => x.id === id);
@@ -5033,6 +5229,7 @@ function checkGardenTime() {
 }
 function init() {
   S = load();
+  syncExercisePlanWithProfile(curProfileInfo());
   save();
   syncEarnedRewards();
   restoreTimer();
@@ -5061,6 +5258,7 @@ window.__bloomGetRoutines = function() {
 window.__bloomApplySkincareProfile = function(profile, skRec) {
   if (!S) S = load();
   S.profile = Object.assign({}, S.profile || {}, profile || {});
+  syncExercisePlanWithProfile(S.profile);
   if (skRec && Array.isArray(skRec.morning) && skRec.morning.length) {
     S.skincare.morning = skRec.morning.map(x => Object.assign({}, x));
   }
@@ -5085,6 +5283,7 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   profile.exerciseApplied = true;
   profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
+  syncExercisePlanWithProfile(profile);
   const mapItems = (items, prevList) => {
     const prev = Array.isArray(prevList) ? prevList : [];
     return (items || []).map(it => {
@@ -5121,6 +5320,8 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   }
   save();
   render();
+  const welcomeHeading = $("#welcomeScreen h1");
+  if (welcomeHeading) welcomeHeading.textContent = `Hoş geldin${profile.name ? ` ${profile.name}` : ""} 🌿`;
   if (!silent) {
     toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri, cilt bakımı ve egzersiz programı yüklendi! 🌷`);
   }
@@ -5132,6 +5333,7 @@ window.__bloomBack = function() {
   if (UI.page !== "home") { go("home"); return "handled"; }
   return "exit";
 };
+applyTheme(selectedTheme());
 init();
 </script>
   <script src="onboarding.js?v=2.8.0"></script>
