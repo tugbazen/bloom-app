@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.4.1">
+<meta name="bloom-version" content="2.5.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -712,7 +712,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.4.1";
+const APP_VERSION = "2.5.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -3221,14 +3221,21 @@ function pageSkincare() {
   const list = tab === "evening" ? eList : mList;
   const doneCount = tab === "evening" ? eDone : mDone;
   const pct = list.length ? Math.round(doneCount / list.length * 100) : 0;
+  const prof = curProfileInfo();
+  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
+  const skinBadge = prof.skinLabel || `${activeGk} Yaş Cilt Bakımı`;
 
-  return `<div class="page-head"><div><h1>Cilt Bakım Rutini 🧴</h1><p>Sabah ve akşam hangi ürünü hangi sırayla süreceğini kolayca takip et.</p></div>
-      <div class="row" style="gap:8px"><button class="btn ${UI.skinEdit ? "" : "soft"}" data-act="skinEdit">${UI.skinEdit ? "✓ Düzenlemeyi bitir" : "✏️ Sırayı düzenle"}</button><button class="btn" data-act="skinForm">+ Ürün ekle</button></div></div>
+  return `<div class="page-head"><div><h1>Cilt Bakım Rutini 🧴</h1><p>Yaşına ve cinsiyetine göre sabah/akşam cilt bakım sıran hazır; istediğin ürünü ekleyip çıkarabilirsin.</p></div>
+      <div class="row" style="gap:8px"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.skinEdit ? "" : "soft"}" data-act="skinEdit">${UI.skinEdit ? "✓ Düzenlemeyi bitir" : "✏️ Sırayı düzenle"}</button><button class="btn" data-act="skinForm">+ Ürün ekle</button></div></div>
     <div class="card mb tint-pink">
       <div class="stats">
         <div class="stat"><b>${mDone}/${mList.length}</b><span>☀️ sabah rutini</span></div>
         <div class="stat"><b>${eDone}/${eList.length}</b><span>🌙 akşam rutini</span></div>
       </div>
+      <div class="divider"></div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre cilt bakım rutini seç (${esc(skinBadge)} · ${gLabel})</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "morning" ? "active" : ""}" data-act="skinTab" data-t="morning">☀️ Sabah Rutini (${mDone}/${mList.length})</div>
@@ -3800,9 +3807,10 @@ document.addEventListener("click", ev => {
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
         const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
-        const nextProf = { name, age: targetAge, gender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, updatedAt: Date.now() };
+        const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender) : null;
+        const nextProf = { name, age: targetAge, gender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, skinLabel: skRec ? skRec.skinLabel : "", skinApplied: true, updatedAt: Date.now() };
         try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
-        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening);
+        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec);
       }
       break;
     }
@@ -4806,8 +4814,25 @@ window.__bloomGetRoutines = function() {
     evening: S.routines.evening || []
   };
 };
-window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems) {
+window.__bloomApplySkincareProfile = function(profile, skRec) {
   if (!S) S = load();
+  S.profile = Object.assign({}, S.profile || {}, profile || {});
+  if (skRec && Array.isArray(skRec.morning) && skRec.morning.length) {
+    S.skincare.morning = skRec.morning.map(x => Object.assign({}, x));
+  }
+  if (skRec && Array.isArray(skRec.evening) && skRec.evening.length) {
+    S.skincare.evening = skRec.evening.map(x => Object.assign({}, x));
+  }
+  save();
+  render();
+};
+window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec) {
+  if (!S) S = load();
+  if (!skRec && typeof window.__bloomGetRecommendedSkincare === "function") {
+    skRec = window.__bloomGetRecommendedSkincare(profile.age, profile.gender);
+  }
+  if (skRec && skRec.skinLabel) profile.skinLabel = skRec.skinLabel;
+  profile.skinApplied = true;
   S.profile = profile;
   const mapItems = (items, prevList) => {
     const prev = Array.isArray(prevList) ? prevList : [];
@@ -4832,9 +4857,15 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   if (Array.isArray(eveningItems) && eveningItems.length) {
     S.routines.evening = mapItems(eveningItems, S.routines.evening);
   }
+  if (skRec && Array.isArray(skRec.morning) && skRec.morning.length) {
+    S.skincare.morning = skRec.morning.map(x => Object.assign({}, x));
+  }
+  if (skRec && Array.isArray(skRec.evening) && skRec.evening.length) {
+    S.skincare.evening = skRec.evening.map(x => Object.assign({}, x));
+  }
   save();
   render();
-  toast(`${profile.groupLabel || (profile.age + " yaş")} ortalama rutini yüklendi! 🌷`);
+  toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri ve cilt bakımı yüklendi! 🌷`);
 };
 window.__bloomBack = function() {
   if ($("#modal")) { closeModal(); return "handled"; }
@@ -4845,6 +4876,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.4.1"></script>
+  <script src="onboarding.js?v=2.5.0"></script>
 </body>
 </html>
