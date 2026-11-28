@@ -33,9 +33,9 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 | **🌺 50+ Yaş** *(Zindelik, Canlılık & Sağlıklı Yaşam)* | Planlı & Aktif Gün Sabah Rutini (06:30 uyanış, yatakta eklem gerinmesi, ılık su, 20 dk sabah yürüyüşü, Akdeniz kahvaltısı, ilaç/vitamin takibi) | Huzurlu Dinlenme, Doğa & Keyif Günü Rutini (07:30 huzurlu uyanış, nefes/eklem esnetme, uzun kahvaltı, 30 dk doğa/sahil yürüyüşü veya bahçe bakımı, sohbet & kitap) | Akşam Sağlık, Bakım & Huzurlu Uyku Rutini (akşam yürüyüşü/bacak dinlendirme, akşam ilaç/vitamin kontrolü, yoğun gece/boyun/el bakımı, bitki çayı, 22:15 uyku) |
 
 - **Enerji Modları:** Her gün için `🌸 Normal gün`, `⚡ Yoğun gün` veya `🌙 Dinlenme günü` seçilerek görev listesi o günkü enerji seviyesine göre otomatik sadeleştirilebilir.
-- **Canlı Geçiş & Özelleştirme:** Rutinlerim sayfasında hem aktif gün tipinin (`🎒 Okul / İş Günü` veya `🏡 Boş / Dinlenme Günü`) görevleri işaretlenebilir hem de diğer gün tipinin planı tek kartta görülüp düzenlenebilir.
+- **Canlı Geçiş & Özelleştirme (Aktif / Pasif Ayrımı):** Rutinlerim sayfasında **☀️ Bugünün Aktif Rutini**, **🗓️ Diğer Gün Planı (Pasif Şablon)** ve **✏️ Tümünü Düzenle** sekmeleri ayrı tutulur; aktif ve pasif planlar birbirine karışmaz. Mobilde tablo yerine dikey kart düzenleyici kullanılır.
 - **Yaşa Göre Dinamik Gün Etiketleri:** Gün tipi çipleri, Yarın sekmesi hazırlık notları ve Ayarlar başlıkları kullanıcının yaş grubuna göre otomatik uyarlanır (`10–17 Yaş`: `🎒 Okul Günü`, `18–24 Yaş`: `🎓 Kampüs / Ders Günü`, `25–49 Yaş`: `💼 İş / Mesai Günü`, `50+ Yaş`: `🌺 Planlı / Aktif Gün`).
-- **⏰ Sıradaki Adım Vurgusu:** Günün saatine göre sıradaki tamamlanmamış rutin adımı hem Ana Sayfa'da hem de Rutinlerim sayfasında `⏰ Sıradaki` rozetiyle öne çıkarılır ve tek tıkla tamamlanabilir.
+- **⏰ Sıradaki Adım Vurgusu & Geri Al (Undo):** Günün saatine göre sıradaki tamamlanmamış rutin adımı hem Ana Sayfa'da hem de Rutinlerim sayfasında `⏰ Sıradaki` rozetiyle öne çıkarılır; rutin, hedef veya su kaydı silindiğinde 5 saniyelik `↩️ Geri Al` bildirimi sunulur.
 
 ---
 
@@ -46,9 +46,11 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
   - **25–34 Yaş:** Antioksidan koruma & ilk çizgi önleme (Sabah C Vitamini serumu, kafeinli göz çevresi kremi, SPF 50+; akşam düşük oranlı Retinol/Peptit serum ve seramid gece kremi).
   - **35–49 Yaş:** Elastikiyet, Peptit/Retinol & leke koruması (Peptit esansı, C Vitamini + Peptit serum, sıkılaştırıcı göz ve boyun kremi, PA++++ leke karşıtı SPF 50+; akşam Retinol/Bakuchiol ve yoğun onarıcı gece/boyun kremi).
   - **50+ Yaş:** Olgun cilt, boyun/dekolte & yoğun lipid onarımı (Kurutmayan süt/krem temizleyici, kolajen/panthenol nem esansı, C Vitamini + Peptit + Q10 serum, göz & dudak çevresi kremi, yüz/boyun/dekolte kremi ve akşam yoğun el/boyun/gece onarım kremi).
-- **Cinsiyete Göre Uyarlama:**
+- **Cinsiyete & İsteğe Bağlı Cilt Profiline Göre Uyarlama:**
   - **Erkek (`🌿 Erkek`)** seçildiğinde **hiçbir yaş grubunda `"Makyaj temizleme"` adımı yer almaz**; bunun yerine yüz/sakal arındırıcı jel, tıraş sonrası yatıştırıcı tonik ve parlama karşıtı nemlendirici adımları gelir.
   - **Kadın (`🌸 Kadın`)** seçildiğinde akşam rutininde yaş grubuna uygun çift aşamalı temizlik (`Makyaj & SPF temizleme`) yer alır.
+  - **🧬 İsteğe Bağlı Cilt Profili (`Cilt Tipi`, `Hassasiyet`, `Öncelik`, `Alerji Notu`):** Kullanıcı dilerse onboarding'de veya Cilt Bakımı sayfasından cilt profilini belirleyebilir; yüksek hassasiyette sert asitler/retinol yerine yatıştırıcı bariyer alternatifleri önerilir, alerji notuyla çakışan içeriklerde uyarı gösterilir.
+  - **💡 Şeffaflık & 🛡️ Güven Notu:** Sayfada adımların neden önerildiğini açıklayan kısa bir özet ve önerilerin tıbbi/dermatolojik tanı yerine geçmediğini belirten güven notu yer alır.
 - **Sabit & Düzenlenebilir Adımlar:** `🪥 Diş fırçalama` ve `🧼 Yüz yıkama` sabit adımlardır; diğer tüm ürün ve adımlar düzenlenebilir, sıralanabilir veya yeni ürün eklenebilir.
 - **Çift Yönlü Senkronizasyon & Ana Sayfa Cilt Bakım Kartı:** Cilt Bakımı sayfasındaki sabah/akşam adımlarının tamamı işaretlendiğinde Günlük Rutin'deki `"Cilt bakımımı yap"` görevi otomatik tamamlanır (ve tersi de geçerlidir). Ana Sayfa'daki **🧴 Cilt Bakımım** kartından sabah/akşam ilerlemesi takip edilebilir ve sıradaki cilt bakım adımı tek dokunuşla tamamlanabilir.
 
@@ -78,8 +80,10 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 
 ---
 
-### 7. 📱 Mobil Uyumluluk (iPhone 11 – iPhone 18 Pro Max) & PWA Güncelleme Mimarisi
-- **iOS & Mobil Ergonomi:** iPhone 11 (`375×812`) ile iPhone 18 Pro Max (`440×956`) arasındaki tüm ekran boyutlarında yatay taşma (`horizontal overflow`) olmadan çalışır; `16px` input font boyutuyla iOS Safari otomatik yakınlaştırmasını engeller, çentik (`safe-area-inset`) ve alt sheet modal yapısını destekler.
+### 7. 📱 Mobil Uyumluluk (iPhone 11 – iPhone 18 Pro Max), Temalar & PWA Güncelleme Mimarisi
+- **iOS & Mobil Ergonomi:** iPhone 11 (`375×812`) ile iPhone 18 Pro Max (`440×956`) arasındaki tüm ekran boyutlarında yatay taşma (`horizontal overflow`) olmadan çalışır; alt menüdeki `⋯ Menü` çekmecesi tüm bölümlere etiketli ve geniş dokunma alanlı (`≥44px`) erişim sunar, `16px` input font boyutuyla iOS Safari otomatik yakınlaştırmasını engeller.
+- **Kompakt Ana Sayfa & Hızlı İşlemler:** Üstte `⚡ Hızlı İşlemler` şeridi (`+200 ml Su`, `+ Öğün`, `+ Egzersiz`, `🧴 Cilt Bakımı`, `⏱ Odak`), temel günlük takip kartları ve katlanabilir ikincil özet alanıyla günlük kullanım sadeleştirilmiştir.
+- **4 Tema Paleti & 🌙 Yumuşak Gece Modu:** Ayarlar'dan `🌸 Gül & Lavanta`, `🌿 Adaçayı & Orman`, `🌊 Okyanus & Dingin` veya `☀️ Sıcak Toprak` paletleri seçilebilir ve üst bardan tek dokunuşla Gece/Gündüz moduna geçilebilir.
 - **Anında PWA Güncellemesi:** `sw.js` ağ öncelikli (`network-first`, `cache: 'no-store'`) stratejiyle çalışır. Yeni bir sürüm yayınlandığında eski önbellekleri temizler ve **Ayarlar > Uygulamayı Şimdi Güncelle** butonuyla tek dokunuşla son sürüme geçiş sağlar.
 
 ---
