@@ -7,25 +7,25 @@
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
 <meta name="bloom-version" content="2.6.2">
-<meta name="theme-color" content="#FCEAF1">
+<meta name="theme-color" content="#F8F6F1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Bloom">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Bloom – Tuğba'nın Dünyası 🌷</title>
+<title>Bloom – Soft Living 🌿</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B7%3C/text%3E%3C/svg%3E">
 <!-- Yazı tipleri yalnızca görünüm içindir; çevrimdışıyken sistem yazı tiplerine geçilir. Hiçbir kullanıcı verisi dışarı gönderilmez. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#FFF8FA; --pink1:#FCEAF1; --pink2:#F5DCE8; --pink3:#E8BFD1; --rose:#D68BAA; --dusty:#C78BA0;
-  --sage:#E7EEE5; --sage2:#B9CDB3; --sage3:#8DB585; --lav:#F3EDF8; --lav2:#D9CCEB; --cream:#FFF6EC; --ivory:#FFFDF8;
-  --text:#5B4450; --muted:#A08896; --line:rgba(232,191,209,.5); --water:#A9D6EC;
-  --shadow:0 6px 24px rgba(214,139,170,.12); --shadow-h:0 12px 32px rgba(214,139,170,.2);
-  --r:22px; --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'Quicksand','Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+  --bg:#F8F6F1; --pink1:#F4EEE8; --pink2:#EAE1D7; --pink3:#D8B8B2; --rose:#8B7163; --dusty:#A68D80;
+  --sage:#E8EDE5; --sage2:#A5B39F; --sage3:#74866D; --lav:#F0EFF5; --lav2:#B9B5D1; --cream:#F6F1E9; --ivory:#FFFEFC;
+  --text:#403A35; --muted:#837970; --line:rgba(182,164,147,.26); --water:#A9D6EC;
+  --shadow:0 8px 26px rgba(64,58,53,.055); --shadow-h:0 12px 32px rgba(64,58,53,.09);
+  --r:20px; --serif:'DM Serif Display',Georgia,'Times New Roman',serif; --sans:'Manrope','Segoe UI',system-ui,-apple-system,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
@@ -446,12 +446,73 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
   .topbar .brand span{font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Soft Living design layer */
+body::before{background:radial-gradient(520px 360px at 100% 0,rgba(185,181,209,.12),transparent 72%),radial-gradient(480px 360px at 0 42%,rgba(234,225,215,.36),transparent 72%)}
+.sidebar{background:rgba(255,254,252,.94);border-right-color:var(--line)}
+.brand .logo{background:var(--pink1);box-shadow:none}
+.brand b{color:var(--text)}
+.nav-item{border:0;width:100%;text-align:left;background:transparent;font:inherit}
+.nav-item:hover{background:var(--pink1);transform:translateX(2px)}
+.nav-item.active{background:var(--pink1);color:var(--text);box-shadow:inset 3px 0 var(--rose)}
+.side-level{background:var(--cream)}
+.topbar{background:rgba(248,246,241,.94)}
+.topbar .brand b{color:var(--text)}
+.bottom-nav{background:rgba(255,254,252,.97);box-shadow:0 -8px 24px rgba(64,58,53,.04)}
+.bn{border:0;background:transparent;font:inherit}
+.bn.active{color:var(--text);background:var(--pink1)}
+.bn.active .ni{transform:translateY(-1px)}
+.page-head h1{color:var(--text)}
+.card{background:var(--ivory);border-color:var(--line);box-shadow:var(--shadow)}
+.card.tint-pink{background:linear-gradient(145deg,#FFFEFC,#F4EEE8)}
+.card.tint-lav{background:linear-gradient(145deg,#FFFEFC,#F0EFF5)}
+.card.tint-sage{background:linear-gradient(145deg,#FFFEFC,#E8EDE5)}
+.card.tint-cream{background:linear-gradient(145deg,#FFFEFC,#F6F1E9)}
+.hero{background:linear-gradient(125deg,#FFFEFC 0%,#F2ECE5 72%,#EEEAF2 100%);border-color:rgba(182,164,147,.3)}
+.hero h1{color:var(--text)}
+.hero .motto,.welcome-card .lead{color:var(--rose)}
+.btn{background:var(--rose);color:#fff;box-shadow:0 4px 12px rgba(64,58,53,.12)}
+.btn:hover{box-shadow:0 6px 16px rgba(64,58,53,.16)}
+.btn.soft{background:var(--pink1);color:#66574D}
+.btn.lav{background:#ECEAF3;color:#625E79}
+.btn.sage{background:#E8EDE5;color:#51604B}
+.btn.water{background:#E6F1F5;color:#426F82;box-shadow:none}
+.btn.ghost{color:var(--rose);border-color:var(--pink3)}
+.chip{border-color:var(--pink2);color:#6E6259}
+.chip.on{background:#EAE1D7;border-color:transparent;color:var(--text);box-shadow:none}
+.tabs{background:var(--pink1)}
+.tab{color:#81756C}
+.tab.active{color:var(--text);box-shadow:0 2px 8px rgba(64,58,53,.09)}
+.card-link{color:var(--rose)}
+input,select,textarea{border-color:var(--pink2);background:var(--ivory)}
+input:focus,select:focus,textarea:focus{border-color:var(--rose);box-shadow:0 0 0 4px rgba(139,113,99,.13)}
+.progress{background:#EEE9E2}
+.progress i{background:var(--rose)}
+.progress.lav i{background:var(--lav2)}
+.progress.sage i{background:var(--sage2)}
+.ring circle:last-child{stroke:var(--rose)}
+.welcome{background:rgba(248,246,241,.92)}
+.welcome-card{background:var(--ivory);border-color:var(--line);box-shadow:0 24px 70px rgba(64,58,53,.12)}
+.welcome-card h1{color:var(--text)}
+.dashboard-tools{display:flex;justify-content:flex-end;margin:-5px 0 12px}
+.dashboard-tools .btn{min-height:40px}
+.dashboard-widget-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:16px;background:var(--ivory);cursor:pointer}
+.dashboard-widget-row input{width:18px;height:18px;accent-color:var(--sage3)}
+.dashboard-widget-row span{flex:1}
+.journey-note{padding:10px 12px;border-radius:14px;background:rgba(255,254,252,.72);color:var(--muted)}
+.btn:focus-visible,.nav-item:focus-visible,.bn:focus-visible,.tab:focus-visible,.chip:focus-visible,.card-link:focus-visible{outline:3px solid rgba(139,113,99,.4);outline-offset:2px}
+@media(max-width:680px){
+  .dashboard-tools{margin:0 0 10px}
+  .dashboard-tools .btn{width:100%;min-height:44px}
+  .hero{background:linear-gradient(150deg,#FFFEFC,#F2ECE5)}
+  .bottom-nav{padding-top:7px}
+}
 </style>
 </head>
 <body>
 <aside class="sidebar" id="sidebar"></aside>
 <header class="topbar">
-  <div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
+  <div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Her gün, kendi ritminde</span></div></div>
   <div class="row" style="gap:6px">
     <button class="btn lav sm hidden" id="topTimerBtn" data-act="goStudyTimer" title="Aktif odak sayacı">⏱ 00:00</button>
     <button class="btn icon soft" data-act="go" data-page="water" title="Su takibi" aria-label="Su takibi">💧</button>
@@ -1214,15 +1275,15 @@ const NAV = [
 const NAV_EXTRA = [{p:"water",e:"💧",t:"Su Takibi"},{p:"skincare",e:"🧴",t:"Cilt Bakım Rutini"},{p:"exercise",e:"🏃",t:"Egzersiz"},{p:"settings",e:"⚙️",t:"Ayarlar"}];
 function renderNav() {
   const L = levelInfo();
-  $("#sidebar").innerHTML = `<div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
+  $("#sidebar").innerHTML = `<div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Her gün, kendi ritminde</span></div></div>
     ${UI.timer ? `<button class="btn lav sm mb-s" id="sideTimerBtn" data-act="goStudyTimer" style="margin:0 8px 8px;justify-content:center">⏱ Odak sayacı: 00:00</button>` : ""}
-    ${NAV.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span>${n.t}</div>`).join("")}
+    ${NAV.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span>${n.t}</button>`).join("")}
     <div class="nav-sep"></div>
-    ${NAV_EXTRA.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span>${n.t}</div>`).join("")}
+    ${NAV_EXTRA.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span>${n.t}</button>`).join("")}
     <div class="side-level"><div class="row between"><b style="font-family:var(--serif);color:#8a4766">Seviye ${L.level}</b><span class="tiny muted">${S.xp.total} XP</span></div>
       <div class="progress thin mt-s"><i style="width:${L.pct}%"></i></div><div class="tiny muted mt-s">Sonraki seviyeye ${L.toNext} XP 🌸</div>
       <div class="tiny muted mt-s">${stageInfo().e} ${stageInfo().name}</div></div>`;
-  $("#bottomNav").innerHTML = NAV.map(n => `<div class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana").replace("İlerlemem","İlerleme").replace("Günlüğüm","Günlük")}</span></div>`).join("");
+  $("#bottomNav").innerHTML = NAV.map(n => `<button type="button" class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana").replace("İlerlemem","İlerleme").replace("Günlüğüm","Günlük")}</span></button>`).join("");
   $$('.topbar [data-act="go"]').forEach(b => b.classList.toggle("active", b.dataset.page === UI.page));
   const tb = $("#topTimerBtn");
   if (tb) tb.classList.toggle("hidden", !UI.timer);
@@ -1231,6 +1292,10 @@ let lastPage = null;
 function render() {
   const fn = PAGES[UI.page] || PAGES.home;
   const v = $("#view"); v.innerHTML = fn();
+  if (UI.page === "home" && UI.homeTab === "today") {
+    const hidden = new Set(hiddenDashboardWidgets());
+    v.querySelectorAll("[data-widget]").forEach(widget => { widget.hidden = hidden.has(widget.dataset.widget); });
+  }
   if (lastPage !== UI.page) { v.classList.remove("view-anim"); void v.offsetWidth; v.classList.add("view-anim"); window.scrollTo({top: 0}); lastPage = UI.page; }
   renderNav();
   if (UI.timer) updateTimer();
@@ -1272,6 +1337,34 @@ function studyMin(k) { return S.study.filter(s => s.date === k).reduce((a, s) =>
 function mealsOn(k) { return S.meals.filter(m => m.date === k).sort((a, b) => (a.time || "").localeCompare(b.time || "")); }
 
 /* ---------------- ANA SAYFA ---------------- */
+const DASHBOARD_WIDGET_KEY = "bloom_dashboard_widgets_v1";
+const DASHBOARD_WIDGETS = [
+  {id: "water", label: "Su takibi"},
+  {id: "goals", label: "Günlük hedefler"},
+  {id: "routines", label: "Rutinlerim"},
+  {id: "skincare", label: "Cilt bakımı"},
+  {id: "nutrition", label: "Beslenme özeti"},
+  {id: "study", label: "Ders çalışma"},
+  {id: "movement", label: "Hareket ve adımlar"},
+  {id: "journey", label: "My Journey ve bahçe"},
+  {id: "reading", label: "Bugünün sayfası"}
+];
+function hiddenDashboardWidgets() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(DASHBOARD_WIDGET_KEY) || "[]");
+    return Array.isArray(stored) ? stored.filter(id => DASHBOARD_WIDGETS.some(widget => widget.id === id)) : [];
+  } catch (e) {
+    return [];
+  }
+}
+function openDashboardSettings() {
+  const hidden = new Set(hiddenDashboardWidgets());
+  openModal("Ana sayfanı düzenle", `<p class="small muted mb">Görmek istediğin alanları seç. Görevler ve günlük ilerleme her zaman görünür kalır; seçimin bu cihazda saklanır.</p>
+    <form data-form="dashboardWidgets" class="stack">
+      ${DASHBOARD_WIDGETS.map(widget => `<label class="dashboard-widget-row"><input type="checkbox" name="visible" value="${widget.id}" ${hidden.has(widget.id) ? "" : "checked"}><span>${widget.label}</span></label>`).join("")}
+      <div class="modal-foot"><button type="button" class="btn soft" data-act="closeModal">İptal</button><button type="submit" class="btn">Görünümü kaydet</button></div>
+    </form>`, {wide: true});
+}
 function curProfileInfo() {
   if (S && S.profile && S.profile.age) return S.profile;
   try {
@@ -1331,13 +1424,14 @@ function dayTypeMeta() {
   };
 }
 function pageHome() {
-  const k = today(), d = dayR(k), h = new Date().getHours(), dt = dayTypeMeta();
+  const k = today(), d = dayR(k), h = new Date().getHours(), dt = dayTypeMeta(), prof = curProfileInfo();
+  const name = (prof.name || (localStorage.getItem("bloom_user_name") || "").trim()).trim();
   const greet = h < 6 ? "İyi geceler" : h < 12 ? "Günaydın" : h < 18 ? "İyi günler" : "İyi akşamlar";
   const sunday = dow1(k) === 7;
   const soon = examsUpcoming(7);
   return `<section class="card hero">
       <span class="deco" style="right:24px;top:14px">🌸</span><span class="deco" style="right:90px;bottom:16px;animation-delay:-2s">🦋</span><span class="deco" style="right:180px;top:20px;animation-delay:-4s;font-size:16px">✨</span>
-      <div class="hero-grid"><div style="flex:1;min-width:240px"><div class="muted small" style="font-weight:700">${fmtLong(k)}</div><h1>${greet} Tuğba 🌷</h1>
+      <div class="hero-grid"><div style="flex:1;min-width:240px"><div class="muted small" style="font-weight:700">${fmtLong(k)}</div><h1>${greet}${name ? ` ${esc(name)}` : ""} 🌿</h1>
       <p class="motto">“${esc(motivation(k))}”</p></div>
       <div><div class="lbl" style="margin-bottom:6px">Bugün nasıl hissediyorsun?</div>${moodPicker(k)}</div></div>
       <div class="mode-row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}
@@ -1347,11 +1441,13 @@ function pageHome() {
     </section>
     ${sunday ? `<div class="banner" data-act="weekReport"><span class="bi">🌷</span><div class="grow"><b>Haftalık değerlendirmen hazır</b><div class="small muted">Bu hafta kendin için yaptığın küçük şeylere bir bakalım.</div></div><span class="card-link">Aç →</span></div>` : ""}
     ${soon.length ? `<div class="banner" data-act="go" data-page="school" style="background:linear-gradient(120deg,#fff4e2,var(--pink1))"><span class="bi">📅</span><div class="grow"><b>Yaklaşan sınav: ${esc(soon[0].name)}</b><div class="small muted">${esc(courseName(soon[0].courseId))} · ${fmtLong(soon[0].date)}</div></div>${countdown(soon[0].date)}</div>` : ""}
+    ${UI.homeTab === "today" ? `<div class="dashboard-tools"><button type="button" class="btn soft sm" data-act="dashboardCustomize" aria-label="Ana sayfada gösterilen kartları düzenle">☷ Ana sayfamı düzenle</button></div>` : ""}
     <div class="tabs">${[["today","Bugün"],["tomorrow","Yarın"],["week","Bu hafta"],["cal","Takvim"]].map(([t, l]) => `<div class="tab ${UI.homeTab === t ? "active" : ""}" data-act="homeTab" data-t="${t}">${l}</div>`).join("")}</div>
     ${({today: homeToday, tomorrow: homeTomorrow, week: homeWeek, cal: () => `<div class="card">${calendarHTML("day")}</div>`})[UI.homeTab]()}`;
 }
 function homeToday() {
   const k = today(), d = dayR(k), st = dayStats(k), L = levelInfo(), gi = stageInfo();
+  const caredForDays = weekDays(weekStart(k)).filter(day => day <= k && dayStats(day).done > 0).length;
   const nxt = nextRoutineTaskFor(k);
   const nextId = nxt && nxt.task ? nxt.task.id : null;
   const remaining = [...st.m.map(t => ({...t, list: "Sabah"})), ...st.e.map(t => ({...t, list: "Akşam"}))].filter(t => !d.checks[t.id]);
@@ -1379,34 +1475,35 @@ function homeToday() {
         ${remaining.slice(0, 7).map(t => checkRow({id: t.id, text: t.text, time: t.time || t.list, done: false, isNext: t.id === nextId})).join("")}
         ${remaining.length > 7 ? `<div class="small muted" style="padding:6px 10px">+${remaining.length - 7} görev daha · <span class="card-link" data-act="go" data-page="routines">gör</span></div>` : ""}</div>`
         : emptyBox("🌸", "Bugünkü tüm görevlerin tamam! Bu güzel enerjiyi kendine ayır.")}</div>
-    <div class="card c4"><h3>💧 Su<span class="sp"></span><span class="card-link" data-act="go" data-page="water">Detay →</span></h3>
+    <div class="card c4" data-widget="water"><h3>💧 Su<span class="sp"></span><span class="card-link" data-act="go" data-page="water">Detay →</span></h3>
       <div class="row" style="gap:16px;flex-wrap:nowrap">${glassHTML(k, true)}<div class="stack" style="gap:8px"><div><b style="font-family:var(--serif);font-size:22px;color:#4f8bab">${fmtMl(wt)}</b><div class="small muted">hedef ${fmtMl(S.settings.waterGoal)}</div></div>
       <div class="water-btns"><button class="btn water sm" data-act="addWater" data-ml="200">+200 ml</button><button class="btn water sm" data-act="addWater" data-ml="300">+300 ml</button></div></div></div></div>
-    <div class="card c4"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
-    <div class="card c4 tint-lav"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
+    <div class="card c4" data-widget="goals"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
+    <div class="card c4 tint-lav" data-widget="routines"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
       <div class="small row between"><b>${isSchool(k) ? dayTypeMeta().activeChip + " Sabah" : dayTypeMeta().offChip + " Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam &amp; Uyku Rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
       ${nxt ? `<div class="tiny mt" style="color:#7a3354"><b>⏰ Sıradaki:</b> ${esc(nxt.task.text)}${nxt.task.time ? ` (${esc(nxt.task.time)})` : ""}</div>` : `<div class="tiny muted mt">✨ Bugünkü tüm rutin adımları tamam!</div>`}
       <div class="small muted mt-s">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? dayTypeMeta().activeChip : dayTypeMeta().offChip}</div></div>
-    <div class="card c4 tint-pink"><h3>🧴 Cilt bakımım<span class="sp"></span><span class="card-link" data-act="go" data-page="skincare">Aç →</span></h3>
+    <div class="card c4 tint-pink" data-widget="skincare"><h3>🧴 Cilt bakımım<span class="sp"></span><span class="card-link" data-act="go" data-page="skincare">Aç →</span></h3>
       <div class="small row between"><b>☀️ Sabah Cilt Bakımı</b><span class="muted">${skMDone}/${skM.length}</span></div><div class="progress mt-s lav"><i style="width:${skM.length ? skMDone / skM.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam Cilt Bakımı</b><span class="muted">${skEDone}/${skE.length}</span></div><div class="progress mt-s"><i style="width:${skE.length ? skEDone / skE.length * 100 : 0}%"></i></div>
       ${nextSkinStep ? `<div class="row between mt" style="gap:6px;flex-wrap:nowrap"><div class="tiny" style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><b>Sıradaki:</b> ${esc(nextSkinStep.icon || "🧴")} ${esc(nextSkinStep.step)}</div><button class="btn sm soft" data-act="skinToggle" data-tab="${activeSkinTab}" data-id="${nextSkinStep.id}" style="flex-shrink:0">✓ Yaptım</button></div>` : `<div class="tiny muted mt">✨ Sabah ve akşam cilt bakımın tamamlandı!</div>`}
       <div class="tiny muted mt-s">${esc(prof.skinLabel || "Yaşa & cinsiyete özel cilt bakımı")}</div></div>
-    <div class="card c4 tint-sage"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
+    <div class="card c4 tint-sage" data-widget="nutrition"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
       <div class="stats"><div class="stat"><b>${meals.length}</b><span>öğün</span></div><div class="stat"><b>${veg}</b><span>sebzeli öğün</span></div>${meals.reduce((a, m) => a + (+m.cal || 0), 0) ? `<div class="stat"><b>${meals.reduce((a, m) => a + (+m.cal || 0), 0)}</b><span>kcal</span></div>` : ""}</div>
       <div class="small mt"><b class="muted">Protein:</b> ${prot.length ? esc(prot.slice(0, 4).join(", ")) : "<span class='muted'>henüz yok</span>"}</div>
       <div class="row mt"><button class="btn sage sm" data-act="mealForm">+ Öğün ekle</button><button class="btn ghost sm" data-act="suggestQuick">Bugün ne yesem? ✨</button></div></div>
-    <div class="card c4 tint-cream"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
+    <div class="card c4 tint-cream" data-widget="study"><h3>📚 Ders çalışma<span class="sp"></span><span class="card-link" data-act="go" data-page="school">Okulum →</span></h3>
       <div class="stats"><div class="stat"><b>${sm}</b><span>dk bugün</span></div><div class="stat"><b>${S.study.filter(s => s.date >= weekStart(k)).reduce((a, s) => a + (+s.minutes || 0), 0)}</b><span>dk bu hafta</span></div></div>
       ${ex ? `<div class="row mt" style="flex-wrap:nowrap">${countdown(ex.date)}<div class="small"><b>${esc(ex.name)}</b><div class="muted">${esc(courseName(ex.courseId))}</div></div></div>` : `<div class="small muted mt">Yaklaşan sınav yok 🌿</div>`}
       <div class="row mt"><button class="btn lav sm" data-act="studyForm">+ Çalışma kaydı</button></div></div>
-    <div class="card c4"><h3>👟 Hareket</h3>${moveBlock(k)}</div>
-    <div class="card c6 lift"><h3>🌳 Bahçemden<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Bahçeme git →</span></h3>
+    <div class="card c4" data-widget="movement"><h3>👟 Hareket</h3>${moveBlock(k)}</div>
+    <div class="card c6 lift" data-widget="journey"><h3>🌿 My Journey<span class="sp"></span><span class="card-link" data-act="go" data-page="garden">Yolculuğumu gör →</span></h3>
       <div class="garden-mini" data-act="go" data-page="garden">${gardenSVG()}</div>
-      <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">Bugünkü büyüme ${dayR(k).growth}/${DAILY_GROWTH} · 💧 ${Math.floor(S.garden.bank / 250)} damla</span></div>
-      <div class="progress thin sage mt-s"><i style="width:${gi.pct}%"></i></div></div>
-    <div class="card c6 tint-lav lift"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
+      <div class="row between small mt"><span><b>${gi.e} ${gi.name}</b></span><span class="muted">Seviye ${L.level} · ${S.xp.total} XP</span></div>
+      <div class="journey-note small mt-s">Bu hafta kendin için ${caredForDays} gün küçük adımlar attın. Bahçen ve alışkanlıkların senin temponda büyüyor.</div>
+      <div class="progress thin sage mt-s"><i style="width:${gi.pct}%"></i></div><div class="tiny muted mt-s">Bugünkü büyüme ${dayR(k).growth}/${DAILY_GROWTH} · 💧 ${Math.floor(S.garden.bank / 250)} damla</div></div>
+    <div class="card c6 tint-lav lift" data-widget="reading"><h3>📖 Bugünün Sayfası<span class="sp"></span><span class="tag lav">${esc(rd.cat)}</span></h3>
       <h4 style="font-size:19px;margin-bottom:8px">${esc(rd.title)}</h4><p class="read-prev">${esc(rd.p[0])}</p>
       <div class="row mt"><button class="btn sm" data-act="readOpen" data-id="${rd.id}">Oku 🌷</button><button class="btn soft sm" data-act="readMore">Bir tane daha oku</button>
       <button class="btn icon sm soft" data-act="fav" data-id="${rd.id}" title="Favorilere ekle">${S.favorites.includes(rd.id) ? "💗" : "🤍"}</button></div></div>
@@ -3919,7 +4016,8 @@ function shouldShowWelcome(k = today()) {
 }
 function showWelcome() {
   const ex = $("#welcomeScreen"); if (ex) ex.remove();
-  const k = today(), w = document.createElement("div");
+  const k = today(), w = document.createElement("div"), prof = curProfileInfo();
+  const name = (prof.name || (localStorage.getItem("bloom_user_name") || "").trim()).trim();
   w.className = "welcome"; w.id = "welcomeScreen";
   w.innerHTML = `<div class="welcome-card">
     <span class="wfloat" style="top:16px;left:22px">🌸</span>
@@ -3927,7 +4025,7 @@ function showWelcome() {
     <span class="wfloat" style="bottom:20px;left:28px;animation-delay:-4s">🌿</span>
     <span class="wfloat" style="bottom:24px;right:26px;animation-delay:-1s">✨</span>
     <div class="small muted" style="font-weight:700">${fmtLong(k)}</div>
-    <h1>Hoş geldin Tuğba 🌷</h1>
+    <h1>Hoş geldin${name ? ` ${esc(name)}` : ""} 🌿</h1>
     <p class="lead">Bugün kendin için küçük bir şey yapmaya ne dersin?</p>
     <p class="wtext">Burası kendin için kurduğun küçük dünya.<br>Burada mükemmel olmak zorunda değilsin.<br>Burada sadece büyümek, öğrenmek, iyileşmek ve kendine yeniden dönmek var.<br>Haydi, bugün birlikte küçük bir şey yapalım. 🌱</p>
     <p class="en">“Perfect days are not required. Small steps are enough.”</p>
@@ -4075,6 +4173,7 @@ document.addEventListener("click", ev => {
     case "setSchool": { const k = ds.k || today(); day(k).school = ds.v === "1"; save(); render(); break; }
     case "weekReport": openWeekReport(ds.ws || weekStart(today())); break;
     case "homeTab": UI.homeTab = ds.t; render(); break;
+    case "dashboardCustomize": openDashboardSettings(); break;
 
     case "toggleTask": {
       const k = today(), d = day(k), id = ds.id;
@@ -4642,6 +4741,17 @@ document.addEventListener("submit", ev => {
   const fd = new FormData(form), type = form.dataset.form, k = fd.get("k") || today();
 
   switch (type) {
+    case "dashboardWidgets": {
+      const visible = new Set(fd.getAll("visible"));
+      const hidden = DASHBOARD_WIDGETS.filter(widget => !visible.has(widget.id)).map(widget => widget.id);
+      try {
+        localStorage.setItem(DASHBOARD_WIDGET_KEY, JSON.stringify(hidden));
+      } catch (e) {
+        toast("Ana sayfa düzeni bu cihazda kaydedilemedi. Depolama alanını kontrol edip yeniden dene.");
+        break;
+      }
+      closeModal(); render(); toast("Ana sayfa düzenin kaydedildi 🌿"); break;
+    }
     case "addGoal": {
       const text = (fd.get("text") || "").trim(); if (!text) return;
       day(k).goals.push({id: uid(), text, done: false}); save(); render(); toast("Hedef eklendi 🎯"); break;
@@ -5264,6 +5374,8 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   }
   save();
   render();
+  const welcomeHeading = $("#welcomeScreen h1");
+  if (welcomeHeading) welcomeHeading.textContent = `Hoş geldin${profile.name ? ` ${profile.name}` : ""} 🌿`;
   if (!silent) {
     toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) okul günü, boş gün ve cilt bakım rutinleri yüklendi! 🌷`);
   }

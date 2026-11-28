@@ -1,5 +1,5 @@
 {
-  "name": "Bloom – Tuğba'nın Dünyası",
+  "name": "Bloom – Soft Living",
   "short_name": "Bloom",
   "description": "Kişisel yaşam, rutin, cilt bakımı, beslenme, egzersiz ve çalışma uygulaması",
   "lang": "tr",
@@ -7,8 +7,8 @@
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFF8FA",
-  "theme_color": "#FCEAF1",
+  "background_color": "#F8F6F1",
+  "theme_color": "#F8F6F1",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }

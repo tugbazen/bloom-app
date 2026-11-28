@@ -78,6 +78,13 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 - **iOS & Mobil Ergonomi:** iPhone 11 (`375×812`) ile iPhone 18 Pro Max (`440×956`) arasındaki tüm ekran boyutlarında yatay taşma (`horizontal overflow`) olmadan çalışır; `16px` input font boyutuyla iOS Safari otomatik yakınlaştırmasını engeller, çentik (`safe-area-inset`) ve alt sheet modal yapısını destekler.
 - **Anında PWA Güncellemesi:** `sw.js` ağ öncelikli (`network-first`, `cache: 'no-store'`) stratejiyle çalışır. Yeni bir sürüm yayınlandığında eski önbellekleri temizler ve **Ayarlar > Uygulamayı Şimdi Güncelle** butonuyla tek dokunuşla son sürüme geçiş sağlar.
 
+### 8. 🌿 Soft Living arayüzü & kişisel ana sayfa
+- **Sakin tasarım sistemi:** Krem, bej, adaçayı, taupe ve lavanta tonları; DM Serif Display başlıkları, Manrope arayüz metinleri, yumuşak kart yüzeyleri ve mobil güvenli alanlarla kullanılır. İnternet bağlantısı olmadığında sistem yazı tiplerine dönülür.
+- **Kişisel karşılama:** Onboarding'de kaydedilen isim ana sayfada ve karşılama ekranında kullanılır.
+- **Düzenlenebilir dashboard:** Ana sayfadaki su, hedef, rutin, cilt bakımı, beslenme, ders çalışma, hareket, My Journey ve günlük okuma kartları gösterilip gizlenebilir. Seçim cihazda ayrı bir arayüz tercihi olarak saklanır; mevcut uygulama verilerine veya yedekleme biçimine dokunmaz. Günlük ilerleme ve görevler daima görünür kalır.
+- **My Journey:** Bahçe büyümesini, XP seviyesini ve o hafta adım atılan günleri tek bir yaşam yolculuğu özetinde birleştirir.
+- **Erişilebilir navigasyon:** Masaüstü yan menüsü ve mobil alt navigasyon gerçek klavye erişimli düğmeler ve aktif sayfa durumu kullanır.
+
 ---
 
 ## 🚀 GitHub Pages ile Yayınlama
