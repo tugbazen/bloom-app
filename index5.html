@@ -1478,7 +1478,7 @@ function pageRoutines() {
   const altKey = schoolActive ? "off" : "school";
   const altList = filterMode(S.routines[altKey] || [], k);
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
   const schoolHeading = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
   const offHeading = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
@@ -1494,7 +1494,7 @@ function pageRoutines() {
       <div class="stack" style="gap:8px"><div class="lbl">Enerji Modu</div><div class="row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div></div></div>
       <div class="divider"></div>
       <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel} · Okul günü, Boş gün ve Akşam rutinleri birlikte güncellenir)</div>
-      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.filter(g => g.k === activeGk).map(g => `<span class="chip on" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
       ${nxt ? `<div class="row between mt" style="padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.78);border:1px solid var(--pink3)"><div class="small"><b>⏰ Sıradaki Adımın (${esc(nxt.label)}):</b> ${esc(nxt.task.text)}${nxt.task.time ? ` <span class="tag lav">${esc(nxt.task.time)}</span>` : ""}</div><button class="btn sm" data-act="toggleTask" data-id="${nxt.task.id}">✓ Tamamla</button></div>` : `<div class="note-soft mt">✨ Bugünkü tüm sabah ve akşam rutin adımlarını tamamladın!</div>`}
       <div class="note-soft mt-s">${MODES[d.mode].d}</div></div>
     ${UI.routineEdit ? routineEditor() : `<div class="grid">
@@ -1528,7 +1528,7 @@ function pageRoutines() {
 const LVL_LABEL = {1: "Her gün (dinlenme gününde de)", 2: "Yoğun günde de göster", 3: "Sadece normal günde"};
 function routineEditor() {
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const schoolTitle = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
   const offTitle = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
   const eveningTitle = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
@@ -3362,7 +3362,7 @@ function pageSkincare() {
   const doneCount = tab === "evening" ? eDone : mDone;
   const pct = list.length ? Math.round(doneCount / list.length * 100) : 0;
   const prof = curProfileInfo();
-  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const activeGk = ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
   const skinBadge = prof.skinLabel || `${activeGk} Yaş Cilt Bakımı`;
 
@@ -3375,7 +3375,7 @@ function pageSkincare() {
       </div>
       <div class="divider"></div>
       <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre cilt bakım rutini seç (${esc(skinBadge)} · ${gLabel})</div>
-      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.filter(g => g.k === activeGk).map(g => `<span class="chip on" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "morning" ? "active" : ""}" data-act="skinTab" data-t="morning">☀️ Sabah Rutini (${mDone}/${mList.length})</div>
@@ -3509,6 +3509,81 @@ const EX_PRESETS = {
     }
   }
 };
+const AGE_EXERCISE_PRESETS = {
+  "10-17": {
+    n:"Gençler İçin Dengeli Hareket", e:"🎒",
+    d:"Kısa yürüyüş, eğlenceli hareket ve esnemeyi dinlenme günleriyle dengeler.",
+    week:[
+      {name:"Keyifli tempolu yürüyüş",type:"yuruyus",min:20,note:"Rahat konuşma temposu"},
+      {name:"Dans veya sevdiğin aktif oyun",type:"kardiyo",min:20,note:"Eğlenceli ve zorlamayan tempo"},
+      null,
+      {name:"Mat pilates ve esneme",type:"pilates",min:20,note:"Kontrollü, rahat hareketler"},
+      {name:"Açık havada yürüyüş",type:"yuruyus",min:25,note:"Kendini iyi hissettiğin tempo"},
+      {name:"Yumuşak yoga",type:"yoga",min:20,note:"Nefes ve mobilite"},
+      null
+    ]
+  },
+  "18-24": {
+    n:"Genç Yetişkin Dengeli Programı", e:"🎓",
+    d:"Yürüyüş, pilates, kuvvet ve mobiliteyi haftaya dengeli yayar.",
+    week:[
+      {name:"Tempolu yürüyüş",type:"yuruyus",min:30,note:"Orta tempo"},
+      {name:"Full body pilates",type:"pilates",min:30,note:"Kontrollü core ve duruş çalışması"},
+      {name:"Direnç bandı çalışması",type:"direnc",min:25,sets:"2x10",note:"Hafif-orta direnç"},
+      null,
+      {name:"Yürüyüş veya bisiklet",type:"bisiklet",min:30,note:"Konforlu tempo"},
+      {name:"Yoga ve esneme",type:"yoga",min:25,note:"Aktif toparlanma"},
+      null
+    ]
+  },
+  "25-34": {
+    n:"Aktif Yaşam Dengeli Programı", e:"💼",
+    d:"İş temposuna uyarlanabilen kuvvet, yürüyüş ve toparlanma günleri.",
+    week:[
+      {name:"Tempolu yürüyüş",type:"yuruyus",min:30,note:"Orta tempo"},
+      {name:"Pilates ve core",type:"pilates",min:30,note:"Kontrollü tekrarlar"},
+      {name:"Direnç bandı çalışması",type:"direnc",min:30,sets:"3x10",note:"Hafif-orta direnç"},
+      null,
+      {name:"Bisiklet veya tempolu yürüyüş",type:"bisiklet",min:30,note:"Konforlu tempo"},
+      {name:"Mobilite ve yoga",type:"yoga",min:25,note:"Toparlanma ve esneklik"},
+      null
+    ]
+  },
+  "35-49": {
+    n:"Denge ve Mobilite Programı", e:"🌿",
+    d:"Düşük darbeli hareket, kuvvet ve esnekliği dinlenme aralarıyla birleştirir.",
+    week:[
+      {name:"Rahat tempolu yürüyüş",type:"yuruyus",min:25,note:"Konuşabileceğin tempo"},
+      {name:"Mat pilates ve denge",type:"pilates",min:25,note:"Kontrollü hareketler"},
+      null,
+      {name:"Hafif direnç bandı",type:"direnc",min:20,sets:"2x10",note:"Rahat aralıkta çalış"},
+      {name:"Yumuşak yoga ve mobilite",type:"yoga",min:20,note:"Eklem dostu akış"},
+      {name:"Açık havada yürüyüş",type:"yuruyus",min:30,note:"Kendi rahat tempon"},
+      null
+    ]
+  },
+  "50+": {
+    n:"50+ İçin Nazik Hareket Programı", e:"🌺",
+    d:"Düşük darbeli yürüyüş, esneme ve hafif kuvvet egzersizleri içerir.",
+    week:[
+      {name:"Rahat tempolu yürüyüş",type:"yuruyus",min:20,note:"Güvenli ve rahat parkur"},
+      {name:"Sandalyede esneme ve mobilite",type:"esneme",min:15,note:"Ağrısız hareket aralığında"},
+      null,
+      {name:"Hafif direnç bandı ve denge",type:"direnc",min:15,sets:"2x8",note:"Destek alarak, rahat tempoda"},
+      {name:"Yumuşak yoga",type:"yoga",min:20,note:"Nazik nefes ve esneme"},
+      {name:"Kısa açık hava yürüyüşü",type:"yuruyus",min:25,note:"Kendini iyi hissettiğin tempo"},
+      null
+    ]
+  }
+};
+function ageExercisePreset(age) {
+  const preset = AGE_EXERCISE_PRESETS[ageGroupKeyFor(age)];
+  const plan = Object.fromEntries(preset.week.map((exercise, index) => [
+    index + 1,
+    exercise ? [exercise] : []
+  ]));
+  return {n: preset.n, e: preset.e, d: preset.d, plan};
+}
 const exType = k => EX_TYPES[k] || EX_TYPES.yuruyus;
 const exKcal = (type, min) => Math.round((+min || 0) * exType(type).kcalMin);
 const exLogsOn = k => (S.exercise.logs || []).filter(l => l.date === k);
@@ -3635,9 +3710,14 @@ function exWeekView(ws) {
     </div>`;
 }
 function exPlanView() {
+  const age = curProfileInfo().age || 21;
+  const ageGroup = ageGroupKeyFor(age);
+  const agePreset = ageExercisePreset(age);
   return `<div class="card mb tint-pink">
       <h3>✨ Hazır haftalık program şablonları</h3>
       <p class="small muted mb">İstersen tek dokunuşla bir program yükleyip kendi temposuna göre gün gün düzenleyebilirsin.</p>
+      <div class="row mb-s"><button class="btn sage sm" data-act="exLoadAgePreset">✨ Yaşıma uygun programı yükle (${ageGroup} yaş)</button></div>
+      <p class="tiny muted">${esc(agePreset.d)}</p>
       <div class="row" style="gap:8px">${Object.entries(EX_PRESETS).map(([k2, o]) => `<button class="btn soft sm" data-act="exLoadPreset" data-k="${k2}">${o.e} ${esc(o.n)}</button>`).join("")}</div>
     </div>
     <div class="grid">${[1,2,3,4,5,6,7].map(d1 => {
@@ -3941,8 +4021,8 @@ document.addEventListener("click", ev => {
     }
     case "rDel": ev.stopPropagation(); S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
     case "applyAgeRoutine": {
-      const targetAge = +ds.age || 21;
       const prof = curProfileInfo();
+      const targetAge = +prof.age || +ds.age || 21;
       const gender = prof.gender || "female";
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
@@ -4245,6 +4325,16 @@ document.addEventListener("click", ev => {
         S.exercise.plan = np;
         save(); render(); toast(`${pr.e} "${pr.n}" programı yüklendi!`);
       }, "Programı yükle");
+      break;
+    }
+    case "exLoadAgePreset": {
+      const pr = ageExercisePreset(curProfileInfo().age || 21);
+      confirmBox(`"${pr.n}" haftalık egzersiz programı yüklensin mi? Mevcut programın yenilenecek (geçmiş kayıtların korunur).`, () => {
+        const np = {1:[],2:[],3:[],4:[],5:[],6:[],7:[]};
+        [1,2,3,4,5,6,7].forEach(i => np[i] = (pr.plan[i] || []).map(x => exItem(uid(), x.name, x.type, x.min, x.sets || "", x.note || "")));
+        S.exercise.plan = np;
+        save(); render(); toast(`${pr.e} "${pr.n}" programı yüklendi!`);
+      }, "Yaşıma uygun programı yükle");
       break;
     }
     case "saveCustomFood": {
