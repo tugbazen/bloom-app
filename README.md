@@ -69,6 +69,7 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 
 ### 6. 💧 Su Takibi, 👟 Egzersiz & 🌳 Dinamik Bahçe
 - **Su Takibi & Bahçe Damlaları:** Günlük su hedefi, hızlı `+100 / +200 / +300 / +500 ml` butonları; içilen her `250 ml` su bahçe için `1 su damlası` kazandırır.
+- **Kişiye Uygun Egzersiz Programı:** Yaş grubu ve cinsiyet profiline göre haftalık plan ile dengeli, kuvvet/kardiyo ve nazik hareket şablonları uyarlanır; kullanıcı kendi planını düzenlediğinde bu plan korunur.
 - **Yaşayan Bahçe:** Görevlerden kazanılan XP ve su damlalarıyla Tohum'dan Çiçek Açmış Ağaç'a kadar 6 büyüme aşaması; günün saatine göre (Sabah, Öğle, Gün Batımı, Gece) otomatik değişen gökyüzü ve açılıp gizlenebilen bahçe öğeleri.
 
 ---
