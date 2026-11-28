@@ -426,6 +426,120 @@
 
   window.__bloomGetRecommendedSkincare = getRecommendedSkincare;
 
+  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+) ve cinsiyet için haftalık egzersiz programı
+  function getRecommendedExercise(ageNum, gender) {
+    const age = Math.max(10, Math.min(99, Number(ageNum) || 21));
+    const g = gender || "female";
+    const isMale = g === "male";
+    const ex = (id, name, type, min, sets = "", note = "") => ({ id, name, type, min, sets, note });
+
+    let exLabel = "18–24 Yaş · Pilates, Sıkılaşma & Kardiyo Dengesi";
+    let weeklyGoalMin = 150;
+    let plan = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] };
+
+    if (age <= 17) {
+      exLabel = isMale
+        ? "10–17 Yaş · Gençlik, Atletik Koordinasyon & Spor Programı"
+        : "10–17 Yaş · Gençlik, Esneklik, Koordinasyon & Aktif Hareket";
+      weeklyGoalMin = 180;
+      plan = {
+        1: [ex("ex_10_1", isMale ? "Tempolu yürüyüş & dinamik ısınma" : "Tempolu yürüyüş & duruş esnetme", "yuruyus", 30, "", "Okul sonrası taze hava & enerji")],
+        2: [ex("ex_10_2", isMale ? "Vücut ağırlığı kuvvet & koordinasyon" : "Core, denge & mat pilates akışı", isMale ? "direnc" : "pilates", 25, isMale ? "3x12" : "", "Omurga ve duruş gelişimi")],
+        3: [ex("ex_10_3", "Ders arası boyun, sırt & bacak esnetme", "esneme", 20, "", "Masa başı yorgunluğunu azalt")],
+        4: [ex("ex_10_4", isMale ? "Basketbol / futbol / aktif kardiyo veya bisiklet" : "Dans / kardiyo veya bisiklet", "kardiyo", 35, "", "Kalp ritmini yükselten eğlenceli hareket")],
+        5: [ex("ex_10_5", "Tüm vücut mobilite & esneklik", "esneme", 25, "", "Haftanın okul yorgunluğunu at")],
+        6: [ex("ex_10_6", "Hafta sonu açık hava yürüyüşü veya yüzme", "yuzme", 45, "", "Arkadaşlarla veya aileyle aktif hafta sonu")],
+        7: []
+      };
+    } else if (age <= 24) {
+      exLabel = isMale
+        ? "18–24 Yaş · Kuvvet, Kardiyo & Atletik Mobilite Programı"
+        : "18–24 Yaş · Pilates, Sıkılaşma & Kardiyo Dengesi";
+      weeklyGoalMin = isMale ? 180 : 150;
+      plan = isMale ? {
+        1: [ex("ex_18m_1", "Üst vücut & core kuvvet antrenmanı", "direnc", 35, "4x12", "Göğüs, sırt, omuz ve core odaklı")],
+        2: [ex("ex_18m_2", "Tempolu kardiyo yürüyüşü / hafif koşu", "kardiyo", 30, "", "Kondisyon ve zihinsel odak")],
+        3: [ex("ex_18m_3", "Alt vücut kuvvet & bacak/kalça mobilite", "direnc", 35, "4x10", "Squat, lunge ve esneklik")],
+        4: [ex("ex_18m_4", "Omuz, sırt & kalça mobilite akışı", "esneme", 20, "", "Amfi/masa başı duruş düzeltme")],
+        5: [ex("ex_18m_5", "Fonksiyonel tüm vücut direnç & core", "direnc", 30, "3x15", "Hafta kapanışı güç antrenmanı")],
+        6: [ex("ex_18m_6", "Açık hava yürüyüşü, bisiklet veya yüzme", "bisiklet", 40, "", "Hafta sonu aktif yenilenme")],
+        7: []
+      } : {
+        1: [ex("ex_18f_1", "Full body mat pilates & duruş", "pilates", 30, "", "Core ve sıkılaşma odaklı")],
+        2: [ex("ex_18f_2", "Tempolu açık hava yürüyüşü", "yuruyus", 35, "", "Kulaklıkla enerjik yürüyüş")],
+        3: [ex("ex_18f_3", "Alt beden & direnç bandı antrenmanı", "direnc", 25, "3x12", "Bacak, kalça ve merkez bölge")],
+        4: [ex("ex_18f_4", "Yoga & sırt/omuz esneme akışı", "yoga", 20, "", "Ders temposunda aktif dinlenme")],
+        5: [ex("ex_18f_5", "Alt beden pilates & dolaşım akışı", "pilates", 30, "", "Denge ve esneklik")],
+        6: [ex("ex_18f_6", "Hafta sonu yürüyüşü, dans veya yüzme", "kardiyo", 35, "", "Keyifli hafta sonu hareketi")],
+        7: []
+      };
+    } else if (age <= 34) {
+      exLabel = isMale
+        ? "25–34 Yaş · Fonksiyonel Kuvvet, Postür & Kardiyo Programı"
+        : "25–34 Yaş · Pilates, Direnç & Masa Başı Mobilite Programı";
+      weeklyGoalMin = 150;
+      plan = isMale ? {
+        1: [ex("ex_25m_1", "Fonksiyonel kuvvet & direnç antrenmanı", "direnc", 35, "3x12", "Kas kütlesi ve metabolik hız")],
+        2: [ex("ex_25m_2", "Mesai sonrası tempolu yürüyüş / kardiyo", "yuruyus", 30, "", "İş stresini atan akşam yürüyüşü")],
+        3: [ex("ex_25m_3", "Masa başı karşıtı sırt, boyun & core mobilite", "esneme", 20, "", "Omurga sağlığı ve duruş")],
+        4: [ex("ex_25m_4", "Üst/alt vücut kuvvet & core", "direnc", 35, "3x12", "Dengeli güç ve dayanıklılık")],
+        5: [ex("ex_25m_5", "Esnetme & nefes toparlanma akışı", "yoga", 20, "", "Haftanın yorgunluğunu bırak")],
+        6: [ex("ex_25m_6", "Hafta sonu doğa yürüyüşü, yüzme veya bisiklet", "yuzme", 40, "", "Açık hava & kardiyo")],
+        7: []
+      } : {
+        1: [ex("ex_25f_1", "Pilates & core güçlendirme", "pilates", 30, "", "Postür ve sıkılaşma")],
+        2: [ex("ex_25f_2", "Mesai sonrası tempolu yürüyüş", "yuruyus", 30, "", "Dolaşım ve zihinsel ferahlama")],
+        3: [ex("ex_25f_3", "Direnç bandı ile tüm vücut kuvvet", "direnc", 25, "3x12", "Kas tonusu ve metabolizma desteği")],
+        4: [ex("ex_25f_4", "Boyun, omuz & kalça açıcı akşam yogası", "yoga", 25, "", "Masa başı gerginliğini çöz")],
+        5: [ex("ex_25f_5", "Alt beden pilates & lenfatik esneme", "pilates", 25, "", "Bacakları hafifleten akış")],
+        6: [ex("ex_25f_6", "Hafta sonu sahil/doğa yürüyüşü veya yüzme", "yuruyus", 40, "", "Hafta sonu taze enerji")],
+        7: []
+      };
+    } else if (age <= 49) {
+      exLabel = isMale
+        ? "35–49 Yaş · Kas Koruma, Metabolik Kardiyo & Eklem Mobilitesi"
+        : "35–49 Yaş · Direnç, Pilates & Eklem/Sırt Sağlığı Programı";
+      weeklyGoalMin = 150;
+      plan = isMale ? {
+        1: [ex("ex_35m_1", "Kas koruyucu direnç & kuvvet antrenmanı", "direnc", 30, "3x10", "Büyük kas grupları ve core")],
+        2: [ex("ex_35m_2", "Tempolu kardiyo yürüyüşü", "yuruyus", 35, "", "Kalp-damar sağlığı için sabit tempo")],
+        3: [ex("ex_35m_3", "Omurga, kalça ve omuz eklem mobilitesi", "esneme", 20, "", "Eklem açıklığı ve bel koruması")],
+        4: [ex("ex_35m_4", "Fonksiyonel kuvvet & denge", "direnc", 30, "3x10", "Sırt ve bacak kuvveti")],
+        5: [ex("ex_35m_5", "Stres azaltıcı esneme & nefes", "yoga", 20, "", "Sinir sistemini dinlendir")],
+        6: [ex("ex_35m_6", "Hafta sonu doğa yürüyüşü veya yüzme", "yuzme", 40, "", "Eklem dostu tam vücut hareketi")],
+        7: []
+      } : {
+        1: [ex("ex_35f_1", "Kemik & kas destekli direnç / bant egzersizi", "direnc", 30, "3x12", "Kuvvet ve sıkılaşma")],
+        2: [ex("ex_35f_2", "Tempolu yürüyüş & dolaşım akışı", "yuruyus", 35, "", "Kalp ve dolaşım sağlığı")],
+        3: [ex("ex_35f_3", "Omurga dostu mat pilates", "pilates", 25, "", "Core, bel ve pelvik denge")],
+        4: [ex("ex_35f_4", "Eklem mobilite & derin esneme", "esneme", 20, "", "Boyun, sırt ve kalça rahatlatma")],
+        5: [ex("ex_35f_5", "Yoga & nefes akışı", "yoga", 25, "", "Hormonal denge ve gevşeme")],
+        6: [ex("ex_35f_6", "Hafta sonu uzun yürüyüş veya yüzme", "yuruyus", 40, "", "Açık havada zindelik")],
+        7: []
+      };
+    } else {
+      exLabel = "50+ Yaş · Eklem Dostu Yürüyüş, Denge, Dolaşım & Esneme Programı";
+      weeklyGoalMin = 140;
+      plan = {
+        1: [ex("ex_50_1", "Eklem dostu sabah yürüyüşü", "yuruyus", 30, "", "Rahat nefes temposunda açık hava")],
+        2: [ex("ex_50_2", "Denge, duruş & hafif bant/vücut ağırlığı", "direnc", 20, "2x10", "Kas ve kemik gücünü koruma")],
+        3: [ex("ex_50_3", "Boyun, bel, kalça ve bacak esnetme", "esneme", 20, "", "Eklem hareketliliğini koru")],
+        4: [ex("ex_50_4", "Tempolu park yürüyüşü veya su yürüyüşü/yüzme", "yuzme", 30, "", "Eklemlere yük bindirmeden kardiyo")],
+        5: [ex("ex_50_5", "Nefes, denge & yumuşak yoga/mobilite", "yoga", 20, "", "Esneklik ve huzurlu gevşeme")],
+        6: [ex("ex_50_6", "Hafta sonu doğa / sahil yürüyüşü", "yuruyus", 35, "", "Keyifli hafta sonu zindeliği")],
+        7: []
+      };
+    }
+
+    return {
+      exLabel,
+      weeklyGoalMin,
+      plan
+    };
+  }
+
+  window.__bloomGetRecommendedExercise = getRecommendedExercise;
+
   function escHtml(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
@@ -593,6 +707,7 @@
 
     const initRec = getRecommendedRoutines(initAge, initGender);
     const initSkRec = getRecommendedSkincare(initAge, initGender);
+    const initExRec = getRecommendedExercise(initAge, initGender);
 
     const screen = document.createElement("section");
     screen.className = "bloom-onboarding";
@@ -622,7 +737,7 @@
             </div>
           </div>
           <div class="bo-preview-badge" id="boPreviewBadge">
-            ✨ Günlük rutin: <b>${escHtml(initRec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(initSkRec.skinLabel)}</b>
+            ✨ Günlük rutin: <b>${escHtml(initRec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(initSkRec.skinLabel)}</b><br>💪 Egzersiz: <b>${escHtml(initExRec.exLabel)}</b>
           </div>
           <div class="bloom-onboarding__error" id="bloom-onboarding-error" aria-live="polite"></div>
           <div class="bo-foot">
@@ -647,7 +762,8 @@
     function updateBadge() {
       const rec = getRecommendedRoutines(ageInp.value, curGender);
       const skRec = getRecommendedSkincare(ageInp.value, curGender);
-      badgeEl.innerHTML = `✨ Günlük rutin: <b>${escHtml(rec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(skRec.skinLabel)}</b>`;
+      const exRec = getRecommendedExercise(ageInp.value, curGender);
+      badgeEl.innerHTML = `✨ Günlük rutin: <b>${escHtml(rec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(skRec.skinLabel)}</b><br>💪 Egzersiz: <b>${escHtml(exRec.exLabel)}</b>`;
     }
 
     ageInp.addEventListener("input", updateBadge);
@@ -686,6 +802,7 @@
 
       const rec = getRecommendedRoutines(age, curGender);
       const skRec = getRecommendedSkincare(age, curGender);
+      const exRec = getRecommendedExercise(age, curGender);
       const profile = {
         name,
         age,
@@ -696,7 +813,10 @@
         offTitle: rec.offTitle,
         eveningTitle: rec.eveningTitle,
         skinLabel: skRec.skinLabel,
+        exLabel: exRec.exLabel,
+        weeklyGoalMin: exRec.weeklyGoalMin,
         skinApplied: true,
+        exerciseApplied: true,
         distinctDayRoutinesV1: true,
         updatedAt: Date.now()
       };
@@ -713,7 +833,7 @@
 
       if (typeof window.__bloomApplyOnboardingProfile === "function") {
         try {
-          window.__bloomApplyOnboardingProfile(profile, rec.school, rec.off, rec.evening, skRec);
+          window.__bloomApplyOnboardingProfile(profile, rec.school, rec.off, rec.evening, skRec, false, exRec);
         } catch (e) {}
       }
 
@@ -737,20 +857,24 @@
   };
 
   if (savedProfile && savedProfile.name && savedProfile.age && savedProfile.gender) {
-    if (!savedProfile.distinctDayRoutinesV1 && typeof window.__bloomApplyOnboardingProfile === "function") {
+    if ((!savedProfile.distinctDayRoutinesV1 || !savedProfile.exerciseApplied) && typeof window.__bloomApplyOnboardingProfile === "function") {
       try {
         const rec = getRecommendedRoutines(savedProfile.age, savedProfile.gender);
         const skRec = getRecommendedSkincare(savedProfile.age, savedProfile.gender);
+        const exRec = getRecommendedExercise(savedProfile.age, savedProfile.gender);
         savedProfile.groupKey = rec.groupKey;
         savedProfile.groupLabel = rec.groupLabel;
         savedProfile.schoolTitle = rec.schoolTitle;
         savedProfile.offTitle = rec.offTitle;
         savedProfile.eveningTitle = rec.eveningTitle;
         savedProfile.skinLabel = skRec.skinLabel;
+        savedProfile.exLabel = exRec.exLabel;
+        savedProfile.weeklyGoalMin = exRec.weeklyGoalMin;
         savedProfile.skinApplied = true;
+        savedProfile.exerciseApplied = true;
         savedProfile.distinctDayRoutinesV1 = true;
         localStorage.setItem(PROFILE_KEY, JSON.stringify(savedProfile));
-        window.__bloomApplyOnboardingProfile(savedProfile, rec.school, rec.off, rec.evening, skRec, true);
+        window.__bloomApplyOnboardingProfile(savedProfile, rec.school, rec.off, rec.evening, skRec, true, exRec);
       } catch (e) {}
     } else if (!savedProfile.skinApplied && typeof window.__bloomApplySkincareProfile === "function") {
       try {
