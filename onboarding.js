@@ -101,7 +101,9 @@
         z-index: 10000;
         display: grid;
         place-items: center;
-        padding: 24px;
+        padding: calc(20px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px));
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
         background: radial-gradient(800px 600px at 20% 10%, #fde9f1, transparent 70%),
                     radial-gradient(700px 600px at 90% 90%, #efe6f8, transparent 70%),
                     linear-gradient(160deg, #fff8fa, #fdf1f5 50%, #f6f1fa);

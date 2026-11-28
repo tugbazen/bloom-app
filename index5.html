@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.2.0">
+<meta name="bloom-version" content="2.3.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -362,42 +362,88 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
 @keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
 @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
 
-/* ---------- RESPONSIVE ---------- */
+/* ---------- RESPONSIVE (iPhone 11 – iPhone 18 Mobile UX) ---------- */
+.btn,.bn,.nav-item,.tab,.chip,.mood,.check-item,.cday,.wday,.skin-step,.card-link{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.topbar .btn.icon.active{background:linear-gradient(135deg,var(--pink2),var(--lav));color:#8a4766;box-shadow:0 3px 10px rgba(214,139,170,.28)}
 @media (max-width:1100px){
   .c3{grid-column:span 6}.c4{grid-column:span 6}.c5,.c7{grid-column:span 12}.c8{grid-column:span 12}
 }
 @media (max-width:900px){
   .sidebar{display:none}
-  .topbar{display:flex}
-  .bottom-nav{display:flex}
-  .main{margin-left:0;padding:16px 14px 100px}
-  .hero{padding:20px}
-  .hero h1{font-size:26px}
-  .page-head h1{font-size:25px}
+  .topbar{display:flex;padding:calc(10px + env(safe-area-inset-top,0px)) calc(14px + env(safe-area-inset-right,0px)) 10px calc(14px + env(safe-area-inset-left,0px))}
+  .topbar .btn.icon{width:38px;height:38px;border-radius:13px;font-size:17px}
+  .bottom-nav{display:flex;padding:6px calc(6px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(6px + env(safe-area-inset-left,0px));gap:2px}
+  .bn{min-height:48px;justify-content:center;padding:4px 1px;border-radius:14px}
+  .bn span:last-child{display:block;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
+  .main{margin-left:0;padding:14px calc(14px + env(safe-area-inset-right,0px)) calc(98px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px))}
+  .hero{padding:18px 16px}
+  .hero h1{font-size:25px}
+  .page-head{gap:10px;margin-bottom:14px}
+  .page-head h1{font-size:24px}
+  #toasts{top:calc(14px + env(safe-area-inset-top,0px));max-width:94vw}
+  input:not([type=checkbox]):not([type=file]),select,textarea{font-size:16px!important}
 }
 @media (max-width:680px){
-  .grid{gap:14px}
+  .grid{gap:12px}
   .c3,.c4,.c5,.c6,.c7,.c8{grid-column:span 12}
   .form-grid{grid-template-columns:1fr}
-  .card{padding:16px;border-radius:20px}
-  .modal-bg{align-items:flex-start;padding:12px 10px 16px}
-  .modal{border-radius:24px;max-height:calc(100% - 8px);padding:0}
-  .modal-head{padding:14px 16px 10px}
-  .modal-body{padding:14px 16px 20px}
-  .welcome-card{padding:26px 18px}
-  .welcome-card h1{font-size:29px}
-  .mood{min-width:56px;padding:6px 6px}
-  .mood .me{font-size:23px}
-  .week-strip{grid-template-columns:repeat(4,1fr)}
+  .card{padding:15px;border-radius:20px}
+  .card h3{font-size:17px;flex-wrap:wrap}
+  .hero-grid{flex-direction:column;gap:12px}
+  .hero-grid>div{width:100%;min-width:0!important}
+  .mood-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;width:100%}
+  .mood{min-width:0;padding:8px 3px;border-radius:14px}
+  .mood .me{font-size:22px}
+  .mood span{font-size:11px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .mode-row{gap:6px;margin-top:12px}
+  .mode-row .chip{padding:6px 11px;font-size:12.5px}
+  .tabs{display:flex;width:100%;padding:4px;margin-bottom:14px;-webkit-overflow-scrolling:touch}
+  .tab{flex:1 0 auto;text-align:center;padding:8px 12px;font-size:13.5px}
+  .page-head>.row{width:100%}
+  .page-head>.row>.btn{flex:1;min-height:42px}
+  .modal-bg{align-items:flex-end;padding:calc(12px + env(safe-area-inset-top,0px)) 0 0}
+  .modal{border-radius:26px 26px 0 0;max-width:100%;max-height:calc(100vh - 14px);max-height:calc(100dvh - 14px - env(safe-area-inset-top,0px));padding:0}
+  .modal-head{padding:15px 16px 11px}
+  .modal-head h2{font-size:19px}
+  .modal-body{padding:14px 16px calc(22px + env(safe-area-inset-bottom,0px))}
+  .modal-foot{gap:8px}
+  .modal-foot .btn{flex:1;min-height:44px}
+  .welcome{padding:calc(16px + env(safe-area-inset-top,0px)) 14px calc(20px + env(safe-area-inset-bottom,0px))}
+  .welcome-card{padding:24px 16px;border-radius:26px}
+  .welcome-card h1{font-size:27px}
+  .welcome-card .lead{font-size:16px}
+  .welcome-card .btn.big{width:100%;min-height:48px}
+  .week-strip{grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+  .wday{padding:8px 2px;border-radius:14px}
+  .wday .dn{font-size:11px}
+  .wday .dd{font-size:17px}
   .plan-grid{grid-template-columns:1fr 1fr}
   .plan-grid .ph{display:none}
   .plan-grid .pd{grid-column:1/-1;margin-top:8px}
-  .cday{min-height:52px;padding:4px}
+  .cal{gap:4px}
+  .cday{min-height:50px;padding:4px;border-radius:11px}
+  .cday .n{font-size:12px}
   .cday .cm{font-size:14px}
-  .ring{width:118px;height:118px}
-  .ring svg{width:118px;height:118px}
-  .item-card .ph{width:64px;height:64px}
+  .ring{width:110px;height:110px}
+  .ring svg{width:110px;height:110px}
+  .ring .ring-txt b{font-size:26px}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .stat{padding:10px 12px}
+  .stat b{font-size:19px}
+  .item-card{padding:12px;gap:10px}
+  .item-card .ph{width:58px;height:58px;font-size:24px}
+  .skin-step,.ex-row{padding:11px 12px;gap:10px}
+  .banner{padding:12px 14px;gap:10px}
   form.row{flex-wrap:wrap!important}
+}
+@media (max-width:395px){
+  .main{padding-left:11px;padding-right:11px}
+  .card{padding:13px}
+  .bn{font-size:9.8px}
+  .bn .ni{font-size:18.5px}
+  .mood span{font-size:10.2px}
+  .topbar .brand b{font-size:18px}
+  .topbar .brand span{font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
@@ -664,7 +710,7 @@ const BADGES = [
 "use strict";
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
-const APP_VERSION = "2.2.0";
+const APP_VERSION = "2.3.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1134,7 +1180,8 @@ function renderNav() {
     <div class="side-level"><div class="row between"><b style="font-family:var(--serif);color:#8a4766">Seviye ${L.level}</b><span class="tiny muted">${S.xp.total} XP</span></div>
       <div class="progress thin mt-s"><i style="width:${L.pct}%"></i></div><div class="tiny muted mt-s">Sonraki seviyeye ${L.toNext} XP 🌸</div>
       <div class="tiny muted mt-s">${stageInfo().e} ${stageInfo().name}</div></div>`;
-  $("#bottomNav").innerHTML = NAV.map(n => `<div class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana")}</span></div>`).join("");
+  $("#bottomNav").innerHTML = NAV.map(n => `<div class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana").replace("İlerlemem","İlerleme").replace("Günlüğüm","Günlük")}</span></div>`).join("");
+  $$('.topbar [data-act="go"]').forEach(b => b.classList.toggle("active", b.dataset.page === UI.page));
 }
 let lastPage = null;
 function render() {
