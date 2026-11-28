@@ -23,9 +23,13 @@
 :root{
   --bg:#FFF8FA; --pink1:#FCEAF1; --pink2:#F5DCE8; --pink3:#E8BFD1; --rose:#D68BAA; --dusty:#C78BA0;
   --sage:#E7EEE5; --sage2:#B9CDB3; --sage3:#8DB585; --lav:#F3EDF8; --lav2:#D9CCEB; --cream:#FFF6EC; --ivory:#FFFDF8;
-  --text:#523b47; --muted:#705865; --line:rgba(216,166,188,.55); --water:#A9D6EC;
+  --text:#5B4450; --muted:#A08896; --line:rgba(232,191,209,.5); --water:#A9D6EC;
   --shadow:0 6px 24px rgba(214,139,170,.12); --shadow-h:0 12px 32px rgba(214,139,170,.2);
   --r:22px; --serif:'Fraunces',Georgia,'Times New Roman',serif; --sans:'Quicksand','Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+}
+[data-palette="rose"]{
+  --bg:#FFF7FA; --pink1:#FDE7F0; --pink2:#F4D4E4; --pink3:#E4B4CB; --rose:#C96E96; --dusty:#B87490;
+  --text:#4E3642; --muted:#6D5361; --line:rgba(216,166,188,.58);
 }
 [data-palette="sage"]{
   --bg:#F6FAF5; --pink1:#E8F2E5; --pink2:#D6E8D1; --pink3:#B4D1AC; --rose:#5F8C58; --dusty:#739D6C;
@@ -797,7 +801,7 @@ const exItem = (id, name, type = "yuruyus", min = 25, sets = "", note = "") => (
 function defaults() {
   return {
     version: 1, created: today(),
-    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", palette: "rose", darkMode: false, notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
+    settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", palette: "soft", darkMode: false, notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
     routines: {
       school: [
         r("Uyan & 1 büyük bardak su iç",1,"07:30"),
@@ -1319,16 +1323,17 @@ function renderNav() {
   renderMoreNavSheet();
 }
 const PALETTES = [
-  {k:"rose", e:"🌸", n:"Gül & Lavanta", c1:"#FCEAF1", c2:"#D68BAA"},
+  {k:"soft", e:"🌷", n:"Klasik Soft", c1:"#FCEAF1", c2:"#D68BAA"},
+  {k:"rose", e:"🌸", n:"Gül & Lavanta", c1:"#FDE7F0", c2:"#C96E96"},
   {k:"sage", e:"🌿", n:"Adaçayı & Orman", c1:"#E8F2E5", c2:"#5F8C58"},
   {k:"ocean", e:"🌊", n:"Okyanus & Dingin", c1:"#E6F2FA", c2:"#4281A4"},
   {k:"earth", e:"☀️", n:"Sıcak Toprak", c1:"#F8ECE0", c2:"#B87148"}
 ];
 function applyTheme() {
-  const pal = (S && S.settings && S.settings.palette) || "rose";
+  const pal = (S && S.settings && S.settings.palette) || "soft";
   const dark = !!(S && S.settings && S.settings.darkMode);
   const root = document.documentElement;
-  if (pal === "rose") root.removeAttribute("data-palette");
+  if (pal === "soft") root.removeAttribute("data-palette");
   else root.setAttribute("data-palette", pal);
   if (dark) root.setAttribute("data-dark", "1");
   else root.removeAttribute("data-dark");
@@ -3089,7 +3094,7 @@ function pageProgress() {
       <div class="card c12 tint-pink">
         <h3>🎨 Renk Paleti &amp; Gece Modu</h3>
         <div class="row between">
-          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "rose") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
+          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "soft") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
           <button type="button" class="btn ${s.darkMode ? "lav" : "soft"}" data-act="toggleDarkMode">${s.darkMode ? "☀️ Gündüz Moduna Geç" : "🌙 Yumuşak Gece Modu"}</button>
         </div>
       </div>
@@ -3291,7 +3296,7 @@ function pageSettings() {
       <div class="card c12 tint-pink">
         <h3>🎨 Renk Paleti &amp; Gece Modu</h3>
         <div class="row between">
-          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "rose") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
+          <div class="row" style="gap:8px">${PALETTES.map(p => `<span class="chip ${(s.palette || "soft") === p.k ? "on" : ""}" data-act="setPalette" data-p="${p.k}">${p.e} ${p.n}</span>`).join("")}</div>
           <button type="button" class="btn ${s.darkMode ? "lav" : "soft"}" data-act="toggleDarkMode">${s.darkMode ? "☀️ Gündüz Moduna Geç" : "🌙 Yumuşak Gece Modu"}</button>
         </div>
       </div>

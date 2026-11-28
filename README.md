@@ -83,7 +83,7 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 ### 7. 📱 Mobil Uyumluluk (iPhone 11 – iPhone 18 Pro Max), Temalar & PWA Güncelleme Mimarisi
 - **iOS & Mobil Ergonomi:** iPhone 11 (`375×812`) ile iPhone 18 Pro Max (`440×956`) arasındaki tüm ekran boyutlarında yatay taşma (`horizontal overflow`) olmadan çalışır; alt menüdeki `⋯ Menü` çekmecesi tüm bölümlere etiketli ve geniş dokunma alanlı (`≥44px`) erişim sunar, `16px` input font boyutuyla iOS Safari otomatik yakınlaştırmasını engeller.
 - **Kompakt Ana Sayfa & Hızlı İşlemler:** Üstte `⚡ Hızlı İşlemler` şeridi (`+200 ml Su`, `+ Öğün`, `+ Egzersiz`, `🧴 Cilt Bakımı`, `⏱ Odak`), temel günlük takip kartları ve katlanabilir ikincil özet alanıyla günlük kullanım sadeleştirilmiştir.
-- **4 Tema Paleti & 🌙 Yumuşak Gece Modu:** Ayarlar'dan `🌸 Gül & Lavanta`, `🌿 Adaçayı & Orman`, `🌊 Okyanus & Dingin` veya `☀️ Sıcak Toprak` paletleri seçilebilir ve üst bardan tek dokunuşla Gece/Gündüz moduna geçilebilir.
+- **5 Tema Paleti & 🌙 Yumuşak Gece Modu:** Ayarlar'dan `🌷 Klasik Soft`, `🌸 Gül & Lavanta`, `🌿 Adaçayı & Orman`, `🌊 Okyanus & Dingin` veya `☀️ Sıcak Toprak` paletleri seçilebilir ve üst bardan tek dokunuşla Gece/Gündüz moduna geçilebilir.
 - **Anında PWA Güncellemesi:** `sw.js` ağ öncelikli (`network-first`, `cache: 'no-store'`) stratejiyle çalışır. Yeni bir sürüm yayınlandığında eski önbellekleri temizler ve **Ayarlar > Uygulamayı Şimdi Güncelle** butonuyla tek dokunuşla son sürüme geçiş sağlar.
 
 ---
