@@ -76,6 +76,7 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
   - Onboarding'de girilen yaş grubu (`10–17`, `18–24`, `25–34`, `35–49`, `50+`) ve cinsiyete göre haftalık egzersiz planı, haftalık dakika hedefi (`140–180 dk`) ve egzersiz ikonları (`🏋️‍♂️/🧘‍♀️`, `🚶‍♂️/🚶‍♀️`, `🏊‍♂️/🏊‍♀️`, `🏃‍♂️/💃`) otomatik uyarlanır.
   - Egzersiz sayfasındaki yaş grubu çipleriyle istenen yaş grubunun haftalık antrenman programı tek dokunuşla yüklenebilir ve gün gün özelleştirilebilir.
 - **Su Takibi & Bahçe Damlaları:** Günlük su hedefi, hızlı `+100 / +200 / +300 / +500 ml` butonları; içilen her `250 ml` su bahçe için `1 su damlası` kazandırır.
+- **Kişiye Uygun Egzersiz Programı:** Yaş grubu ve cinsiyet profiline göre haftalık plan ile dengeli, kuvvet/kardiyo ve nazik hareket şablonları uyarlanır; kullanıcı kendi planını düzenlediğinde bu plan korunur.
 - **Yaşayan Bahçe:** Görevlerden kazanılan XP ve su damlalarıyla Tohum'dan Çiçek Açmış Ağaç'a kadar 6 büyüme aşaması; günün saatine göre (Sabah, Öğle, Gün Batımı, Gece) otomatik değişen gökyüzü ve açılıp gizlenebilen bahçe öğeleri.
 
 ---
@@ -85,6 +86,13 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 - **Kompakt Ana Sayfa & Hızlı İşlemler:** Üstte `⚡ Hızlı İşlemler` şeridi (`+200 ml Su`, `+ Öğün`, `+ Egzersiz`, `🧴 Cilt Bakımı`, `⏱ Odak`), temel günlük takip kartları ve katlanabilir ikincil özet alanıyla günlük kullanım sadeleştirilmiştir.
 - **5 Tema Paleti & 🌙 Yumuşak Gece Modu:** Ayarlar'dan `🌷 Klasik Soft`, `🌸 Gül & Lavanta`, `🌿 Adaçayı & Orman`, `🌊 Okyanus & Dingin` veya `☀️ Sıcak Toprak` paletleri seçilebilir ve üst bardan tek dokunuşla Gece/Gündüz moduna geçilebilir.
 - **Anında PWA Güncellemesi:** `sw.js` ağ öncelikli (`network-first`, `cache: 'no-store'`) stratejiyle çalışır. Yeni bir sürüm yayınlandığında eski önbellekleri temizler ve **Ayarlar > Uygulamayı Şimdi Güncelle** butonuyla tek dokunuşla son sürüme geçiş sağlar.
+
+### 8. 🌿 Temalar & kişisel ana sayfa
+- **İki görünüm:** Ayarlar > Temalar bölümünden orijinal pembe/pastel **Bloom Klasik** ve krem, bej, adaçayı, taupe ve lavanta tonlu **Soft Living** arasında istenildiği zaman geçiş yapılır. İlk kullanımda Bloom Klasik seçilidir; tercih cihazda ayrı saklanır ve kullanıcı verisini/yedek biçimini değiştirmez. Soft Living'de DM Serif Display başlıkları ve Manrope arayüz metinleri kullanılır; çevrimdışında sistem yazı tiplerine dönülür.
+- **Kişisel karşılama:** Onboarding'de kaydedilen isim ana sayfada ve karşılama ekranında kullanılır.
+- **Düzenlenebilir dashboard:** Ana sayfadaki su, hedef, rutin, cilt bakımı, beslenme, ders çalışma, hareket, My Journey ve günlük okuma kartları gösterilip gizlenebilir. Seçim cihazda ayrı bir arayüz tercihi olarak saklanır; mevcut uygulama verilerine veya yedekleme biçimine dokunmaz. Günlük ilerleme ve görevler daima görünür kalır.
+- **My Journey:** Bahçe büyümesini, XP seviyesini ve o hafta adım atılan günleri tek bir yaşam yolculuğu özetinde birleştirir.
+- **Erişilebilir navigasyon:** Masaüstü yan menüsü ve mobil alt navigasyon gerçek klavye erişimli düğmeler ve aktif sayfa durumu kullanır.
 
 ---
 
