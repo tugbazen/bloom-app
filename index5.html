@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.6.0">
+<meta name="bloom-version" content="2.6.1">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -712,7 +712,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.6.0";
+const APP_VERSION = "2.6.1";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1261,8 +1261,66 @@ function studyMin(k) { return S.study.filter(s => s.date === k).reduce((a, s) =>
 function mealsOn(k) { return S.meals.filter(m => m.date === k).sort((a, b) => (a.time || "").localeCompare(b.time || "")); }
 
 /* ---------------- ANA SAYFA ---------------- */
+function curProfileInfo() {
+  if (S && S.profile && S.profile.age) return S.profile;
+  try {
+    const rp = localStorage.getItem("bloom_user_profile");
+    if (rp) return JSON.parse(rp);
+  } catch (e) {}
+  return { name: "", age: 21, gender: "female", groupKey: "18-24" };
+}
+function ageGroupKeyFor(age) {
+  const a = Number(age) || 21;
+  if (a <= 17) return "10-17";
+  if (a <= 24) return "18-24";
+  if (a <= 34) return "25-34";
+  if (a <= 49) return "35-49";
+  return "50+";
+}
+function dayTypeMeta() {
+  const prof = curProfileInfo();
+  const gk = prof.groupKey || ageGroupKeyFor(prof.age);
+  if (gk === "10-17") {
+    return {
+      activeChip: "🎒 Okul Günü",
+      offChip: "🏡 Tatil / Dinlenme Günü",
+      tomorrowActiveNote: "🎒 Yarın okul günü. Bu akşam okul çantanı, defterlerini ve kıyafetini hazırlamak sabahını çok hafifletir.",
+      tomorrowOffNote: "🏡 Yarın tatil / dinlenme günü. Alarmsız dinlenip kendine ve hobilerine zaman ayırmayı unutma.",
+      settingsHeading: "🌷 Rutinler & okul günleri",
+      settingsDesc: "Haftanın hangi günleri okulun olduğunu seç; okul günü ve tatil günü sabah rutinlerin otomatik uyum sağlar."
+    };
+  }
+  if (gk === "18-24") {
+    return {
+      activeChip: "🎓 Kampüs / Ders Günü",
+      offChip: "🏡 Boş / Dinlenme Günü",
+      tomorrowActiveNote: "🎓 Yarın kampüs / ders günü. Laptopunu, şarj aletini ve ders notlarını bu akşamdan çantana koymak sabahını çok hafifletir.",
+      tomorrowOffNote: "🏡 Yarın boş / dinlenme günü. Kahveni keyifle içip kendine ve sosyal yaşamına vakit ayırmayı unutma.",
+      settingsHeading: "🌷 Rutinler & kampüs / ders günleri",
+      settingsDesc: "Haftanın hangi günleri kampüs, ders veya iş günün olduğunu seç; sabah rutinin otomatik uyum sağlar."
+    };
+  }
+  if (gk === "25-34" || gk === "35-49") {
+    return {
+      activeChip: "💼 İş / Mesai Günü",
+      offChip: "🏡 İzin / Dinlenme Günü",
+      tomorrowActiveNote: "💼 Yarın iş / mesai günü. Yarınki toplantılarını, 3 önceliğini ve kombinini bu akşamdan hazırlamak sabahını çok hafifletir.",
+      tomorrowOffNote: "🏡 Yarın izin / dinlenme günü. İş bildirimlerinden uzaklaşıp bedenini ve zihnini dinlendirmeyi unutma.",
+      settingsHeading: "🌷 Rutinler & iş / çalışma günleri",
+      settingsDesc: "Haftanın hangi günleri iş / mesai günün olduğunu seç; iş günü ve izin günü rutinlerin otomatik uyum sağlar."
+    };
+  }
+  return {
+    activeChip: "🌺 Planlı / Aktif Gün",
+    offChip: "🏡 Huzurlu Dinlenme Günü",
+    tomorrowActiveNote: "🌺 Yarın planlı ve aktif bir gün. Sabah yürüyüşünü ve randevularını şimdiden gözden geçirmek güne harika başlatır.",
+    tomorrowOffNote: "🏡 Yarın huzurlu dinlenme günü. Doğa yürüyüşüne, sevdiklerinle sohbete ve kitap keyfine bolca zaman ayır.",
+    settingsHeading: "🌷 Rutinler & planlı aktif günler",
+    settingsDesc: "Haftanın hangi günleri planlı/aktif günün olduğunu seç; sabah rutinin otomatik uyum sağlar."
+  };
+}
 function pageHome() {
-  const k = today(), d = dayR(k), h = new Date().getHours();
+  const k = today(), d = dayR(k), h = new Date().getHours(), dt = dayTypeMeta();
   const greet = h < 6 ? "İyi geceler" : h < 12 ? "Günaydın" : h < 18 ? "İyi günler" : "İyi akşamlar";
   const sunday = dow1(k) === 7;
   const soon = examsUpcoming(7);
@@ -1272,8 +1330,8 @@ function pageHome() {
       <p class="motto">“${esc(motivation(k))}”</p></div>
       <div><div class="lbl" style="margin-bottom:6px">Bugün nasıl hissediyorsun?</div>${moodPicker(k)}</div></div>
       <div class="mode-row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}
-        <span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş Günü</span>
-        <span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Boş / Dinlenme Günü</span></div>
+        <span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">${dt.activeChip}</span>
+        <span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">${dt.offChip}</span></div>
       ${d.mode === "low" ? `<div class="note-soft mt">${MODES.low.d}</div>` : d.mood ? `<div class="note-soft mt">${MOOD_MSG[d.mood]}</div>` : ""}
     </section>
     ${sunday ? `<div class="banner" data-act="weekReport"><span class="bi">🌷</span><div class="grow"><b>Haftalık değerlendirmen hazır</b><div class="small muted">Bu hafta kendin için yaptığın küçük şeylere bir bakalım.</div></div><span class="card-link">Aç →</span></div>` : ""}
@@ -1306,9 +1364,9 @@ function homeToday() {
       <div class="water-btns"><button class="btn water sm" data-act="addWater" data-ml="200">+200 ml</button><button class="btn water sm" data-act="addWater" data-ml="300">+300 ml</button></div></div></div></div>
     <div class="card c4"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
     <div class="card c4 tint-lav"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
-      <div class="small row between"><b>${isSchool(k) ? "🎒 Okul / İş Günü Sabah" : "🏡 Boş / Dinlenme Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
+      <div class="small row between"><b>${isSchool(k) ? dayTypeMeta().activeChip + " Sabah" : dayTypeMeta().offChip + " Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
       <div class="small row between mt"><b>🌙 Akşam &amp; Uyku Rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
-      <div class="small muted mt">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? "🎒 Okul / İş Günü" : "🏡 Boş / Dinlenme Günü"}</div></div>
+      <div class="small muted mt">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? dayTypeMeta().activeChip : dayTypeMeta().offChip}</div></div>
     <div class="card c4 tint-sage"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
       <div class="stats"><div class="stat"><b>${meals.length}</b><span>öğün</span></div><div class="stat"><b>${veg}</b><span>sebzeli öğün</span></div>${meals.reduce((a, m) => a + (+m.cal || 0), 0) ? `<div class="stat"><b>${meals.reduce((a, m) => a + (+m.cal || 0), 0)}</b><span>kcal</span></div>` : ""}</div>
       <div class="small mt"><b class="muted">Protein:</b> ${prot.length ? esc(prot.slice(0, 4).join(", ")) : "<span class='muted'>henüz yok</span>"}</div>
@@ -1342,15 +1400,16 @@ function moveBlock(k) {
     <div class="tiny muted mt-s">20 dk hareket veya 5.000 adım bahçene yeni yapraklar getirir 🍃</div>`;
 }
 function homeTomorrow() {
-  const k = addDays(today(), 1), d = dayR(k), dw = dow1(k), plan = S.mealPlan[dw] || {};
+  const k = addDays(today(), 1), d = dayR(k), dw = dow1(k), plan = S.mealPlan[dw] || {}, dt = dayTypeMeta();
   const ex = examsUpcoming(10), ml = morningList(k);
   const rev = S.courses.flatMap(c => c.review.filter(x => x.date === k && !x.done).map(x => ({...x, c: c.name})));
   return `<div class="grid">
     <div class="card c6 tint-pink"><h3>🌙 Yarın: ${fmtLong(k)}</h3>
-      <div class="row"><span class="chip ${isSchool(k) ? "on" : ""}" data-act="toggleSchool" data-k="${k}">🎒 ${isSchool(k) ? "Okul günü" : "Okul yok"}</span>
+      <div class="row"><span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">${dt.activeChip}</span>
+      <span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">${dt.offChip}</span>
       ${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div>
-      <div class="sec-title">☀️ Yarın sabah rutinin (${ml.length} adım)</div><div class="small muted">${ml.map(t => esc(t.text)).join(" · ")}</div>
-      ${isSchool(k) ? `<div class="note-soft mt">🎒 Yarın okul var. Bu akşam çantanı hazırlamak sabahını çok hafifletir.</div>` : `<div class="note-soft mt">🏡 Yarın okul yok. Kendine biraz zaman ayırmayı unutma.</div>`}</div>
+      <div class="sec-title">☀️ Yarın sabah rutinin (${ml.length} adım · ${isSchool(k) ? dt.activeChip : dt.offChip})</div><div class="small muted">${ml.map(t => esc(t.text)).join(" · ")}</div>
+      ${isSchool(k) ? `<div class="note-soft mt">${esc(dt.tomorrowActiveNote)}</div>` : `<div class="note-soft mt">${esc(dt.tomorrowOffNote)}</div>`}</div>
     <div class="card c6"><h3>🎯 Yarın için hedefler</h3>${goalsBlock(k)}</div>
     <div class="card c6 tint-sage"><h3>🥗 Yarının yemek planı<span class="sp"></span><span class="card-link" data-act="nutPlan">Planı düzenle →</span></h3>
       ${PLAN_SLOTS.some(s => plan[s.k]) ? `<div class="kv">${PLAN_SLOTS.map(s => `<b>${s.t}</b><span>${esc(plan[s.k] || "—")}</span>`).join("")}</div>` : emptyBox("🥗", "Yarın için henüz plan yok.", `<button class="btn sage sm" data-act="nutPlan">Plan yap</button>`)}</div>
@@ -1384,22 +1443,6 @@ const AGE_ROUTINE_GROUPS = [
   {k:"35-49", age:40, e:"🌿", t:"35–49 Yaş (Denge & Sağlık)"},
   {k:"50+",   age:55, e:"🌺", t:"50+ Yaş (Zindelik & Yaşam)"}
 ];
-function curProfileInfo() {
-  if (S && S.profile && S.profile.age) return S.profile;
-  try {
-    const rp = localStorage.getItem("bloom_user_profile");
-    if (rp) return JSON.parse(rp);
-  } catch (e) {}
-  return { name: "", age: 21, gender: "female", groupKey: "18-24" };
-}
-function ageGroupKeyFor(age) {
-  const a = Number(age) || 21;
-  if (a <= 17) return "10-17";
-  if (a <= 24) return "18-24";
-  if (a <= 34) return "25-34";
-  if (a <= 49) return "35-49";
-  return "50+";
-}
 function pageRoutines() {
   const k = today(), d = dayR(k), st = dayStats(k);
   const schoolActive = isSchool(k);
@@ -2997,7 +3040,7 @@ function openDayModal(k) {
   const j = dv.journal || {};
   openModal(`${fmtLong(k)} 🌷`, `
     <div class="row mb">${mo ? `<span class="tag">${mo.e} ${mo.t}</span>` : ""}<span class="tag lav">${MODES[dv.mode].e} ${MODES[dv.mode].t}</span>
-      <span class="tag sage">${isSchool(k) ? "🎒 Okul günü" : "🏡 Okul yok"}</span><span class="tag blue">💧 ${fmtMl(waterTotal(k))}</span></div>
+      <span class="tag sage">${isSchool(k) ? dayTypeMeta().activeChip : dayTypeMeta().offChip}</span><span class="tag blue">💧 ${fmtMl(waterTotal(k))}</span></div>
     <div class="stats mb"><div class="stat"><b>%${st.pct}</b><span>günlük ilerleme</span></div><div class="stat"><b>${st.mDone}/${st.m.length}</b><span>sabah rutini</span></div>
       <div class="stat"><b>${st.eDone}/${st.e.length}</b><span>akşam rutini</span></div><div class="stat"><b>${ml.length}</b><span>öğün kaydı</span></div></div>
     ${(dv.goals || []).length ? `<div class="sec-title">🎯 Hedefler</div>${dv.goals.map(g => `<div class="small">${g.done ? "✅" : "⬜"} ${esc(g.text)}</div>`).join("")}` : ""}
@@ -3055,12 +3098,12 @@ function openWeekReport(ws = weekStart(today())) {
 
 /* ---------------- AYARLAR ---------------- */
 function pageSettings() {
-  const s = S.settings;
+  const s = S.settings, dt = dayTypeMeta();
   return `<div class="page-head"><div><h1>Ayarlar ⚙️</h1><p>Uygulamayı kendi düzenine göre kişiselleştir.</p></div></div>
     <div class="grid">
       <div class="card c6">
-        <h3>🌷 Rutinler & okul günleri</h3>
-        <p class="small muted mb">Haftanın hangi günleri okulun olduğunu seç; sabah rutinin otomatik uyum sağlar.</p>
+        <h3>${esc(dt.settingsHeading)}</h3>
+        <p class="small muted mb">${esc(dt.settingsDesc)}</p>
         <div class="row mb">${[1,2,3,4,5,6,7].map(i => `<span class="chip ${s.schoolDays.includes(i) ? "on" : ""}" data-act="toggleSchoolDay" data-d="${i}">${TR_DAYS[i % 7].slice(0, 3)}</span>`).join("")}</div>
         <button class="btn soft" data-act="openRoutineEdit">✏️ Rutinleri ve vitaminleri düzenle</button>
       </div>
@@ -4701,7 +4744,14 @@ $("#importFile").addEventListener("change", ev => {
       const data = JSON.parse(rd.result);
       if (!data || typeof data !== "object" || (!data.routines && !data.days && !data.courses)) throw new Error("Geçersiz dosya");
       confirmBox("Bu yedek dosyası mevcut verilerin yerine yüklenecek. Devam edilsin mi?", () => {
-        S = merge(defaults(), data); save(); render(); toast("Yedek başarıyla geri yüklendi! 🌷");
+        S = merge(defaults(), data);
+        if (S.profile && typeof S.profile === "object") {
+          try {
+            if (S.profile.name) localStorage.setItem("bloom_user_name", S.profile.name);
+            localStorage.setItem("bloom_user_profile", JSON.stringify(S.profile));
+          } catch (e) {}
+        }
+        save(); render(); toast("Yedek ve profil bilgilerin başarıyla geri yüklendi! 🌷");
       }, "Yedekten yükle");
     } catch (e) { toast("Dosya okunamadı 😔 Lütfen geçerli bir Bloom JSON yedeği seç."); }
   };
