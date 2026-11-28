@@ -242,6 +242,120 @@
 
   window.__bloomGetRecommendedRoutines = getRecommendedRoutines;
 
+  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+) ve cinsiyet için sabah/akşam cilt bakım rutinleri
+  // Erkek seçildiğinde hiçbir yaş grubunda "Makyaj temizleme" yer almaz.
+  function getRecommendedSkincare(ageNum, gender) {
+    const age = Math.max(10, Math.min(99, Number(ageNum) || 21));
+    const g = gender || "female";
+    const isFemale = g === "female";
+    const isMale = g === "male";
+    const sk = (id, step, product, note, icon, fixed = false) => ({ id, step, product, note, icon, fixed });
+
+    let skinLabel = "18–24 Yaş · Nem, Işıltı & Gözenek Dengesi";
+    let morning = [];
+    let evening = [];
+
+    if (age <= 17) {
+      skinLabel = "10–17 Yaş · Genç Cilt Bariyer & Sebum Dengesi";
+      morning = [
+        sk("sk_m_teeth", "Diş fırçalama", "Diş macunu", "Güne ferah başlangıç • sabit adım", "🪥", true),
+        sk("sk_m_wash", "Yüz yıkama", "Nazik su bazlı genç cilt temizleme jeli", "Ilık suyla 60 sn cildi yormadan temizle", "🧼", true),
+        sk("sk_m_moist", "Hafif nemlendirici", "Yağsız (oil-free) su bazlı nemlendirici jel", "Gözenekleri tıkamadan nem dengesini koru", "🧴", false),
+        sk("sk_m_spf", "Güneş kremi", "SPF 50+ komedojenik olmayan hafif güneş koruyucu", "Dışarı çıkmadan 15 dk önce son adım", "☀️", false)
+      ];
+      evening = [
+        sk("sk_e_teeth", "Diş fırçalama", "Diş macunu & diş ipi", "Gece bakımı öncesi sabit adım", "🪥", true),
+        ...(isFemale ? [sk("sk_e_clean", "Makyaj / SPF temizleme", "Nazik misel su", "Varsa makyajı ve gün boyu biriken SPF'yi arındır", "🫧", false)] : []),
+        sk("sk_e_wash", "Yüz yıkama", "Gözenek arındırıcı nazik yüz yıkama jeli", "Günün kirini ve fazla sebumu temizle", "🧼", true),
+        sk("sk_e_serum", "Hedefli yatıştırıcı bakım", "Centella veya Salisilik Asit (BHA) lokal jel", "Sadece ihtiyaç duyulan bölgelere ince tabaka uygula", "💧", false),
+        sk("sk_e_cream", isMale ? "Hafif gece nemlendiricisi" : "Gece nemlendiricisi & dudak balmı", isMale ? "Su bazlı yatıştırıcı nemlendirici" : "Su bazlı yatıştırıcı krem + dudak balmı", "Gece boyu cilt bariyerini dinlendir", "✨", false)
+      ];
+    } else if (age <= 24) {
+      skinLabel = "18–24 Yaş · Nem, Işıltı & Gözenek/Bariyer Bakımı";
+      morning = [
+        sk("sk_m_teeth", "Diş fırçalama", "Diş macunu", "Güne ferah başlangıç • sabit adım", "🪥", true),
+        sk("sk_m_wash", "Yüz yıkama", isMale ? "Yüz & sakal arındırıcı nazik temizleme jeli" : "Nazik su bazlı yüz temizleme jeli", "Ilık suyla 60 sn nazikçe temizle", "🧼", true),
+        sk("sk_m_toner", isMale ? "Yatıştırıcı tonik / tıraş sonrası losyon" : "Nemlendirici & dengeleyici tonik", isMale ? "Alkolsüz yatıştırıcı tonik" : "Hyaluronik asit / gözenek dengeleyici tonik", "Cildi ferahlat ve nemi hapsetmeye hazırla", "💦", false),
+        sk("sk_m_serum", "Nem & ışıltı serumu", "Hyaluronik Asit veya Niacinamide (%5) serum", "Hafif nemli cilde 2-3 damla uygula", "💧", false),
+        sk("sk_m_moist", "Günlük nemlendirici", isMale ? "Parlama karşıtı hafif su bazlı nemlendirici" : "Su bazlı günlük bariyer nemlendirici krem", "Yüz ve boyun bölgesine sür", "🧴", false),
+        sk("sk_m_spf", "Güneş kremi", "SPF 50+ su bazlı güneş koruyucu", "Dışarı çıkmadan 15 dk önce son adım", "☀️", false)
+      ];
+      evening = [
+        sk("sk_e_teeth", "Diş fırçalama", "Diş macunu & diş ipi", "Gece bakımı öncesi sabit adım", "🪥", true),
+        ...(isFemale ? [sk("sk_e_clean", "Makyaj & SPF temizleme", "Temizleme yağı veya misel su", "Gün boyu biriken SPF ve makyajı ilk aşamada çöz", "🫧", false)] : []),
+        sk("sk_e_wash", "Yüz yıkama", isMale ? "Arındırıcı yüz & sakal temizleme jeli" : "Nazik yüz temizleme jeli", isFemale ? "Çift aşamalı temizliği tamamla" : "Gün boyu biriken SPF ve kiri arındır", "🧼", true),
+        sk("sk_e_toner", "Yatıştırıcı tonik", "Panthenol / Centella içerikli tonik", "Cildi sonraki adımlara hazırla", "💦", false),
+        sk("sk_e_serum", "Gece dengeleyici serum", "Niacinamide veya Hyaluronik Asit onarıcı serum", "İnce tabaka halinde uygula", "🌙", false),
+        sk("sk_e_cream", isMale ? "Gece onarıcı nemlendirici" : "Gece kremi & dudak bakımı", isMale ? "Bariyer destekleyici hafif gece kremi" : "Onarıcı nemlendirici + dudak balmı", "Nemi kilitle ve uykuya hazırlan", "✨", false)
+      ];
+    } else if (age <= 34) {
+      skinLabel = "25–34 Yaş · Antioksidan Koruma & İlk Çizgi Önleme";
+      morning = [
+        sk("sk_m_teeth", "Diş fırçalama", "Diş macunu", "Güne ferah başlangıç • sabit adım", "🪥", true),
+        sk("sk_m_wash", "Yüz yıkama", isMale ? "Nazik yüz & sakal temizleme jeli" : "Aminoasit / jel yüz temizleyici", "Ilık suyla cildi kurutmadan temizle", "🧼", true),
+        sk("sk_m_toner", "Nemlendirici esans / tonik", "Hyaluronik & antioksidan tonik", "Avuç içi ile nazikçe tamponla", "💦", false),
+        sk("sk_m_serum", "Antioksidan C Vitamini serumu", "C Vitamini + Hyaluronik Asit aydınlatıcı serum", "Çevresel etkilere ve lekelere karşı 3 damla uygula", "💧", false),
+        sk("sk_m_eye", "Göz çevresi kremi", "Kafein & nem destekli göz çevresi kremi", "Yorgunluk ve ilk ince çizgilere karşı yüzük parmağıyla sür", "👁️", false),
+        sk("sk_m_moist", "Bariyer nemlendirici", isMale ? "Hafif seramid nemlendirici losyon" : "Seramid & hyaluronik günlük nemlendirici krem", "Yüz ve boyun bölgesine uygula", "🧴", false),
+        sk("sk_m_spf", "Güneş kremi", "SPF 50+ geniş spektrumlu (UVA/UVB) güneş koruyucu", "Fotoyaşlanma koruması için son adım", "☀️", false)
+      ];
+      evening = [
+        sk("sk_e_teeth", "Diş fırçalama", "Diş macunu & diş ipi", "Gece bakımı öncesi sabit adım", "🪥", true),
+        ...(isFemale ? [sk("sk_e_clean", "Makyaj & SPF temizleme", "Temizleme yağı veya balsamı", "Güneş kremi ve makyajı nazikçe çöz", "🫧", false)] : []),
+        sk("sk_e_wash", "Yüz yıkama", isMale ? "Yüz & sakal temizleme jeli" : "Nazik su bazlı yüz temizleme jeli", isFemale ? "Çift aşamalı temizliği tamamla" : "Gün boyu biriken SPF ve kiri temizle", "🧼", true),
+        sk("sk_e_serum", "Gece yenileyici aktif serum", "Düşük oranlı Retinol / Peptit veya AHA-BHA serum", "Hücre yenilenmesi için kuru cilde uygula", "🌙", false),
+        sk("sk_e_eye", "Göz çevresi gece bakımı", "Nemlendirici & ince çizgi karşıtı göz kremi", "Göz çevresine hafifçe tamponla", "👁️", false),
+        sk("sk_e_cream", "Gece onarım kremi", isMale ? "Seramid içerikli gece onarım kremi" : "Seramid & peptit gece kremi + dudak balmı", "Gece boyu nem ve bariyer onarımı", "✨", false)
+      ];
+    } else if (age <= 49) {
+      skinLabel = "35–49 Yaş · Elastikiyet, Peptit/Retinol & Leke Koruması";
+      morning = [
+        sk("sk_m_teeth", "Diş fırçalama", "Diş macunu", "Güne ferah başlangıç • sabit adım", "🪥", true),
+        sk("sk_m_wash", "Yüz yıkama", "Nem bariyerini koruyan krem/jel temizleyici", "Ilık suyla nazikçe temizle", "🧼", true),
+        sk("sk_m_toner", "Dolgunlaştırıcı esans / tonik", "Peptit & Hyaluronik Asit esansı", "Yüz ve boyun bölgesine tamponlayarak uygula", "💦", false),
+        sk("sk_m_serum", "C Vitamini + Peptit serumu", "Sıkılaştırıcı & leke karşıtı antioksidan serum", "Yüz ve boyun bölgesine 3-4 damla uygula", "💧", false),
+        sk("sk_m_eye", "Sıkılaştırıcı göz çevresi kremi", "Peptit & kafein içerikli göz kremi", "Göz altı ve kaz ayağı bölgesine nazikçe uygula", "👁️", false),
+        sk("sk_m_moist", "Sıkılaştırıcı yüz & boyun kremi", "Seramid ve kolajen destekli nemlendirici", "Yüz ve boyuna aşağıdan yukarı doğru sür", "🧴", false),
+        sk("sk_m_spf", "Leke karşıtı güneş kremi", "SPF 50+ PA++++ yaşlanma karşıtı güneş koruyucu", "Her sabah dört mevsim son adım", "☀️", false)
+      ];
+      evening = [
+        sk("sk_e_teeth", "Diş fırçalama", "Diş macunu & diş ipi", "Gece bakımı öncesi sabit adım", "🪥", true),
+        ...(isFemale ? [sk("sk_e_clean", "Makyaj & SPF temizleme yağı", "Besleyici temizleme yağı veya balsamı", "Cildi kurutmadan makyaj ve SPF kalıntılarını çöz", "🫧", false)] : []),
+        sk("sk_e_wash", "Yüz yıkama", "Kurutmayan nazik yüz temizleyici", isFemale ? "Çift aşamalı gece temizliğini tamamla" : "SPF ve kiri cildi germeden arındır", "🧼", true),
+        sk("sk_e_eye", "Retinol / Peptit göz çevresi kremi", "İnce çizgi ve elastikiyet odaklı gece göz kremi", "Aktif serumdan önce göz çevresini koru", "👁️", false),
+        sk("sk_e_serum", "Yaşlanma karşıtı gece serumu", "Retinol / Bakuchiol veya çoklu Peptit kompleksi", "Kollajen desteği için yüz ve boyuna sür", "🌙", false),
+        sk("sk_e_cream", "Yoğun onarıcı gece & boyun kremi", "Seramid, skualen ve peptit zengin gece kremi", "Nemi kilitle, yüz ve boyun bariyerini güçlendir", "✨", false)
+      ];
+    } else {
+      skinLabel = "50+ Yaş · Olgun Cilt, Boyun/Dekolte & Yoğun Lipid Onarımı";
+      morning = [
+        sk("sk_m_teeth", "Diş fırçalama", "Diş ve diş eti bakımı", "Güne ferah başlangıç • sabit adım", "🪥", true),
+        sk("sk_m_wash", "Yüz yıkama", "Kurutmayan süt / krem dokulu nazik yüz temizleyici", "Cilt lipidlerini koruyarak ılık suyla temizle", "🧼", true),
+        sk("sk_m_toner", "Besleyici nem esansı", "Kolajen, hyaluronik asit ve panthenol esansı", "Olgun cilde anında nem ve dolgunluk kazandır", "💦", false),
+        sk("sk_m_serum", "Anti-aging & leke karşıtı serum", "C Vitamini, Peptit & Koenzim Q10 serumu", "Yüz, boyun ve el üstlerine 3-4 damla uygula", "💧", false),
+        sk("sk_m_eye", "Göz & dudak çevresi kremi", "Derin nem ve elastikiyet veren göz/dudak çevresi kremi", "Göz çevresi ve dudak üstü çizgilerine nazikçe tamponla", "👁️", false),
+        sk("sk_m_moist", "Yoğun yüz, boyun & dekolte kremi", "Seramid, lipid ve peptit zengin besleyici krem", "Yüz, boyun ve dekolte bölgesine masajla uygula", "🧴", false),
+        sk("sk_m_spf", "Nemlendirici güneş kremi", "SPF 50+ leke ve fotoyaşlanma karşıtı güneş koruyucu", "Yüz, boyun ve eller için koruyucu son adım", "☀️", false)
+      ];
+      evening = [
+        sk("sk_e_teeth", "Diş fırçalama", "Diş ve ağız bakımı", "Gece bakımı öncesi sabit adım", "🪥", true),
+        ...(isFemale ? [sk("sk_e_clean", "Makyaj & SPF temizleme sütü/yağı", "Besleyici temizleme sütü veya yağı", "Cildi hiç germeden SPF ve makyajı yumuşakça arındır", "🫧", false)] : []),
+        sk("sk_e_wash", "Yüz yıkama", "Krem / losyon dokulu nazik yüz temizleyici", isFemale ? "Nem bariyerini koruyarak temizliği tamamla" : "Gün boyu biriken SPF ve kiri kurutmadan temizle", "🧼", true),
+        sk("sk_e_serum", "Yenileyici gece serumu", "Bakuchiol / Retinol veya yoğun Peptit-Seramid serumu", "Hücresel onarım ve sıkılaşma için yüz ve boyuna sür", "🌙", false),
+        sk("sk_e_eye", "Besleyici göz çevresi gece kremi", "Yoğun onarıcı göz çevresi bakım kremi", "Yüzük parmağıyla göz çevresine nazikçe uygula", "👁️", false),
+        sk("sk_e_cream", "Yoğun gece, boyun & el onarım kremi", "Skualen, seramid ve doğal yağlar içeren gece kremi", "Gece boyu derin nemlendirme için yüz, boyun ve ellere sür", "✨", false)
+      ];
+    }
+
+    return {
+      skinLabel,
+      morning,
+      evening
+    };
+  }
+
+  window.__bloomGetRecommendedSkincare = getRecommendedSkincare;
+
   function escHtml(s) {
     return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   }
@@ -408,6 +522,7 @@
     document.head.appendChild(styles);
 
     const initRec = getRecommendedRoutines(initAge, initGender);
+    const initSkRec = getRecommendedSkincare(initAge, initGender);
 
     const screen = document.createElement("section");
     screen.className = "bloom-onboarding";
@@ -437,7 +552,7 @@
             </div>
           </div>
           <div class="bo-preview-badge" id="boPreviewBadge">
-            ✨ Seçilen yaş grubu rutini: <b>${escHtml(initRec.badge)}</b>
+            ✨ Günlük rutin: <b>${escHtml(initRec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(initSkRec.skinLabel)}</b>
           </div>
           <div class="bloom-onboarding__error" id="bloom-onboarding-error" aria-live="polite"></div>
           <div class="bo-foot">
@@ -461,7 +576,8 @@
 
     function updateBadge() {
       const rec = getRecommendedRoutines(ageInp.value, curGender);
-      badgeEl.innerHTML = `✨ Seçilen yaş grubu rutini: <b>${escHtml(rec.badge)}</b>`;
+      const skRec = getRecommendedSkincare(ageInp.value, curGender);
+      badgeEl.innerHTML = `✨ Günlük rutin: <b>${escHtml(rec.badge)}</b><br>🧴 Cilt bakımı: <b>${escHtml(skRec.skinLabel)}</b>`;
     }
 
     ageInp.addEventListener("input", updateBadge);
@@ -499,7 +615,8 @@
       }
 
       const rec = getRecommendedRoutines(age, curGender);
-      const profile = { name, age, gender: curGender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, updatedAt: Date.now() };
+      const skRec = getRecommendedSkincare(age, curGender);
+      const profile = { name, age, gender: curGender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, skinLabel: skRec.skinLabel, updatedAt: Date.now() };
       try {
         localStorage.setItem(NAME_KEY, name);
         localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -513,7 +630,7 @@
 
       if (typeof window.__bloomApplyOnboardingProfile === "function") {
         try {
-          window.__bloomApplyOnboardingProfile(profile, rec.school, rec.off, rec.evening);
+          window.__bloomApplyOnboardingProfile(profile, rec.school, rec.off, rec.evening, skRec);
         } catch (e) {}
       }
 
@@ -536,6 +653,17 @@
     return userName ? { name: userName, age: null, gender: null } : null;
   };
 
-  if (savedProfile && savedProfile.name && savedProfile.age && savedProfile.gender) return;
+  if (savedProfile && savedProfile.name && savedProfile.age && savedProfile.gender) {
+    if (!savedProfile.skinApplied && typeof window.__bloomApplySkincareProfile === "function") {
+      try {
+        const skRec = getRecommendedSkincare(savedProfile.age, savedProfile.gender);
+        savedProfile.skinLabel = skRec.skinLabel;
+        savedProfile.skinApplied = true;
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(savedProfile));
+        window.__bloomApplySkincareProfile(savedProfile, skRec);
+      } catch (e) {}
+    }
+    return;
+  }
   showOnboardingModal(false);
 })();
