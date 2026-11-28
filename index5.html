@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.5.0">
+<meta name="bloom-version" content="2.6.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -712,7 +712,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.5.0";
+const APP_VERSION = "2.6.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -749,9 +749,38 @@ function defaults() {
     version: 1, created: today(),
     settings: {waterGoal: 2000, passGrade: 60, schoolDays: [1,2,3,4,5], meds: [], foodLikes: "", foodDislikes: "", gardenTheme: "auto", notify: false, notifyEvery: 2, aiKey: "", aiModel: "gemini-2.5-flash"},
     routines: {
-      school: [r("Uyan",1,"07:00"), r("Yatağımı düzelt",2), r("Yüzümü yıka",1), r("Dişlerimi fırçala",1), r("Cilt bakımımı yap",3), r("Su iç",1), r("Kahvaltı yap",1), r("Ders programını kontrol et",2), r("Çantamı hazırla",2), r("Günün hedeflerini belirle",3), r("Evden çıkmaya hazırlan",1)],
-      off: [r("Uyan",1,"09:00"), r("Yatağımı düzelt",2), r("Kişisel bakım",1), r("Su iç",1), r("Kahvaltı",1), r("Odamı toparla",3), r("Günün 3 önceliğini belirle",2), r("Ders çalış",2), r("Hareket et",3), r("Kendime zaman ayır",1)],
-      evening: [r("Günlük görevleri kontrol et",2,"21:00"), r("Beslenme kayıtlarını tamamla",3), r("Su tüketimini kontrol et",2), r("Yarınki dersleri kontrol et",2), r("Çantamı hazırla",3), r("Odamı 5 dakika toparla",3), r("Dişlerimi fırçala",1), r("Cilt bakımımı yap",2), r("Günlük değerlendirme yaz",3), r("Uykuya hazırlan",1,"23:00")]
+      school: [
+        r("Uyan & 1 büyük bardak su iç",1,"07:30"),
+        r("Yatağımı düzelt & odamı havalandır",2,"07:35"),
+        r("Yüzümü yıka & dişlerimi fırçala",1,"07:40"),
+        r("Cilt bakımımı yap (Tonik, Nem/Işıltı Serumu & SPF 50)",2,"07:45"),
+        r("Protein ağırlıklı kahvaltı yap & kahvemi/çayımı hazırla",1,"08:00"),
+        r("Amfi / ders programını ve bugünkü ders slaytlarını kontrol et",2,"08:20"),
+        r("Laptop, şarj aleti, su matarası ve defterlerimi çantama yerleştir",2,"08:30"),
+        r("Günün 3 akademik / kişisel önceliğini belirle",3,"08:35"),
+        r("Kampüs / iş için evden çıkmaya hazırlan",1,"08:45")
+      ],
+      off: [
+        r("Dinlenmiş uyan & 1 büyük bardak su iç",1,"09:00"),
+        r("Perdeyi aç, yatağımı topla & 5 dk sabah esnemesi yap",2,"09:10"),
+        r("Yüzümü yıka & dişlerimi fırçala",1,"09:20"),
+        r("Cilt bakımımı yap (Detaylı sabah bakımı, serum & SPF 50)",2,"09:25"),
+        r("Keyifli ve uzun hafta sonu kahvaltısı & kahve molası",1,"09:45"),
+        r("Odamı toparla, çamaşır / haftalık kişisel düzenimi yap",3,"10:45"),
+        r("Haftalık ders özeti veya proje/vize tekrar bloğu (45 dk odak)",2,"11:30"),
+        r("Açık hava yürüyüşü, antrenman veya arkadaşlarla/kendimle sosyal vakit",1,"14:00")
+      ],
+      evening: [
+        r("Bugün işlenen ders notlarını / slaytları 20 dk gözden geçir",2,"20:30"),
+        r("Beslenme ve su kayıtlarını tamamla",3,"21:00"),
+        r("Yarınki programı kontrol et & çantamı/masamı hazırla",2,"21:30"),
+        r("Yarınki kombinimi hazırla",3,"21:45"),
+        r("Çalışma masamı ve odamı 5 dakika toparla",3,"22:00"),
+        r("Dişlerimi fırçala & diş ipi kullan",1,"22:45"),
+        r("Cilt bakımımı yap (Çift aşamalı temizlik, serum & gece kremi)",2,"22:50"),
+        r("Günlük değerlendirme yaz & zihnimi boşalt",3,"23:10"),
+        r("Ekran süresini bitir & uykuya hazırlan",1,"23:30")
+      ]
     },
     skincare: {
       morning: [
@@ -810,6 +839,16 @@ function merge(d, p) {
   if (!Array.isArray(o.settings.schoolDays)) o.settings.schoolDays = d.settings.schoolDays;
   if (!Array.isArray(o.settings.meds)) o.settings.meds = [];
   ["school","off","evening"].forEach(k => { if (!Array.isArray(o.routines[k]) || !o.routines[k].length) o.routines[k] = d.routines[k]; });
+  const sameDayLists = Array.isArray(o.routines.school) && Array.isArray(o.routines.off) &&
+    o.routines.school.length === o.routines.off.length &&
+    o.routines.school.every((x, i) => o.routines.off[i] && x.text === o.routines.off[i].text);
+  if (sameDayLists || (o.routines.school[0] && o.routines.school[0].text === "Uyan")) {
+    o.routines.off = d.routines.off;
+    if (o.routines.school[0] && o.routines.school[0].text === "Uyan") {
+      o.routines.school = d.routines.school;
+      o.routines.evening = d.routines.evening;
+    }
+  }
   if (!o.skinRoutineMigrated) {
     [["school", 3], ["evening", 2]].forEach(([rk, lvl]) => {
       const list = o.routines[rk];
@@ -1233,7 +1272,8 @@ function pageHome() {
       <p class="motto">“${esc(motivation(k))}”</p></div>
       <div><div class="lbl" style="margin-bottom:6px">Bugün nasıl hissediyorsun?</div>${moodPicker(k)}</div></div>
       <div class="mode-row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}
-        <span class="chip ${isSchool(k) ? "on" : ""}" data-act="toggleSchool" data-k="${k}">🎒 ${isSchool(k) ? "Okul günü" : "Okul yok"}</span></div>
+        <span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş Günü</span>
+        <span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Boş / Dinlenme Günü</span></div>
       ${d.mode === "low" ? `<div class="note-soft mt">${MODES.low.d}</div>` : d.mood ? `<div class="note-soft mt">${MOOD_MSG[d.mood]}</div>` : ""}
     </section>
     ${sunday ? `<div class="banner" data-act="weekReport"><span class="bi">🌷</span><div class="grow"><b>Haftalık değerlendirmen hazır</b><div class="small muted">Bu hafta kendin için yaptığın küçük şeylere bir bakalım.</div></div><span class="card-link">Aç →</span></div>` : ""}
@@ -1266,9 +1306,9 @@ function homeToday() {
       <div class="water-btns"><button class="btn water sm" data-act="addWater" data-ml="200">+200 ml</button><button class="btn water sm" data-act="addWater" data-ml="300">+300 ml</button></div></div></div></div>
     <div class="card c4"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
     <div class="card c4 tint-lav"><h3>☀️ Rutinlerim<span class="sp"></span><span class="card-link" data-act="go" data-page="routines">Aç →</span></h3>
-      <div class="small row between"><b>Sabah rutini</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
-      <div class="small row between mt"><b>Akşam rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
-      <div class="small muted mt">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? "🎒 Okul günü" : "🏡 Okul yok"}</div></div>
+      <div class="small row between"><b>${isSchool(k) ? "🎒 Okul / İş Günü Sabah" : "🏡 Boş / Dinlenme Sabah"}</b><span class="muted">${st.mDone}/${st.m.length}</span></div><div class="progress mt-s lav"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
+      <div class="small row between mt"><b>🌙 Akşam &amp; Uyku Rutini</b><span class="muted">${st.eDone}/${st.e.length}</span></div><div class="progress mt-s"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
+      <div class="small muted mt">${MODES[d.mode].e} ${MODES[d.mode].t} · ${isSchool(k) ? "🎒 Okul / İş Günü" : "🏡 Boş / Dinlenme Günü"}</div></div>
     <div class="card c4 tint-sage"><h3>🥗 Beslenme özeti<span class="sp"></span><span class="card-link" data-act="go" data-page="nutrition">Aç →</span></h3>
       <div class="stats"><div class="stat"><b>${meals.length}</b><span>öğün</span></div><div class="stat"><b>${veg}</b><span>sebzeli öğün</span></div>${meals.reduce((a, m) => a + (+m.cal || 0), 0) ? `<div class="stat"><b>${meals.reduce((a, m) => a + (+m.cal || 0), 0)}</b><span>kcal</span></div>` : ""}</div>
       <div class="small mt"><b class="muted">Protein:</b> ${prot.length ? esc(prot.slice(0, 4).join(", ")) : "<span class='muted'>henüz yok</span>"}</div>
@@ -1362,37 +1402,65 @@ function ageGroupKeyFor(age) {
 }
 function pageRoutines() {
   const k = today(), d = dayR(k), st = dayStats(k);
-  const mKey = isSchool(k) ? "school" : "off";
+  const schoolActive = isSchool(k);
+  const mKey = schoolActive ? "school" : "off";
+  const altKey = schoolActive ? "off" : "school";
+  const altList = filterMode(S.routines[altKey] || [], k);
   const prof = curProfileInfo();
   const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
-  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Yaşına ve cinsiyetine göre ortalama rutinin hazır; istediğin adımı ekleyip çıkarabilirsin.</p></div>
-    <div class="row"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.routineEdit ? "" : "soft"}" data-act="routineEdit">${UI.routineEdit ? "✓ Düzenlemeyi bitir" : "✏️ Rutinleri düzenle"}</button></div></div>
+  const schoolHeading = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
+  const offHeading = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
+  const eveningHeading = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
+  const activeMorningHeading = schoolActive ? "🎒 Okul / İş Günü Sabah Rutini" : "🏡 Boş Gün / Dinlenme Günü Rutini";
+  const activeMorningSub = schoolActive ? schoolHeading : offHeading;
+  const altMorningHeading = schoolActive ? "🏡 Boş Gün / Dinlenme Günü Rutini" : "🎒 Okul / İş Günü Sabah Rutini";
+  const altMorningSub = schoolActive ? offHeading : schoolHeading;
+  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Yaşına ve gün tipine (Okul/İş günü veya Boş/Dinlenme günü) göre özel rutinlerin hazır; dilediğin adımı ekleyip çıkarabilirsin.</p></div>
+    <div class="row"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.routineEdit ? "" : "soft"}" data-act="routineEdit">${UI.routineEdit ? "✓ Düzenlemeyi bitir" : "✏️ Tabloda düzenle"}</button></div></div>
     <div class="card mb tint-pink"><div class="row between"><div class="stack" style="gap:8px">
-      <div class="lbl">Gün tipi</div><div class="row"><span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş günü</span><span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Tatil / Boş gün</span></div></div>
-      <div class="stack" style="gap:8px"><div class="lbl">Enerji modu</div><div class="row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div></div></div>
+      <div class="lbl">Bugünün Gün Tipi</div><div class="row"><span class="chip ${schoolActive ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş Günü Rutini</span><span class="chip ${!schoolActive ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Boş Gün / Dinlenme Rutini</span></div></div>
+      <div class="stack" style="gap:8px"><div class="lbl">Enerji Modu</div><div class="row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div></div></div>
       <div class="divider"></div>
-      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel})</div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel} · Okul günü, Boş gün ve Akşam rutinleri birlikte güncellenir)</div>
       <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
       <div class="note-soft mt">${MODES[d.mode].d}</div></div>
     ${UI.routineEdit ? routineEditor() : `<div class="grid">
-      <div class="card c6"><h3>☀️ Sabah rutini <span class="tag lav">${isSchool(k) ? "Okul / İş günü" : "Boş gün"}</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
+      <div class="card c6"><h3>${activeMorningHeading} <span class="tag lav">${schoolActive ? "Aktif: Okul / İş Günü" : "Aktif: Boş / Dinlenme Günü"}</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
+        <div class="small muted" style="margin:-4px 0 10px"><b>${esc(activeMorningSub)}</b></div>
         <div class="progress lav mb"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
         <div class="check-list">${st.m.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], del: t.med ? "" : `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="${mKey}" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌱", "Bu modda sabah görevi yok.")}</div>
-        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${mKey}"><input name="text" placeholder="Sabah rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${mKey}"><input name="text" placeholder="${schoolActive ? "Okul/iş günü" : "Boş/dinlenme günü"} rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.m.length && st.mDone === st.m.length ? `<div class="note-soft mt">☀️ Sabah rutinin tamam! Güzel bir başlangıç yaptın.</div>` : ""}</div>
-      <div class="card c6"><h3>🌙 Akşam rutini<span class="sp"></span><span class="small muted">${st.eDone}/${st.e.length}</span></h3>
+      <div class="card c6"><h3>🌙 Akşam &amp; Uyku Öncesi Rutini<span class="sp"></span><span class="small muted">${st.eDone}/${st.e.length}</span></h3>
+        <div class="small muted" style="margin:-4px 0 10px"><b>${esc(eveningHeading)}</b></div>
         <div class="progress mb"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
         <div class="check-list">${st.e.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], del: `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="evening" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌙", "Bu modda akşam görevi yok.")}</div>
         <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="evening"><input name="text" placeholder="Akşam rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.e.length && st.eDone === st.e.length ? `<div class="note-soft mt">🌙 Akşam rutinin tamam. Tatlı rüyalar Tuğba.</div>` : ""}</div>
+      <div class="card c12 ${schoolActive ? "tint-sage" : "tint-lav"}">
+        <div class="row between" style="margin-bottom:8px">
+          <div>
+            <h3 style="margin-bottom:2px">${altMorningHeading} <span class="tag">${altList.length} adım</span></h3>
+            <div class="small muted"><b>${esc(altMorningSub)}</b> · ${schoolActive ? "Tatil, hafta sonu ve dinlenme günlerinde bu rutin otomatik devreye girer." : "Okul, ders ve iş günlerinde bu rutin otomatik devreye girer."}</div>
+          </div>
+          <button class="btn sm ${schoolActive ? "sage" : "lav"}" data-act="setSchool" data-v="${schoolActive ? "0" : "1"}" data-k="${k}">${schoolActive ? "🏡 Bugünü Boş / Dinlenme Günü Yap" : "🎒 Bugünü Okul / İş Günü Yap"}</button>
+        </div>
+        <div class="check-list">${altList.map(t => `<div class="check-item" style="cursor:default"><span class="cbox" style="font-size:12px">${schoolActive ? "🏡" : "🎒"}</span><span class="ct">${esc(t.text)}</span>${t.time ? `<span class="time">${esc(t.time)}</span>` : ""}<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="${altKey}" data-id="${t.id}" title="Kaldır">✕</button></div>`).join("") || emptyBox("🌿", "Bu rutin listesinde görev yok.")}</div>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${altKey}"><input name="text" placeholder="${schoolActive ? "Boş/dinlenme günü" : "Okul/iş günü"} rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
+      </div>
       <div class="card c6"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
       <div class="card c6"><h3>👟 Bugün hareket</h3>${moveBlock(k)}</div>
     </div>`}`;
 }
 const LVL_LABEL = {1: "Her gün (dinlenme gününde de)", 2: "Yoğun günde de göster", 3: "Sadece normal günde"};
 function routineEditor() {
-  const block = (key, title) => `<div class="card c12"><h3>${title}</h3>
+  const prof = curProfileInfo();
+  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const schoolTitle = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
+  const offTitle = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
+  const eveningTitle = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
+  const block = (key, title, sub) => `<div class="card c12"><h3>${title}</h3><p class="small muted" style="margin:-4px 0 10px">${esc(sub)}</p>
     <div class="table-wrap"><table class="t"><thead><tr><th>Görev</th><th>Saat</th><th>Ne zaman görünsün?</th><th></th></tr></thead><tbody>
     ${S.routines[key].map((t, i) => `<tr><td><input value="${esc(t.text)}" data-chg="rText" data-list="${key}" data-id="${t.id}" maxlength="80"></td>
       <td style="width:120px"><input type="time" value="${esc(t.time || "")}" data-chg="rTime" data-list="${key}" data-id="${t.id}"></td>
@@ -1402,7 +1470,7 @@ function routineEditor() {
       <button class="btn icon sm danger" data-act="rDel" data-list="${key}" data-id="${t.id}" title="Sil">🗑</button></td></tr>`).join("")}
     </tbody></table></div>
     <form class="row mt" data-form="rAdd" style="flex-wrap:nowrap"><input type="hidden" name="list" value="${key}"><input name="text" placeholder="Yeni görev…" maxlength="80" required><input type="time" name="time" style="width:120px"><button class="btn sm" type="submit">+ Ekle</button></form></div>`;
-  return `<div class="grid">${block("school", "☀️ Sabah rutini – Okul günleri")}${block("off", "🏡 Sabah rutini – Okul olmayan günler")}${block("evening", "🌙 Akşam rutini")}
+  return `<div class="grid">${block("school", "🎒 1. Okul / İş Günü Sabah Rutini", schoolTitle + " · Ders, kampüs ve mesai günlerinde aktif olur.")}${block("off", "🏡 2. Boş Gün / Dinlenme Günü Rutini", offTitle + " · Tatil, hafta sonu ve dinlenme günlerinde aktif olur.")}${block("evening", "🌙 3. Akşam & Uyku Öncesi Rutini", eveningTitle + " · Günü kapatma, hazırlık, cilt bakımı ve uyku düzeni.")}
     <div class="card c12 tint-lav"><h3>💊 Vitamin / ilaç takibi</h3><p class="small muted mb">Yalnızca buraya eklediklerin sabah rutininde görünür.</p>
       <div class="list-gap">${S.settings.meds.map(m => `<div class="row item-tile"><span class="ii">💊</span><b class="grow">${esc(m.name)}</b><span class="tag">${esc(m.time || "saat yok")}</span><button class="btn icon sm danger" data-act="medDel" data-id="${m.id}">🗑</button></div>`).join("") || `<div class="small muted">Henüz bir şey eklenmedi.</div>`}</div>
       <form class="row mt" data-form="medAdd" style="flex-wrap:nowrap"><input name="name" placeholder="örn. D vitamini" maxlength="60" required><input type="time" name="time" style="width:120px"><button class="btn sm" type="submit">+ Ekle</button></form></div></div>`;
@@ -3808,7 +3876,20 @@ document.addEventListener("click", ev => {
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
         const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
         const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender) : null;
-        const nextProf = { name, age: targetAge, gender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, skinLabel: skRec ? skRec.skinLabel : "", skinApplied: true, updatedAt: Date.now() };
+        const nextProf = {
+          name,
+          age: targetAge,
+          gender,
+          groupKey: rec.groupKey,
+          groupLabel: rec.groupLabel,
+          schoolTitle: rec.schoolTitle,
+          offTitle: rec.offTitle,
+          eveningTitle: rec.eveningTitle,
+          skinLabel: skRec ? skRec.skinLabel : "",
+          skinApplied: true,
+          distinctDayRoutinesV1: true,
+          updatedAt: Date.now()
+        };
         try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
         window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec);
       }
@@ -4826,13 +4907,14 @@ window.__bloomApplySkincareProfile = function(profile, skRec) {
   save();
   render();
 };
-window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec) {
+window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec, silent = false) {
   if (!S) S = load();
   if (!skRec && typeof window.__bloomGetRecommendedSkincare === "function") {
     skRec = window.__bloomGetRecommendedSkincare(profile.age, profile.gender);
   }
   if (skRec && skRec.skinLabel) profile.skinLabel = skRec.skinLabel;
   profile.skinApplied = true;
+  profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
   const mapItems = (items, prevList) => {
     const prev = Array.isArray(prevList) ? prevList : [];
@@ -4851,8 +4933,6 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   }
   if (Array.isArray(offItems) && offItems.length) {
     S.routines.off = mapItems(offItems, S.routines.off);
-  } else if (Array.isArray(schoolItems) && schoolItems.length) {
-    S.routines.off = mapItems(schoolItems.map(x => Object.assign({}, x, { time: x.time ? "09:00" : "" })), S.routines.off);
   }
   if (Array.isArray(eveningItems) && eveningItems.length) {
     S.routines.evening = mapItems(eveningItems, S.routines.evening);
@@ -4865,7 +4945,9 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   }
   save();
   render();
-  toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri ve cilt bakımı yüklendi! 🌷`);
+  if (!silent) {
+    toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) okul günü, boş gün ve cilt bakım rutinleri yüklendi! 🌷`);
+  }
 };
 window.__bloomBack = function() {
   if ($("#modal")) { closeModal(); return "handled"; }
@@ -4876,6 +4958,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.5.0"></script>
+  <script src="onboarding.js?v=2.6.0"></script>
 </body>
 </html>

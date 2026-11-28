@@ -93,7 +93,10 @@
   }
   personalizePage();
 
-  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+) ve cinsiyet için belirgin, gerçekçi ortalama rutinler
+  // Her yaş grubu (10-17, 18-24, 25-34, 35-49, 50+) ve cinsiyet için:
+  // 1) Okul / İş Günü Sabah Rutini (school)
+  // 2) Boş Gün / Dinlenme Günü Rutini (off) -> okul gününden tamamen farklı, dinlenme ve yenilenme odaklı
+  // 3) Akşam & Uyku Öncesi Rutini (evening)
   function getRecommendedRoutines(ageNum, gender) {
     const age = Math.max(10, Math.min(99, Number(ageNum) || 21));
     const g = gender || "female";
@@ -102,6 +105,9 @@
 
     let groupKey = "18-24";
     let groupLabel = "18–24 Yaş · Üniversite & Genç Yetişkin";
+    let schoolTitle = "🎓 Kampüs / Ders & İş Günü Sabah Rutini";
+    let offTitle = "🏡 Boş Gün & Dinlenme / Yenilenme Rutini";
+    let eveningTitle = "🌙 Akşam Tekrar, Bakım & Uyku Rutini";
     let school = [];
     let off = [];
     let evening = [];
@@ -109,122 +115,183 @@
     if (age <= 17) {
       groupKey = "10-17";
       groupLabel = "10–17 Yaş · Lise & Gençlik Rutini";
+      schoolTitle = "🎒 Okul Günü Sabah Rutini (10–17 Yaş)";
+      offTitle = "🏡 Boş Gün & Hafta Sonu Dinlenme Rutini (10–17 Yaş)";
+      eveningTitle = "🌙 Akşam Ödev, Hazırlık & Uyku Rutini (10–17 Yaş)";
       school = [
         { text: "Alarm ertelemeden uyan & perdeyi aç", time: "07:00", lvl: 1 },
-        { text: "Yatağımı topla & odamı havalandır", time: "", lvl: 2 },
-        { text: "El-yüz yıkama & diş fırçalama", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Nazik temizleyici & güneş kremi)" : isMale ? "Cilt bakımımı yap (Yüz yıkama & nemlendirici)" : "Cilt bakımımı yap", time: "", lvl: 3 },
-        { text: "1 büyük bardak su iç", time: "", lvl: 1 },
-        { text: "Okul öncesi besleyici kahvaltı yap", time: "", lvl: 1 },
-        { text: "Ders programına göre okul çantamı kontrol et", time: "", lvl: 2 },
-        { text: "Okul kıyafetimi giy ve evden çıkmaya hazırlan", time: "", lvl: 1 }
+        { text: "Yatağımı topla & odamı havalandır", time: "07:05", lvl: 2 },
+        { text: "El-yüz yıkama & diş fırçalama", time: "07:10", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Nazik temizleyici & güneş kremi)" : isMale ? "Cilt bakımımı yap (Yüz yıkama & nemlendirici)" : "Cilt bakımımı yap (Temizleyici & güneş kremi)", time: "07:15", lvl: 2 },
+        { text: "1 büyük bardak su iç", time: "07:20", lvl: 1 },
+        { text: "Okul öncesi besleyici kahvaltı yap", time: "07:25", lvl: 1 },
+        { text: "Ders programına göre okul çantamı ve defterlerimi kontrol et", time: "07:45", lvl: 2 },
+        { text: "Okul kıyafetimi giy, suluğumu al ve evden çık", time: "07:55", lvl: 1 }
       ];
-      off = school.map(x => ({ ...x, time: x.time === "07:00" ? "08:30" : x.time }));
+      off = [
+        { text: "Alarmsız dinlenmiş uyan & odamı havalandır", time: "09:00", lvl: 1 },
+        { text: "1 büyük bardak su iç & yatağımı topla", time: "09:10", lvl: 1 },
+        { text: "El-yüz yıkama & diş fırçalama", time: "09:15", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Hafta sonu nemlendirici & güneş kremi)" : isMale ? "Cilt bakımımı yap (Yüz yıkama & nemlendirici)" : "Cilt bakımımı yap", time: "09:20", lvl: 2 },
+        { text: "Aileyle / keyifli ve acele etmeden hafta sonu kahvaltısı yap", time: "09:40", lvl: 1 },
+        { text: "Odamı, kitaplığımı ve çalışma masamı düzenle", time: "10:30", lvl: 3 },
+        { text: "Haftalık konu tekrarı veya 1 kısa deneme/test çöz (40 dk)", time: "11:00", lvl: 2 },
+        { text: "Hobi, açık hava / spor veya arkadaşlarla dinlenme vakti", time: "13:30", lvl: 1 }
+      ];
       evening = [
         { text: "Günlük ödevleri ve konu tekrarını bitir", time: "19:30", lvl: 2 },
         { text: "Sınav / test pratiği yap (20-30 soru)", time: "20:15", lvl: 3 },
-        { text: "Yarınki okul çantamı ve kıyafetimi hazırla", time: "", lvl: 2 },
-        { text: "Su tüketimimi kontrol et", time: "", lvl: 2 },
-        { text: "Dişlerimi fırçala", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Yüz temizliği & dudak bakımı)" : "Cilt bakımımı yap (Akşam yüz temizliği)", time: "", lvl: 2 },
-        { text: "Telefonu masaya bırak & 15 dk kitap oku", time: "", lvl: 3 },
+        { text: "Yarınki programa göre çantamı ve kıyafetimi hazırla", time: "21:00", lvl: 2 },
+        { text: "Günlük su tüketimimi kontrol et", time: "21:15", lvl: 2 },
+        { text: "Dişlerimi fırçala", time: "21:45", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Akşam yüz temizliği & dudak bakımı)" : "Cilt bakımımı yap (Akşam yüz temizliği & nemlendirici)", time: "21:50", lvl: 2 },
+        { text: "Telefonu masaya bırak & 15 dk kitap oku", time: "22:05", lvl: 3 },
         { text: "9 saatlik verimli uyku için yatağa geç", time: "22:30", lvl: 1 }
       ];
     } else if (age <= 24) {
       groupKey = "18-24";
       groupLabel = "18–24 Yaş · Üniversite & Genç Yetişkin Rutini";
+      schoolTitle = "🎓 Kampüs / Ders & İş Günü Sabah Rutini (18–24 Yaş)";
+      offTitle = "🏡 Boş Gün & Dinlenme / Yenilenme Rutini (18–24 Yaş)";
+      eveningTitle = "🌙 Akşam Tekrar, Bakım & Uyku Rutini (18–24 Yaş)";
       school = [
         { text: "Uyan & 1 büyük bardak su iç", time: "07:30", lvl: 1 },
-        { text: "Yatağımı düzelt & odamı havalandır", time: "", lvl: 2 },
-        { text: "Yüzümü yıka & dişlerimi fırçala", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Tonik, Serum & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz yıkama, sakal/tıraş & SPF nemlendirici)" : "Cilt bakımımı yap (Nemlendirici & SPF)", time: "", lvl: 3 },
-        { text: "Protein ağırlıklı kahvaltı yap", time: "", lvl: 1 },
-        { text: "Amfi / ders programını ve slaytları kontrol et", time: "", lvl: 2 },
-        { text: "Laptop, şarj aleti, su matarası ve notlarımı çantama koy", time: "", lvl: 2 },
-        { text: "Günün 3 önceliğini belirle", time: "", lvl: 3 },
-        { text: "Evden çıkmaya hazırlan", time: "", lvl: 1 }
+        { text: "Yatağımı düzelt & odamı havalandır", time: "07:35", lvl: 2 },
+        { text: "Yüzümü yıka & dişlerimi fırçala", time: "07:40", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Tonik, Nem/Işıltı Serumu & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz/sakal yıkama, tonik & SPF nemlendirici)" : "Cilt bakımımı yap (Serum, nemlendirici & SPF 50)", time: "07:45", lvl: 2 },
+        { text: "Protein ağırlıklı kahvaltı yap & kahvemi/çayımı hazırla", time: "08:00", lvl: 1 },
+        { text: "Amfi / ders programını ve bugünkü ders slaytlarını kontrol et", time: "08:20", lvl: 2 },
+        { text: "Laptop, şarj aleti, su matarası ve defterlerimi çantama yerleştir", time: "08:30", lvl: 2 },
+        { text: "Günün 3 akademik / kişisel önceliğini belirle", time: "08:35", lvl: 3 },
+        { text: "Kampüs / iş için evden çıkmaya hazırlan", time: "08:45", lvl: 1 }
       ];
-      off = school.map(x => ({ ...x, time: x.time === "07:30" ? "09:00" : x.time }));
+      off = [
+        { text: "Dinlenmiş uyan & 1 büyük bardak su iç", time: "09:00", lvl: 1 },
+        { text: "Perdeyi aç, yatağımı topla & 5 dk sabah esnemesi yap", time: "09:10", lvl: 2 },
+        { text: "Yüzümü yıka & dişlerimi fırçala", time: "09:20", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Detaylı sabah bakımı, serum & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz/sakal bakımı, nemlendirici & SPF)" : "Cilt bakımımı yap (Nemlendirici & SPF 50)", time: "09:25", lvl: 2 },
+        { text: "Keyifli ve uzun hafta sonu kahvaltısı & kahve molası", time: "09:45", lvl: 1 },
+        { text: "Odamı toparla, çamaşır / haftalık kişisel düzenimi yap", time: "10:45", lvl: 3 },
+        { text: "Haftalık ders özeti veya proje/vize tekrar bloğu (45 dk odak)", time: "11:30", lvl: 2 },
+        { text: "Açık hava yürüyüşü, antrenman veya arkadaşlarla/kendimle sosyal vakit", time: "14:00", lvl: 1 }
+      ];
       evening = [
         { text: "Bugün işlenen ders notlarını / slaytları 20 dk gözden geçir", time: "20:30", lvl: 2 },
-        { text: "Beslenme ve su kayıtlarını tamamla", time: "", lvl: 3 },
-        { text: "Yarınki dersleri kontrol et & çantamı hazırla", time: "", lvl: 2 },
-        { text: isFemale ? "Yarınki kombinimi hazırla" : "Yarınki kıyafet ve spor eşyalarımı hazırla", time: "", lvl: 3 },
-        { text: "Çalışma masamı ve odamı 5 dakika toparla", time: "", lvl: 3 },
-        { text: "Dişlerimi fırçala & diş ipi kullan", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Çift aşamalı temizlik, serum & gece kremi)" : "Cilt bakımımı yap (Gece yüz temizliği & nemlendirici)", time: "", lvl: 2 },
-        { text: "Günlük değerlendirme yaz", time: "", lvl: 3 },
+        { text: "Beslenme ve su kayıtlarını tamamla", time: "21:00", lvl: 3 },
+        { text: "Yarınki programı kontrol et & çantamı/masamı hazırla", time: "21:30", lvl: 2 },
+        { text: isFemale ? "Yarınki kombinimi hazırla" : "Yarınki kıyafet ve spor eşyalarımı hazırla", time: "21:45", lvl: 3 },
+        { text: "Çalışma masamı ve odamı 5 dakika toparla", time: "22:00", lvl: 3 },
+        { text: "Dişlerimi fırçala & diş ipi kullan", time: "22:45", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Çift aşamalı temizlik, serum & gece kremi)" : "Cilt bakımımı yap (Gece yüz temizliği, tonik & onarıcı nemlendirici)", time: "22:50", lvl: 2 },
+        { text: "Günlük değerlendirme yaz & zihnimi boşalt", time: "23:10", lvl: 3 },
         { text: "Ekran süresini bitir & uykuya hazırlan", time: "23:30", lvl: 1 }
       ];
     } else if (age <= 34) {
       groupKey = "25-34";
       groupLabel = "25–34 Yaş · Kariyer, İş & Aktif Yaşam Rutini";
+      schoolTitle = "💼 İş & Mesai Günü Sabah Rutini (25–34 Yaş)";
+      offTitle = "🏡 İzin Günü & Dinlenme / Kendine Zaman Rutini (25–34 Yaş)";
+      eveningTitle = "🌙 Akşam Dijital Kapanış, Bakım & Dinlenme Rutini (25–34 Yaş)";
       school = [
         { text: "Uyan & 1 büyük bardak ılık su iç", time: "07:00", lvl: 1 },
-        { text: "Yatağımı düzelt & 5 dk sabah esnemesi yap", time: "", lvl: 2 },
-        { text: "Yüz yıkama & diş fırçalama", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (C Vitamini serum, göz kremi, nemlendirici & SPF)" : isMale ? "Cilt bakımımı yap (Yüz temizliği, tıraş/sakal bakımı & SPF)" : "Cilt bakımımı yap (Serum, nemlendirici & SPF)", time: "", lvl: 2 },
-        { text: "Dengeli kahvaltı yap & günlük vitaminlerimi al", time: "", lvl: 1 },
-        { text: "İş takvimimi, toplantılarımı ve günün 3 kritik hedefini planla", time: "", lvl: 2 },
-        { text: "Öğle yemeği / ara öğün ve su matarımı yanıma al", time: "", lvl: 3 },
-        { text: "Güne enerjik başla", time: "", lvl: 1 }
+        { text: "Yatağımı düzelt & 5 dk boyun/sırt sabah esnemesi yap", time: "07:05", lvl: 2 },
+        { text: "Yüz yıkama & diş fırçalama", time: "07:15", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (C Vitamini serum, göz kremi, nemlendirici & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz/sakal temizliği, göz kremi, nemlendirici & SPF)" : "Cilt bakımımı yap (Antioksidan serum, nemlendirici & SPF 50)", time: "07:20", lvl: 2 },
+        { text: "Dengeli kahvaltı yap & günlük vitaminlerimi al", time: "07:35", lvl: 1 },
+        { text: "İş takvimimi, toplantılarımı ve günün 3 kritik hedefini planla", time: "07:55", lvl: 2 },
+        { text: "Öğle yemeği / ara öğün paketi ve su matarımı çantama al", time: "08:10", lvl: 3 },
+        { text: "İş / mesai gününe enerjik başla", time: "08:20", lvl: 1 }
       ];
-      off = school.map(x => ({ ...x, time: x.time === "07:00" ? "08:30" : x.time }));
+      off = [
+        { text: "Alarmsız dinlenmiş uyan & 1 büyük bardak ılık su iç", time: "08:30", lvl: 1 },
+        { text: "15 dk sabah yogası, mobilite veya nefes egzersizi yap", time: "08:45", lvl: 2 },
+        { text: "Yüz yıkama & diş fırçalama", time: "09:00", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Hafta sonu ışıltı bakımı, C Vitamini, göz kremi & SPF 50)" : isMale ? "Cilt bakımımı yap (Arındırıcı yüz/sakal bakımı, nemlendirici & SPF)" : "Cilt bakımımı yap (C Vitamini serum, nemlendirici & SPF 50)", time: "09:05", lvl: 2 },
+        { text: "Acele etmeden uzun ve keyifli hafta sonu kahvaltısı yap", time: "09:30", lvl: 1 },
+        { text: "Ev düzeni & yeni haftanın yemek / alışveriş planını oluştur", time: "10:45", lvl: 3 },
+        { text: "Açık havada yürüyüş, spor veya sevdiğim bir hobiye vakit ayır", time: "12:00", lvl: 2 },
+        { text: "İş bildirimlerinden uzak dijital detoks & dinlenme saati", time: "15:00", lvl: 1 }
+      ];
       evening = [
         { text: "İş bildirimlerini kapat & dijital mesaiyi bitir", time: "19:30", lvl: 2 },
-        { text: "25 dk akşam yürüyüşü, pilates veya sırt/boyun esnetme", time: "", lvl: 3 },
-        { text: "Akşam yemeği ve su tüketimimi kaydet", time: "", lvl: 2 },
-        { text: "Mutfağı ve yaşam alanını 10 dakika toparla", time: "", lvl: 3 },
-        { text: isFemale ? "Yarınki iş kombinimi ve çantamı hazırla" : "Yarınki iş kıyafetimi ve çantamı hazırla", time: "", lvl: 2 },
-        { text: "Dişlerimi fırçala & ağız bakımı yap", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Makyaj/SPF temizliği, aktif serum & gece kremi)" : "Cilt bakımımı yap (Gece yüz yıkama & onarıcı nemlendirici)", time: "", lvl: 2 },
-        { text: "Bitki çayı eşliğinde kitap oku veya günlüğe yaz", time: "", lvl: 3 },
+        { text: "25 dk akşam yürüyüşü, pilates veya sırt/boyun esnetme", time: "20:00", lvl: 3 },
+        { text: "Akşam yemeği ve su tüketimimi kaydet", time: "20:45", lvl: 2 },
+        { text: "Mutfağı ve yaşam alanını 10 dakika toparla", time: "21:15", lvl: 3 },
+        { text: isFemale ? "Yarınki kombinimi ve çantamı hazırla" : "Yarınki kıyafetimi ve çantamı hazırla", time: "21:30", lvl: 2 },
+        { text: "Dişlerimi fırçala & ağız bakımı yap", time: "22:15", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Makyaj/SPF temizliği, aktif gece serumu & göz/gece kremi)" : "Cilt bakımımı yap (Gece yüz yıkama, aktif serum & onarıcı nemlendirici)", time: "22:20", lvl: 2 },
+        { text: "Bitki çayı eşliğinde kitap oku veya günlüğe yaz", time: "22:40", lvl: 3 },
         { text: "Telefonu sessize al & uykuya hazırlan", time: "23:00", lvl: 1 }
       ];
     } else if (age <= 49) {
       groupKey = "35-49";
       groupLabel = "35–49 Yaş · Denge, Sağlık & Üretkenlik Rutini";
+      schoolTitle = "🌿 İş & Aktif Gün Sabah Rutini (35–49 Yaş)";
+      offTitle = "🏡 Dinlenme Günü, Sağlık & Yaşam Dengesi Rutini (35–49 Yaş)";
+      eveningTitle = "🌙 Akşam Gevşeme, Onarım & Kaliteli Uyku Rutini (35–49 Yaş)";
       school = [
         { text: "Erken uyan & derin nefes ile güne başla", time: "06:45", lvl: 1 },
-        { text: "2 bardak oda sıcaklığında su iç", time: "", lvl: 1 },
-        { text: "10 dk eklem mobilite, duruş ve sırt esnetme", time: "", lvl: 2 },
-        { text: "Diş fırçalama & yüz yıkama", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Peptit/antioksidan serum, göz kremi & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz temizliği, göz/yüz nemlendirici & SPF)" : "Cilt bakımımı yap (Onarıcı serum & SPF 50)", time: "", lvl: 2 },
-        { text: "Protein ve lif zengin kahvaltı & takviyelerimi al", time: "", lvl: 1 },
-        { text: "Günlük iş, aile ve kişisel önceliklerimi netleştir", time: "", lvl: 2 }
+        { text: "2 bardak oda sıcaklığında su iç", time: "06:50", lvl: 1 },
+        { text: "10 dk eklem mobilite, duruş ve sırt esnetme", time: "06:55", lvl: 2 },
+        { text: "Diş fırçalama & yüz yıkama", time: "07:10", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Peptit/C Vitamini serum, göz kremi, boyun kremi & SPF 50)" : isMale ? "Cilt bakımımı yap (Yüz temizliği, peptit serum, göz/yüz nemlendirici & SPF 50)" : "Cilt bakımımı yap (Peptit serum, göz kremi & SPF 50)", time: "07:15", lvl: 2 },
+        { text: "Protein ve lif zengin kahvaltı & sabah takviyelerimi al", time: "07:30", lvl: 1 },
+        { text: "Günlük iş, aile ve kişisel önceliklerimi netleştir", time: "07:55", lvl: 2 },
+        { text: "Planlı ve dengeli şekilde güne başla", time: "08:10", lvl: 1 }
       ];
-      off = school.map(x => ({ ...x, time: x.time === "06:45" ? "08:00" : x.time }));
+      off = [
+        { text: "Sakin ve dinlenmiş uyan & 2 bardak su iç", time: "08:00", lvl: 1 },
+        { text: "20 dk sabah yürüyüşü veya tüm vücut esneme & mobilite", time: "08:15", lvl: 2 },
+        { text: "Diş fırçalama & yüz yıkama", time: "08:40", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Besleyici esans, peptit serum, göz/boyun bakımı & SPF 50)" : isMale ? "Cilt bakımımı yap (Nazik yüz temizliği, sıkılaştırıcı bakım & SPF 50)" : "Cilt bakımımı yap (Onarıcı serum & SPF 50)", time: "08:45", lvl: 2 },
+        { text: "Aileyle / huzurlu ve uzun kahvaltı & vitamin takviyeleri", time: "09:10", lvl: 1 },
+        { text: "Ev, bahçe veya haftalık yaşam alanı düzenlemesi", time: "10:30", lvl: 3 },
+        { text: "Doğa yürüyüşü, kültür/sanat veya sevdiğim bir hobiye zaman ayır", time: "12:30", lvl: 2 },
+        { text: "Zihinsel dinlenme, kitap okuma & kendine şefkat molası", time: "16:00", lvl: 1 }
+      ];
       evening = [
         { text: "Akşam yemeği sonrası 15 dk sindirim yürüyüşü", time: "20:00", lvl: 3 },
-        { text: "Günlük su hedefimi ve beslenme notlarımı kontrol et", time: "", lvl: 2 },
-        { text: "Yarınki programı ve hazırlıkları tamamla", time: "", lvl: 2 },
-        { text: "Evde 10 dk akşam toparlaması yap", time: "", lvl: 3 },
-        { text: "Dişlerimi fırçala & diş ipi kullan", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Çift aşamalı temizlik, retinol/onarıcı serum & gece kremi)" : "Cilt bakımımı yap (Gece yüz temizliği & onarıcı gece kremi)", time: "", lvl: 2 },
-        { text: "10 dk nefes gevşemesi, kitap veya şükür günlüğü", time: "", lvl: 3 },
+        { text: "Günlük su hedefimi ve beslenme notlarımı kontrol et", time: "20:30", lvl: 2 },
+        { text: "Yarınki programı ve hazırlıkları tamamla", time: "21:00", lvl: 2 },
+        { text: "Evde 10 dk akşam toparlaması yap", time: "21:20", lvl: 3 },
+        { text: "Dişlerimi fırçala & diş ipi kullan", time: "22:00", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Çift aşamalı temizlik, retinol/peptit serum, göz & boyun gece kremi)" : "Cilt bakımımı yap (Gece yüz temizliği, yaşlanma karşıtı serum & onarıcı gece kremi)", time: "22:05", lvl: 2 },
+        { text: "10 dk nefes gevşemesi, kitap veya şükür günlüğü", time: "22:25", lvl: 3 },
         { text: "Mavi ışığı kapat & kaliteli uykuya geç", time: "22:45", lvl: 1 }
       ];
     } else {
       groupKey = "50+";
       groupLabel = "50+ Yaş · Zindelik, Canlılık & Sağlıklı Yaşam Rutini";
+      schoolTitle = "🌺 Planlı & Aktif Gün Sabah Rutini (50+ Yaş)";
+      offTitle = "🏡 Huzurlu Dinlenme, Doğa & Keyif Günü Rutini (50+ Yaş)";
+      eveningTitle = "🌙 Akşam Sağlık, Bakım & Huzurlu Uyku Rutini (50+ Yaş)";
       school = [
-        { text: "Güne dinç uyan & yatakta hafif gerinme yap", time: "06:30", lvl: 1 },
-        { text: "1-2 bardak ılık su iç", time: "", lvl: 1 },
-        { text: "Diş ve ağız bakımımı yap & yüzümü yıka", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Yoğun nemlendirici, göz/boyun bakımı & SPF 50)" : "Cilt bakımımı yap (Yatıştırıcı nemlendirici & güneş koruyucu)", time: "", lvl: 2 },
-        { text: "20 dk sabah yürüyüşü veya eklem dostu esneme egzersizi", time: "", lvl: 2 },
-        { text: "Akdeniz tipi dengeli kahvaltı yap", time: "", lvl: 1 },
-        { text: "Sabah ilaç / vitamin takibimi tamamla", time: "", lvl: 1 },
-        { text: "Günün keyifli aktivitelerini planla", time: "", lvl: 2 }
+        { text: "Güne dinç uyan & yatakta hafif eklem gerinmesi yap", time: "06:30", lvl: 1 },
+        { text: "1-2 bardak ılık su iç", time: "06:40", lvl: 1 },
+        { text: "Diş ve ağız bakımımı yap & yüzümü yıka", time: "06:45", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Besleyici esans, anti-aging serum, göz/boyun kremi & SPF 50)" : "Cilt bakımımı yap (Nemlendirici esans, yatıştırıcı yüz/boyun kremi & SPF 50)", time: "06:50", lvl: 2 },
+        { text: "20 dk sabah yürüyüşü veya eklem dostu esneme egzersizi", time: "07:05", lvl: 2 },
+        { text: "Akdeniz tipi dengeli kahvaltı yap", time: "07:35", lvl: 1 },
+        { text: "Sabah ilaç / vitamin takibimi tamamla", time: "08:00", lvl: 1 },
+        { text: "Günün randevu, iş ve sosyal aktivitelerini planla", time: "08:15", lvl: 2 }
       ];
-      off = school.map(x => ({ ...x, time: x.time === "06:30" ? "07:30" : x.time }));
+      off = [
+        { text: "Huzurla uyan & yatakta yavaş nefes ve eklem esnetme yap", time: "07:30", lvl: 1 },
+        { text: "1-2 bardak ılık su iç & pencereyi açıp temiz hava al", time: "07:45", lvl: 1 },
+        { text: "Diş ve ağız bakımımı yap & yüzümü yıka", time: "07:55", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Yoğun nem esansı, yüz/boyun/dekolte bakımı & SPF 50)" : "Cilt bakımımı yap (Besleyici nemlendirici & güneş koruyucu SPF 50)", time: "08:00", lvl: 2 },
+        { text: "Uzun ve keyifli hafta sonu kahvaltısı yap", time: "08:30", lvl: 1 },
+        { text: "Sabah ilaç / vitamin takibimi tamamla", time: "09:10", lvl: 1 },
+        { text: "30 dk doğa / sahil / park yürüyüşü veya bahçe & çiçek bakımı", time: "10:00", lvl: 2 },
+        { text: "Sevdiklerimle sohbet, kitap/bulmaca ve öğleden sonra dinlenme keyfi", time: "14:00", lvl: 1 }
+      ];
       evening = [
         { text: "Hafif akşam yürüyüşü veya bacak dinlendirme", time: "19:30", lvl: 2 },
-        { text: "Günlük su tüketimimi ve akşam ilaç/vitaminlerimi kontrol et", time: "", lvl: 1 },
-        { text: "Yarınki planımı gözden geçir", time: "", lvl: 2 },
-        { text: "Dişlerimi fırçala", time: "", lvl: 1 },
-        { text: isFemale ? "Cilt bakımımı yap (Nazik temizlik, besleyici gece & boyun kremi)" : "Cilt bakımımı yap (Gece yüz temizliği & yatıştırıcı krem)", time: "", lvl: 2 },
-        { text: "Bitki çayı & dinlendirici kitap okuma / günlük", time: "", lvl: 3 },
+        { text: "Günlük su tüketimimi ve akşam ilaç/vitaminlerimi kontrol et", time: "20:00", lvl: 1 },
+        { text: "Yarınki planımı sakinlikle gözden geçir", time: "20:30", lvl: 2 },
+        { text: "Dişlerimi fırçala & ağız bakımımı yap", time: "21:15", lvl: 1 },
+        { text: isFemale ? "Cilt bakımımı yap (Nazik temizlik sütü, yenileyici serum & yoğun gece/boyun/el kremi)" : "Cilt bakımımı yap (Kurutmayan gece yüz temizliği & yoğun onarıcı krem)", time: "21:20", lvl: 2 },
+        { text: "Bitki çayı & dinlendirici kitap okuma / şükür günlüğü", time: "21:40", lvl: 3 },
         { text: "Odayı havalandır & huzurlu uykuya geç", time: "22:15", lvl: 1 }
       ];
     }
@@ -234,6 +301,9 @@
       groupKey,
       groupLabel,
       badge: `${groupLabel} · ${genderLabel}`,
+      schoolTitle,
+      offTitle,
+      eveningTitle,
       school,
       off,
       evening
@@ -616,7 +686,20 @@
 
       const rec = getRecommendedRoutines(age, curGender);
       const skRec = getRecommendedSkincare(age, curGender);
-      const profile = { name, age, gender: curGender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, skinLabel: skRec.skinLabel, updatedAt: Date.now() };
+      const profile = {
+        name,
+        age,
+        gender: curGender,
+        groupKey: rec.groupKey,
+        groupLabel: rec.groupLabel,
+        schoolTitle: rec.schoolTitle,
+        offTitle: rec.offTitle,
+        eveningTitle: rec.eveningTitle,
+        skinLabel: skRec.skinLabel,
+        skinApplied: true,
+        distinctDayRoutinesV1: true,
+        updatedAt: Date.now()
+      };
       try {
         localStorage.setItem(NAME_KEY, name);
         localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
@@ -654,7 +737,22 @@
   };
 
   if (savedProfile && savedProfile.name && savedProfile.age && savedProfile.gender) {
-    if (!savedProfile.skinApplied && typeof window.__bloomApplySkincareProfile === "function") {
+    if (!savedProfile.distinctDayRoutinesV1 && typeof window.__bloomApplyOnboardingProfile === "function") {
+      try {
+        const rec = getRecommendedRoutines(savedProfile.age, savedProfile.gender);
+        const skRec = getRecommendedSkincare(savedProfile.age, savedProfile.gender);
+        savedProfile.groupKey = rec.groupKey;
+        savedProfile.groupLabel = rec.groupLabel;
+        savedProfile.schoolTitle = rec.schoolTitle;
+        savedProfile.offTitle = rec.offTitle;
+        savedProfile.eveningTitle = rec.eveningTitle;
+        savedProfile.skinLabel = skRec.skinLabel;
+        savedProfile.skinApplied = true;
+        savedProfile.distinctDayRoutinesV1 = true;
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(savedProfile));
+        window.__bloomApplyOnboardingProfile(savedProfile, rec.school, rec.off, rec.evening, skRec, true);
+      } catch (e) {}
+    } else if (!savedProfile.skinApplied && typeof window.__bloomApplySkincareProfile === "function") {
       try {
         const skRec = getRecommendedSkincare(savedProfile.age, savedProfile.gender);
         savedProfile.skinLabel = skRec.skinLabel;
