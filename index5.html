@@ -4352,7 +4352,7 @@ document.addEventListener("click", ev => {
     case "skinProfileForm": openModal("🧬 Cilt Profilim (İsteğe bağlı)", skinProfileFormHTML()); break;
     case "applyAgeRoutine": {
       const prof = curProfileInfo();
-      const targetAge = +prof.age || +ds.age || 21;
+      const targetAge = +ds.age || +prof.age || 21;
       const gender = prof.gender || "female";
       const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
@@ -5415,7 +5415,6 @@ function checkGardenTime() {
 }
 function init() {
   S = load();
-  syncExercisePlanWithProfile(curProfileInfo());
   save();
   syncEarnedRewards();
   restoreTimer();
@@ -5444,7 +5443,6 @@ window.__bloomGetRoutines = function() {
 window.__bloomApplySkincareProfile = function(profile, skRec) {
   if (!S) S = load();
   S.profile = Object.assign({}, S.profile || {}, profile || {});
-  syncExercisePlanWithProfile(S.profile);
   if (skRec && Array.isArray(skRec.morning) && skRec.morning.length) {
     S.skincare.morning = skRec.morning.map(x => Object.assign({}, x));
   }
@@ -5469,7 +5467,6 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   profile.exerciseApplied = true;
   profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
-  syncExercisePlanWithProfile(profile);
   const mapItems = (items, prevList) => {
     const prev = Array.isArray(prevList) ? prevList : [];
     return (items || []).map(it => {
