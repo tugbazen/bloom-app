@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.3.0">
+<meta name="bloom-version" content="2.4.1">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -453,6 +453,7 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
 <header class="topbar">
   <div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
   <div class="row" style="gap:6px">
+    <button class="btn lav sm hidden" id="topTimerBtn" data-act="goStudyTimer" title="Aktif odak sayacı">⏱ 00:00</button>
     <button class="btn icon soft" data-act="go" data-page="water" title="Su takibi" aria-label="Su takibi">💧</button>
     <button class="btn icon soft" data-act="go" data-page="skincare" title="Cilt Bakım Rutini" aria-label="Cilt Bakım Rutini">🧴</button>
     <button class="btn icon soft" data-act="go" data-page="exercise" title="Egzersiz" aria-label="Egzersiz">🧘‍♀️</button>
@@ -710,7 +711,8 @@ const BADGES = [
 "use strict";
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
-const APP_VERSION = "2.3.0";
+const TIMER_KEY = "bloom_active_timer";
+const APP_VERSION = "2.4.1";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -1174,6 +1176,7 @@ const NAV_EXTRA = [{p:"water",e:"💧",t:"Su Takibi"},{p:"skincare",e:"🧴",t:"
 function renderNav() {
   const L = levelInfo();
   $("#sidebar").innerHTML = `<div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
+    ${UI.timer ? `<button class="btn lav sm mb-s" id="sideTimerBtn" data-act="goStudyTimer" style="margin:0 8px 8px;justify-content:center">⏱ Odak sayacı: 00:00</button>` : ""}
     ${NAV.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span>${n.t}</div>`).join("")}
     <div class="nav-sep"></div>
     ${NAV_EXTRA.map(n => `<div class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span>${n.t}</div>`).join("")}
@@ -1182,6 +1185,8 @@ function renderNav() {
       <div class="tiny muted mt-s">${stageInfo().e} ${stageInfo().name}</div></div>`;
   $("#bottomNav").innerHTML = NAV.map(n => `<div class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="ni">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana").replace("İlerlemem","İlerleme").replace("Günlüğüm","Günlük")}</span></div>`).join("");
   $$('.topbar [data-act="go"]').forEach(b => b.classList.toggle("active", b.dataset.page === UI.page));
+  const tb = $("#topTimerBtn");
+  if (tb) tb.classList.toggle("hidden", !UI.timer);
 }
 let lastPage = null;
 function render() {
@@ -1189,13 +1194,15 @@ function render() {
   const v = $("#view"); v.innerHTML = fn();
   if (lastPage !== UI.page) { v.classList.remove("view-anim"); void v.offsetWidth; v.classList.add("view-anim"); window.scrollTo({top: 0}); lastPage = UI.page; }
   renderNav();
-  if (UI.page === "school" && UI.timer) updateTimer();
+  if (UI.timer) updateTimer();
 }
 function go(p) { UI.page = p; if (p !== "school") UI.course = null; closeModal(); render(); }
 
 /* ---------------- ORTAK PARÇALAR ---------------- */
 function checkRow({id, text, time = "", done, act = "toggleTask", attrs = "", del = ""}) {
-  return `<div class="check-item ${done ? "done" : ""}" data-act="${act}" data-id="${id}" ${attrs}><span class="cbox">${CHECK}</span><span class="ct">${esc(text)}</span>${time ? `<span class="time">${esc(time)}</span>` : ""}${del}</div>`;
+  const isSkinTask = act === "toggleTask" && /cilt bakım/i.test(text || "");
+  const skinJump = isSkinTask ? `<span class="tag lav" data-act="go" data-page="skincare" title="Cilt Bakım Rutinine Git" style="cursor:pointer;flex-shrink:0">🧴 Rutin →</span>` : "";
+  return `<div class="check-item ${done ? "done" : ""}" data-act="${act}" data-id="${id}" ${attrs}><span class="cbox">${CHECK}</span><span class="ct">${esc(text)}</span>${skinJump}${time ? `<span class="time">${esc(time)}</span>` : ""}${del}</div>`;
 }
 function emptyBox(em, text, btn = "") { return `<div class="empty"><span class="em">${em}</span><p>${text}</p>${btn}</div>`; }
 function moodPicker(k, act = "setMood") {
@@ -1330,22 +1337,54 @@ function homeWeek() {
 }
 
 /* ---------------- RUTİNLER ---------------- */
+const AGE_ROUTINE_GROUPS = [
+  {k:"10-17", age:16, e:"🎒", t:"10–17 Yaş (Lise & Genç)"},
+  {k:"18-24", age:21, e:"🎓", t:"18–24 Yaş (Üniversite)"},
+  {k:"25-34", age:29, e:"💼", t:"25–34 Yaş (İş & Aktif Yaşam)"},
+  {k:"35-49", age:40, e:"🌿", t:"35–49 Yaş (Denge & Sağlık)"},
+  {k:"50+",   age:55, e:"🌺", t:"50+ Yaş (Zindelik & Yaşam)"}
+];
+function curProfileInfo() {
+  if (S && S.profile && S.profile.age) return S.profile;
+  try {
+    const rp = localStorage.getItem("bloom_user_profile");
+    if (rp) return JSON.parse(rp);
+  } catch (e) {}
+  return { name: "", age: 21, gender: "female", groupKey: "18-24" };
+}
+function ageGroupKeyFor(age) {
+  const a = Number(age) || 21;
+  if (a <= 17) return "10-17";
+  if (a <= 24) return "18-24";
+  if (a <= 34) return "25-34";
+  if (a <= 49) return "35-49";
+  return "50+";
+}
 function pageRoutines() {
   const k = today(), d = dayR(k), st = dayStats(k);
-  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Bir tıkla tamamla; her adım bahçene katkı sağlar.</p></div>
-    <button class="btn ${UI.routineEdit ? "" : "soft"}" data-act="routineEdit">${UI.routineEdit ? "✓ Düzenlemeyi bitir" : "✏️ Rutinleri düzenle"}</button></div>
+  const mKey = isSchool(k) ? "school" : "off";
+  const prof = curProfileInfo();
+  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
+  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Yaşına ve cinsiyetine göre ortalama rutinin hazır; istediğin adımı ekleyip çıkarabilirsin.</p></div>
+    <div class="row"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.routineEdit ? "" : "soft"}" data-act="routineEdit">${UI.routineEdit ? "✓ Düzenlemeyi bitir" : "✏️ Rutinleri düzenle"}</button></div></div>
     <div class="card mb tint-pink"><div class="row between"><div class="stack" style="gap:8px">
-      <div class="lbl">Gün tipi</div><div class="row"><span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul günü</span><span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Okul yok</span></div></div>
+      <div class="lbl">Gün tipi</div><div class="row"><span class="chip ${isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş günü</span><span class="chip ${!isSchool(k) ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Tatil / Boş gün</span></div></div>
       <div class="stack" style="gap:8px"><div class="lbl">Enerji modu</div><div class="row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div></div></div>
+      <div class="divider"></div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel})</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
       <div class="note-soft mt">${MODES[d.mode].d}</div></div>
     ${UI.routineEdit ? routineEditor() : `<div class="grid">
-      <div class="card c6"><h3>☀️ Sabah rutini <span class="tag lav">${isSchool(k) ? "Okul günü" : "Okul yok"}</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
+      <div class="card c6"><h3>☀️ Sabah rutini <span class="tag lav">${isSchool(k) ? "Okul / İş günü" : "Boş gün"}</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
         <div class="progress lav mb"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
-        <div class="check-list">${st.m.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id]})).join("") || emptyBox("🌱", "Bu modda sabah görevi yok.")}</div>
+        <div class="check-list">${st.m.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], del: t.med ? "" : `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="${mKey}" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌱", "Bu modda sabah görevi yok.")}</div>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${mKey}"><input name="text" placeholder="Sabah rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.m.length && st.mDone === st.m.length ? `<div class="note-soft mt">☀️ Sabah rutinin tamam! Güzel bir başlangıç yaptın.</div>` : ""}</div>
       <div class="card c6"><h3>🌙 Akşam rutini<span class="sp"></span><span class="small muted">${st.eDone}/${st.e.length}</span></h3>
         <div class="progress mb"><i style="width:${st.e.length ? st.eDone / st.e.length * 100 : 0}%"></i></div>
-        <div class="check-list">${st.e.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id]})).join("") || emptyBox("🌙", "Bu modda akşam görevi yok.")}</div>
+        <div class="check-list">${st.e.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], del: `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="evening" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌙", "Bu modda akşam görevi yok.")}</div>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="evening"><input name="text" placeholder="Akşam rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.e.length && st.eDone === st.e.length ? `<div class="note-soft mt">🌙 Akşam rutinin tamam. Tatlı rüyalar Tuğba.</div>` : ""}</div>
       <div class="card c6"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
       <div class="card c6"><h3>👟 Bugün hareket</h3>${moveBlock(k)}</div>
@@ -3015,7 +3054,7 @@ function pageSettings() {
           <button class="btn" data-act="exportData">⬇️ JSON yedek indir</button>
           <button class="btn lav" data-act="importData">⬆️ Yedek dosyası yükle</button>
           <button class="btn sage" data-act="forceUpdate">🔄 Uygulamayı güncelle</button>
-          <button class="btn soft" data-act="changeUserName">👤 İsmimi değiştir</button>
+          <button class="btn soft" data-act="changeUserName">👤 Profilim &amp; Rutin Sihirbazı</button>
           <button class="btn soft" data-act="showWelcome">🌷 Açılış ekranını gör</button>
           <button class="btn danger" data-act="resetAll">🗑 Tüm verileri sil</button>
         </div>
@@ -3035,9 +3074,38 @@ function courseFormHTML(c = {}) {
     <div class="field"><label>Ders açıklaması</label><textarea name="desc" maxlength="400" placeholder="Kısa açıklama…">${esc(c.desc || "")}</textarea></div>
     <div class="modal-foot"><button type="button" class="btn soft" data-act="closeModal">Vazgeç</button><button class="btn" type="submit">Kaydet 🌷</button></div></form>`;
 }
+function courseSelectFieldHTML(selectedId = "", full = false) {
+  const noCourses = !S.courses.length;
+  const pickNew = noCourses && !selectedId;
+  return `<div class="field ${full ? "full" : ""}"><label>Ders</label>
+    <select name="courseId" data-chg="courseSelectNew">
+      ${S.courses.map(c => `<option value="${c.id}" ${selectedId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}
+      <option value="__new__" ${pickNew ? "selected" : ""}>➕ Yeni ders ekle…</option>
+      <option value="" ${!pickNew && !selectedId ? "selected" : ""}>Genel</option>
+    </select>
+    <div class="row mt-s inline-new-course ${pickNew ? "" : "hidden"}" style="gap:6px;flex-wrap:nowrap">
+      <input name="newCourseName" placeholder="Yeni ders adı (örn. Anatomi, Matematik)…" maxlength="80" class="grow">
+      <input type="number" name="newCourseEcts" step="0.5" min="0.5" max="30" value="3" style="width:72px;text-align:center" title="AKTS" aria-label="AKTS">
+    </div>
+  </div>`;
+}
+function resolveFormCourseId(fd) {
+  let cid = fd.get("courseId") || "";
+  const newName = (fd.get("newCourseName") || "").trim();
+  if (cid === "__new__" || (!cid && newName)) {
+    if (!newName) return "";
+    const existing = S.courses.find(c => trNorm(c.name) === trNorm(newName));
+    if (existing) return existing.id;
+    const ects = Math.max(0.5, Math.min(30, +fd.get("newCourseEcts") || 3));
+    const created = newCourse(newName, ects);
+    S.courses.push(created);
+    return created.id;
+  }
+  return cid;
+}
 function examFormHTML(e = {}) {
   return `<form data-form="exam" class="form-grid"><input type="hidden" name="id" value="${esc(e.id || "")}">
-    <div class="field"><label>Ders</label><select name="courseId">${S.courses.map(c => `<option value="${c.id}" ${e.courseId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}<option value="" ${!e.courseId ? "selected" : ""}>Genel</option></select></div>
+    ${courseSelectFieldHTML(e.courseId || "", false)}
     <div class="field"><label>Sınav adı *</label><input name="name" required maxlength="80" value="${esc(e.name || "")}" placeholder="örn. Vize"></div>
     <div class="field"><label>Tarih *</label><input type="date" name="date" required value="${esc(e.date || addDays(today(), 7))}"></div>
     <div class="field"><label>Öncelik</label><select name="priority">${["Yüksek","Orta","Düşük"].map(p => `<option ${(e.priority || "Orta") === p ? "selected" : ""}>${p}</option>`).join("")}</select></div>
@@ -3049,7 +3117,7 @@ function gradeFormHTML(g = {}) {
   const curType = g.type || "Vize";
   const defW = (GRADE_TYPES.find(x => x.t === curType) || GRADE_TYPES[0]).w;
   return `<form data-form="grade" class="form-grid"><input type="hidden" name="id" value="${esc(g.id || "")}">
-    <div class="field full"><label>Ders</label><select name="courseId">${S.courses.map(c => `<option value="${c.id}" ${g.courseId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}<option value="" ${g.courseId === "" ? "selected" : ""}>Genel</option></select></div>
+    ${courseSelectFieldHTML(g.courseId || "", true)}
     <div class="field"><label>Sınav türü</label><select name="type" data-chg="gradeType">${GRADE_TYPES.map(x => `<option value="${x.t}" ${curType === x.t ? "selected" : ""}>${x.t}</option>`).join("")}</select></div>
     <div class="field"><label>Not (0–100) *</label><input type="number" step="0.5" min="0" max="100" name="score" required value="${esc(g.score ?? "")}" placeholder="örn. 85"></div>
     <div class="field"><label>Ağırlık (%)</label><input type="number" min="0" max="100" name="weight" value="${esc(g.weight ?? defW)}" required></div>
@@ -3059,7 +3127,7 @@ function gradeFormHTML(g = {}) {
 }
 function studyFormHTML(courseId = "") {
   return `<form data-form="study" class="form-grid">
-    <div class="field full"><label>Ders</label><select name="courseId">${S.courses.map(c => `<option value="${c.id}" ${courseId === c.id ? "selected" : ""}>${esc(c.name)}</option>`).join("")}<option value="" ${!courseId ? "selected" : ""}>Genel</option></select></div>
+    ${courseSelectFieldHTML(courseId || "", true)}
     <div class="field"><label>Tarih</label><input type="date" name="date" value="${today()}" required></div>
     <div class="field"><label>Süre (dakika) *</label><input type="number" name="minutes" min="1" max="600" value="30" required></div>
     <div class="field full"><label>Konu / not</label><input name="topic" maxlength="120" placeholder="Ne çalıştın?"></div>
@@ -3532,9 +3600,60 @@ function checkRoutineDone(k, pos) {
   checkWeekBonus();
 }
 function updateTimer() {
-  const el = $("#timerTxt"); if (!el || !UI.timer) return;
+  if (!UI.timer) return;
   const sec = Math.max(0, Math.floor((Date.now() - UI.timer.start) / 1000));
-  el.textContent = `${pad(Math.floor(sec / 60))}:${pad(sec % 60)}`;
+  const txt = `${pad(Math.floor(sec / 60))}:${pad(sec % 60)}`;
+  const el = $("#timerTxt"); if (el) el.textContent = txt;
+  const tb = $("#topTimerBtn"); if (tb) { tb.textContent = `⏱ ${txt}`; tb.classList.remove("hidden"); }
+  const sb = $("#sideTimerBtn"); if (sb) sb.textContent = `⏱ Odak sayacı: ${txt}`;
+}
+function persistTimer() {
+  try {
+    if (UI.timer) localStorage.setItem(TIMER_KEY, JSON.stringify({ start: UI.timer.start, courseId: UI.timer.courseId || "" }));
+    else localStorage.removeItem(TIMER_KEY);
+  } catch (e) {}
+}
+function restoreTimer() {
+  if (UI.timer) return;
+  try {
+    const raw = localStorage.getItem(TIMER_KEY);
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    if (parsed && +parsed.start > 0 && (Date.now() - (+parsed.start)) < 43200000) {
+      UI.timer = { start: +parsed.start, courseId: parsed.courseId || "", iv: setInterval(updateTimer, 1000) };
+    } else {
+      localStorage.removeItem(TIMER_KEY);
+    }
+  } catch (e) {}
+}
+function syncRoutineToSkincare(taskId, done, k = today(), pos = null) {
+  const d = day(k);
+  const allMorning = [...(S.routines.school || []), ...(S.routines.off || [])];
+  const mTask = allMorning.find(t => t.id === taskId && /cilt bakım/i.test(t.text || ""));
+  const eTask = (S.routines.evening || []).find(t => t.id === taskId && /cilt bakım/i.test(t.text || ""));
+  const tab = eTask ? "evening" : mTask ? "morning" : null;
+  if (!tab) return;
+  const list = S.skincare[tab] || [];
+  list.forEach(it => {
+    d.skinChecks[it.id] = done;
+    if (done) award("skin_" + it.id, 2, "Cilt bakımı adımı 🧴", 1, k, pos);
+  });
+  if (done && list.length && award("skin_done_" + tab, 10, tab === "morning" ? "Sabah cilt bakımı ☀️" : "Akşam cilt bakımı 🌙", 4, k, pos)) {
+    checkWeekBonus();
+  }
+}
+function syncSkincareToRoutine(tab, allDone, k = today(), pos = null) {
+  const d = day(k);
+  const pools = tab === "evening" ? [S.routines.evening || []] : [S.routines.school || [], S.routines.off || []];
+  let matched = false;
+  pools.forEach(rList => {
+    rList.filter(t => /cilt bakım/i.test(t.text || "")).forEach(t => {
+      d.checks[t.id] = allDone;
+      matched = true;
+      if (allDone) award("task_" + t.id, 2, "Rutin adımı", 2, k, pos);
+    });
+  });
+  if (allDone && matched) checkRoutineDone(k, pos);
 }
 let lastRemind = 0;
 function checkReminder() {
@@ -3556,7 +3675,8 @@ document.addEventListener("click", ev => {
   if (el.closest(".garden-mini") && (act === "treeTap" || act === "butterfly")) { go("garden"); return; }
 
   switch (act) {
-    case "go": go(ds.page); break;
+    case "go": ev.stopPropagation(); go(ds.page); break;
+    case "goStudyTimer": UI.page = "school"; UI.course = null; UI.schoolTab = "study"; closeModal(); render(); break;
     case "closeModal": closeModal(); break;
     case "confirmYes": { const cb = confirmCb; confirmCb = null; closeModal(); if (cb) cb(); break; }
     case "startDay": {
@@ -3588,6 +3708,7 @@ document.addEventListener("click", ev => {
     case "toggleTask": {
       const k = today(), d = day(k), id = ds.id;
       const done = !d.checks[id]; d.checks[id] = done;
+      syncRoutineToSkincare(id, done, k, pos);
       if (done) {
         award("task_" + id, 2, "Rutin adımı", 2, k, pos);
         confettiBurst(pos.x, pos.y, 10);
@@ -3671,7 +3792,20 @@ document.addEventListener("click", ev => {
       if (idx >= 0 && to >= 0 && to < arr.length) { [arr[idx], arr[to]] = [arr[to], arr[idx]]; save(); render(); }
       break;
     }
-    case "rDel": S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
+    case "rDel": ev.stopPropagation(); S.routines[ds.list] = S.routines[ds.list].filter(x => x.id !== ds.id); save(); render(); break;
+    case "applyAgeRoutine": {
+      const targetAge = +ds.age || 21;
+      const prof = curProfileInfo();
+      const gender = prof.gender || "female";
+      const name = prof.name || (localStorage.getItem("bloom_user_name") || "").trim() || "Tuğba";
+      if (typeof window.__bloomGetRecommendedRoutines === "function") {
+        const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
+        const nextProf = { name, age: targetAge, gender, groupKey: rec.groupKey, groupLabel: rec.groupLabel, updatedAt: Date.now() };
+        try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
+        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening);
+      }
+      break;
+    }
     case "medDel": S.settings.meds = S.settings.meds.filter(m => m.id !== ds.id); save(); render(); break;
 
     case "schoolTab": UI.schoolTab = ds.t; render(); break;
@@ -3699,6 +3833,7 @@ document.addEventListener("click", ev => {
     case "timerStart": {
       const cid = ($("#timerCourse") || {}).value || "";
       UI.timer = {start: Date.now(), courseId: cid, iv: setInterval(updateTimer, 1000)};
+      persistTimer();
       render(); toast("Odak zamanlayıcı başladı ✨"); break;
     }
     case "timerStop": {
@@ -3706,12 +3841,13 @@ document.addEventListener("click", ev => {
       clearInterval(UI.timer.iv);
       const mins = Math.max(1, Math.round((Date.now() - UI.timer.start) / 60000));
       const cid = UI.timer.courseId; UI.timer = null;
+      persistTimer();
       const stEntry = {id: uid(), courseId: cid, date: today(), minutes: mins, topic: "Odak oturumu"};
       S.study.push(stEntry);
       if (!award("study", 25, "Ders çalışmak 📚", 8, today(), pos)) award("study_" + stEntry.id, 10, "Ek çalışma 📚", 4, today(), pos);
       save(); render(); toast(`${mins} dakika çalışma kaydedildi! 📚`); break;
     }
-    case "timerCancel": { if (UI.timer) { clearInterval(UI.timer.iv); UI.timer = null; render(); } break; }
+    case "timerCancel": { if (UI.timer) { clearInterval(UI.timer.iv); UI.timer = null; persistTimer(); render(); } break; }
     case "topicDel": {
       const c = S.courses.find(x => x.id === UI.course); if (!c) break;
       c[ds.type] = c[ds.type].filter(t => t.id !== ds.id); save(); render(); break;
@@ -3822,7 +3958,10 @@ document.addEventListener("click", ev => {
       arr.sort(); save(); render(); break;
     }
     case "exportData": {
-      const json = JSON.stringify(S, null, 2), fname = `bloom-tugba-yedek-${today()}.json`;
+      let uName = "kullanici";
+      try { uName = (localStorage.getItem("bloom_user_name") || (S.profile && S.profile.name) || "kullanici").trim(); } catch (e) {}
+      const slug = trNorm(uName).replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "kullanici";
+      const json = JSON.stringify(S, null, 2), fname = `bloom-${slug}-yedek-${today()}.json`;
       if (window.BloomAndroid && typeof window.BloomAndroid.exportBackup === "function") {
         window.BloomAndroid.exportBackup(fname, json);
         break;
@@ -3834,18 +3973,20 @@ document.addEventListener("click", ev => {
     }
     case "importData": $("#importFile").click(); break;
     case "forceUpdate": forcePwaUpdate(); break;
-    case "changeUserName": if (typeof window.__bloomOpenOnboarding === "function") window.__bloomOpenOnboarding(); break;
+    case "changeUserName": if (typeof window.__bloomOpenOnboarding === "function") window.__bloomOpenOnboarding(true); break;
     case "skinTab": UI.skinTab = ds.t === "evening" ? "evening" : "morning"; render(); break;
     case "skinEdit": UI.skinEdit = !UI.skinEdit; render(); break;
     case "skinToggle": {
       const k = today(), d = day(k), tab = ds.tab === "evening" ? "evening" : "morning", id = ds.id;
       d.skinChecks[id] = !d.skinChecks[id];
       const done = d.skinChecks[id];
+      const list = S.skincare[tab] || [];
+      const allDone = !!(list.length && list.every(x => d.skinChecks[x.id]));
+      syncSkincareToRoutine(tab, allDone, k, pos);
       if (done) {
         award("skin_" + id, 2, "Cilt bakımı adımı 🧴", 1, k, pos);
         if (pos) confettiBurst(pos.x, pos.y, 10);
-        const list = S.skincare[tab] || [];
-        if (list.length && list.every(x => d.skinChecks[x.id]) && award("skin_done_" + tab, 10, tab === "morning" ? "Sabah cilt bakımı ☀️" : "Akşam cilt bakımı 🌙", 4, k, pos)) {
+        if (allDone && award("skin_done_" + tab, 10, tab === "morning" ? "Sabah cilt bakımı ☀️" : "Akşam cilt bakımı 🌙", 4, k, pos)) {
           confettiBurst(pos ? pos.x : window.innerWidth / 2, pos ? pos.y : 200, 22);
           toast(tab === "morning" ? "Sabah cilt bakımın tamam! +10 XP ✨" : "Akşam cilt bakımın tamam! +10 XP 🌙");
           checkWeekBonus();
@@ -4084,7 +4225,15 @@ document.addEventListener("click", ev => {
     }
 
     case "resetAll": confirmBox("Tüm rutinlerin, su, yemek, ders, bahçe ve günlük verilerin kalıcı olarak silinecek. Öncesinde yedek almanı öneririm. Devam edilsin mi?", () => {
-      localStorage.removeItem(LS_KEY); S = defaults(); save(); render(); toast("Tüm veriler sıfırlandı 🌱");
+      if (UI.timer) { clearInterval(UI.timer.iv); UI.timer = null; }
+      try {
+        localStorage.removeItem(LS_KEY);
+        localStorage.removeItem(TIMER_KEY);
+        localStorage.removeItem("bloom_user_name");
+        localStorage.removeItem("bloom_user_profile");
+      } catch (e) {}
+      S = defaults(); save(); render(); toast("Tüm veriler sıfırlandı 🌱");
+      if (typeof window.__bloomOpenOnboarding === "function") window.__bloomOpenOnboarding(false);
     }, "Evet, tümünü sil"); break;
   }
 });
@@ -4167,14 +4316,16 @@ document.addEventListener("submit", ev => {
       S.courses.push(newCourse(n, ects)); save(); render(); toast("Ders eklendi 📚"); break;
     }
     case "exam": {
-      const id = fd.get("id"), data = {courseId: fd.get("courseId"), name: fd.get("name").trim(), date: fd.get("date"), priority: fd.get("priority"), topics: fd.get("topics").trim(), plan: fd.get("plan").trim()};
+      const cid = resolveFormCourseId(fd);
+      const id = fd.get("id"), data = {courseId: cid, name: fd.get("name").trim(), date: fd.get("date"), priority: fd.get("priority"), topics: fd.get("topics").trim(), plan: fd.get("plan").trim()};
       if (id) { const e = S.exams.find(x => x.id === id); if (e) Object.assign(e, data); }
       else S.exams.push({id: uid(), done: false, ...data});
       save(); closeModal(); render(); toast("Sınav kaydedildi 📅"); break;
     }
     case "grade": {
       const id = fd.get("id");
-      const item = {id: id || uid(), courseId: fd.get("courseId") || "", type: fd.get("type") || "Vize",
+      const cid = resolveFormCourseId(fd);
+      const item = {id: id || uid(), courseId: cid, type: fd.get("type") || "Vize",
         score: Math.max(0, Math.min(100, +fd.get("score") || 0)),
         weight: Math.max(0, Math.min(100, +fd.get("weight") || 0)),
         date: fd.get("date") || today(), note: (fd.get("note") || "").trim()};
@@ -4184,7 +4335,8 @@ document.addEventListener("submit", ev => {
     }
     case "study": {
       const dt = fd.get("date") || today();
-      const stEntry = {id: uid(), courseId: fd.get("courseId"), date: dt, minutes: Math.max(1, +fd.get("minutes") || 25), topic: fd.get("topic").trim()};
+      const cid = resolveFormCourseId(fd);
+      const stEntry = {id: uid(), courseId: cid, date: dt, minutes: Math.max(1, +fd.get("minutes") || 25), topic: fd.get("topic").trim()};
       S.study.push(stEntry);
       if (!award("study", 25, "Ders çalışmak 📚", 8, dt)) award("study_" + stEntry.id, 10, "Ek çalışma 📚", 4, dt);
       save(); closeModal(); render(); toast("Çalışma kaydedildi! 📚"); break;
@@ -4405,6 +4557,13 @@ function onLiveChange(ev) {
     const form = el.closest("form"), wIn = form && form.querySelector('[name="weight"]');
     const gt = GRADE_TYPES.find(x => x.t === el.value);
     if (wIn && gt) wIn.value = gt.w;
+  } else if (chg === "courseSelectNew") {
+    const form = el.closest("form"), box = form && form.querySelector(".inline-new-course"), inp = box && box.querySelector('[name="newCourseName"]');
+    if (box) {
+      const isNew = el.value === "__new__";
+      box.classList.toggle("hidden", !isNew);
+      if (isNew && inp) inp.focus();
+    }
   } else if (chg === "pickSlideTopic") {
     const form = el.closest("form"), inp = form && form.querySelector('[name="name"]');
     if (inp && el.value) inp.value = el.value;
@@ -4624,6 +4783,7 @@ function init() {
   S = load();
   save();
   syncEarnedRewards();
+  restoreTimer();
   UI.curDay = today(); UI.nutDate = today(); UI.jDate = today();
   const now = new Date(); UI.calY = now.getFullYear(); UI.calM = now.getMonth();
   UI.gardenPhase = gardenThemeForTime(now).k; UI.gardenHour = now.getHours();
@@ -4637,6 +4797,45 @@ function init() {
     window.addEventListener("pageshow", ev => { if (ev && ev.persisted) { checkDayRollover(); checkGardenTime(); checkForPwaUpdate(false); } });
   }
 }
+window.render = render;
+window.__bloomGetRoutines = function() {
+  if (!S || !S.routines) return null;
+  const k = today();
+  return {
+    morning: (isSchool(k) ? S.routines.school : S.routines.off) || [],
+    evening: S.routines.evening || []
+  };
+};
+window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems) {
+  if (!S) S = load();
+  S.profile = profile;
+  const mapItems = (items, prevList) => {
+    const prev = Array.isArray(prevList) ? prevList : [];
+    return (items || []).map(it => {
+      const existing = prev.find(p => trNorm(p.text) === trNorm(it.text));
+      return {
+        id: existing ? existing.id : uid(),
+        text: it.text,
+        lvl: it.lvl || 2,
+        time: it.time !== undefined ? it.time : (existing ? existing.time : "")
+      };
+    });
+  };
+  if (Array.isArray(schoolItems) && schoolItems.length) {
+    S.routines.school = mapItems(schoolItems, S.routines.school);
+  }
+  if (Array.isArray(offItems) && offItems.length) {
+    S.routines.off = mapItems(offItems, S.routines.off);
+  } else if (Array.isArray(schoolItems) && schoolItems.length) {
+    S.routines.off = mapItems(schoolItems.map(x => Object.assign({}, x, { time: x.time ? "09:00" : "" })), S.routines.off);
+  }
+  if (Array.isArray(eveningItems) && eveningItems.length) {
+    S.routines.evening = mapItems(eveningItems, S.routines.evening);
+  }
+  save();
+  render();
+  toast(`${profile.groupLabel || (profile.age + " yaş")} ortalama rutini yüklendi! 🌷`);
+};
 window.__bloomBack = function() {
   if ($("#modal")) { closeModal(); return "handled"; }
   if ($("#welcomeScreen")) { day(today()).welcomeSeen = true; save(); $("#welcomeScreen").remove(); return "handled"; }
@@ -4646,6 +4845,6 @@ window.__bloomBack = function() {
 };
 init();
 </script>
-  <script src="onboarding.js?v=2.2.0"></script>
+  <script src="onboarding.js?v=2.4.1"></script>
 </body>
 </html>
