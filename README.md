@@ -34,6 +34,8 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 
 - **Enerji Modları:** Her gün için `🌸 Normal gün`, `⚡ Yoğun gün` veya `🌙 Dinlenme günü` seçilerek görev listesi o günkü enerji seviyesine göre otomatik sadeleştirilebilir.
 - **Canlı Geçiş & Özelleştirme:** Rutinlerim sayfasında hem aktif gün tipinin (`🎒 Okul / İş Günü` veya `🏡 Boş / Dinlenme Günü`) görevleri işaretlenebilir hem de diğer gün tipinin planı tek kartta görülüp düzenlenebilir.
+- **Yaşa Göre Dinamik Gün Etiketleri:** Gün tipi çipleri, Yarın sekmesi hazırlık notları ve Ayarlar başlıkları kullanıcının yaş grubuna göre otomatik uyarlanır (`10–17 Yaş`: `🎒 Okul Günü`, `18–24 Yaş`: `🎓 Kampüs / Ders Günü`, `25–49 Yaş`: `💼 İş / Mesai Günü`, `50+ Yaş`: `🌺 Planlı / Aktif Gün`).
+- **⏰ Sıradaki Adım Vurgusu:** Günün saatine göre sıradaki tamamlanmamış rutin adımı hem Ana Sayfa'da hem de Rutinlerim sayfasında `⏰ Sıradaki` rozetiyle öne çıkarılır ve tek tıkla tamamlanabilir.
 
 ---
 
@@ -48,7 +50,7 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
   - **Erkek (`🌿 Erkek`)** seçildiğinde **hiçbir yaş grubunda `"Makyaj temizleme"` adımı yer almaz**; bunun yerine yüz/sakal arındırıcı jel, tıraş sonrası yatıştırıcı tonik ve parlama karşıtı nemlendirici adımları gelir.
   - **Kadın (`🌸 Kadın`)** seçildiğinde akşam rutininde yaş grubuna uygun çift aşamalı temizlik (`Makyaj & SPF temizleme`) yer alır.
 - **Sabit & Düzenlenebilir Adımlar:** `🪥 Diş fırçalama` ve `🧼 Yüz yıkama` sabit adımlardır; diğer tüm ürün ve adımlar düzenlenebilir, sıralanabilir veya yeni ürün eklenebilir.
-- **Çift Yönlü Senkronizasyon:** Cilt Bakımı sayfasındaki sabah/akşam adımlarının tamamı işaretlendiğinde Günlük Rutin'deki `"Cilt bakımımı yap"` görevi otomatik tamamlanır (ve tersi de geçerlidir).
+- **Çift Yönlü Senkronizasyon & Ana Sayfa Cilt Bakım Kartı:** Cilt Bakımı sayfasındaki sabah/akşam adımlarının tamamı işaretlendiğinde Günlük Rutin'deki `"Cilt bakımımı yap"` görevi otomatik tamamlanır (ve tersi de geçerlidir). Ana Sayfa'daki **🧴 Cilt Bakımım** kartından sabah/akşam ilerlemesi takip edilebilir ve sıradaki cilt bakım adımı tek dokunuşla tamamlanabilir.
 
 ---
 
@@ -67,7 +69,10 @@ Günlük rutinler birbirinin kopyası değildir; günün temposuna ve kullanıc�
 
 ---
 
-### 6. 💧 Su Takibi, 👟 Egzersiz & 🌳 Dinamik Bahçe
+### 6. 💧 Su Takibi, 🏋️‍♂️/🧘‍♀️ Yaşa & Cinsiyete Özel Egzersiz ve 🌳 Dinamik Bahçe
+- **Yaş ve Cinsiyete Göre Haftalık Egzersiz Programı:**
+  - Onboarding'de girilen yaş grubu (`10–17`, `18–24`, `25–34`, `35–49`, `50+`) ve cinsiyete göre haftalık egzersiz planı, haftalık dakika hedefi (`140–180 dk`) ve egzersiz ikonları (`🏋️‍♂️/🧘‍♀️`, `🚶‍♂️/🚶‍♀️`, `🏊‍♂️/🏊‍♀️`, `🏃‍♂️/💃`) otomatik uyarlanır.
+  - Egzersiz sayfasındaki yaş grubu çipleriyle istenen yaş grubunun haftalık antrenman programı tek dokunuşla yüklenebilir ve gün gün özelleştirilebilir.
 - **Su Takibi & Bahçe Damlaları:** Günlük su hedefi, hızlı `+100 / +200 / +300 / +500 ml` butonları; içilen her `250 ml` su bahçe için `1 su damlası` kazandırır.
 - **Kişiye Uygun Egzersiz Programı:** Yaş grubu ve cinsiyet profiline göre haftalık plan ile dengeli, kuvvet/kardiyo ve nazik hareket şablonları uyarlanır; kullanıcı kendi planını düzenlediğinde bu plan korunur.
 - **Yaşayan Bahçe:** Görevlerden kazanılan XP ve su damlalarıyla Tohum'dan Çiçek Açmış Ağaç'a kadar 6 büyüme aşaması; günün saatine göre (Sabah, Öğle, Gün Batımı, Gece) otomatik değişen gökyüzü ve açılıp gizlenebilen bahçe öğeleri.

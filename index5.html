@@ -6,7 +6,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<meta name="bloom-version" content="2.7.0">
+<meta name="bloom-version" content="2.8.0">
 <meta name="theme-color" content="#FCEAF1">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon.svg">
@@ -363,8 +363,18 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
 @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
 
 /* ---------- RESPONSIVE (iPhone 11 – iPhone 18 Mobile UX) ---------- */
-.btn,.bn,.nav-item,.tab,.chip,.mood,.check-item,.cday,.wday,.skin-step,.card-link{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn,.bn,.nav-item,.tab,.chip,.mood,.check-item,.cday,.wday,.skin-step,.card-link,.more-tile{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.btn:focus-visible,.nav-item:focus-visible,.bn:focus-visible,.tab:focus-visible,.chip:focus-visible,.check-item:focus-visible,.more-tile:focus-visible{outline:2px solid var(--rose);outline-offset:2px}
 .topbar .btn.icon.active{background:linear-gradient(135deg,var(--pink2),var(--lav));color:#8a4766;box-shadow:0 3px 10px rgba(214,139,170,.28)}
+.more-sheet-bg{position:fixed;inset:0;z-index:180;background:rgba(91,68,80,.32);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:flex-end;justify-content:center;animation:fade .18s ease}
+.more-sheet{width:100%;max-width:560px;background:#fff;border-radius:26px 26px 0 0;padding:16px 16px calc(22px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(91,68,80,.22);animation:popUp .22s ease}
+.more-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:12px}
+.more-tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 8px;border-radius:18px;background:var(--bg);border:1.5px solid var(--line);cursor:pointer;text-align:center;font-weight:700;font-size:13px;color:var(--text);min-height:82px;transition:all .18s}
+.more-tile .mi{font-size:24px;line-height:1}
+.more-tile.active{background:linear-gradient(135deg,var(--pink2),var(--lav));border-color:var(--pink3);color:#7a3354}
+.r-edit-cards{display:none;flex-direction:column;gap:10px}
+.r-edit-card{padding:12px;border-radius:16px;background:var(--bg);border:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.water-del-btn{width:24px!important;height:24px!important;min-width:24px;border-radius:99px!important;margin-left:4px;font-size:11px!important}
 @media (max-width:1100px){
   .c3{grid-column:span 6}.c4{grid-column:span 6}.c5,.c7{grid-column:span 12}.c8{grid-column:span 12}
 }
@@ -434,6 +444,13 @@ table.t td select{padding:6px 8px;font-size:13px;border-radius:10px}
   .item-card .ph{width:58px;height:58px;font-size:24px}
   .skin-step,.ex-row{padding:11px 12px;gap:10px}
   .banner{padding:12px 14px;gap:10px}
+  .check-item{min-height:46px;padding:10px 10px}
+  .cbox{width:26px;height:26px}
+  .btn.icon{width:40px;height:40px}
+  .btn.icon.sm{width:36px;height:36px;font-size:14px}
+  .water-del-btn{width:30px!important;height:30px!important}
+  .r-edit-table{display:none}
+  .r-edit-cards{display:flex}
   form.row{flex-wrap:wrap!important}
 }
 @media (max-width:395px){
@@ -532,8 +549,7 @@ body[data-theme="soft"] .welcome-card{background:var(--ivory);border-color:var(-
     <button class="btn lav sm hidden" id="topTimerBtn" data-act="goStudyTimer" title="Aktif odak sayacı">⏱ 00:00</button>
     <button class="btn icon soft" data-act="go" data-page="water" title="Su takibi" aria-label="Su takibi">💧</button>
     <button class="btn icon soft" data-act="go" data-page="skincare" title="Cilt Bakım Rutini" aria-label="Cilt Bakım Rutini">🧴</button>
-    <button class="btn icon soft" data-act="go" data-page="exercise" title="Egzersiz" aria-label="Egzersiz">🏃</button>
-    <button class="btn icon soft" data-act="go" data-page="settings" title="Ayarlar" aria-label="Ayarlar">⚙️</button>
+    <button class="btn icon soft" data-act="toggleMoreNav" title="Tüm sayfalar" aria-label="Tüm sayfalar">⋯</button>
   </div>
 </header>
 <main class="main" id="view"></main>
@@ -788,7 +804,7 @@ const BADGES = [
 /* ---------------- YARDIMCILAR ---------------- */
 const LS_KEY = "bloom_tugba_v1";
 const TIMER_KEY = "bloom_active_timer";
-const APP_VERSION = "2.7.0";
+const APP_VERSION = "2.8.0";
 const LEGACY_PRESET_COURSES = ["EKG Analizi","Acil Sağlık Hizmetleri","Acil Hasta Bakımı","Resüsitasyon","İleri Yaşam Desteği","Anatomi","Mesleki Uygulama","Temel Mesleki Beceriler"];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -931,7 +947,7 @@ function chooseTheme(theme) {
   toast(`${AVAILABLE_THEMES[theme].label} teması uygulandı ✨`);
 }
 const UI = {page: "home", homeTab: "today", nutTab: "day", nutDate: null, schoolTab: "courses", course: null, courseTab: "general",
-  calY: null, calM: null, jDate: null, routineEdit: false, skinTab: "morning", skinEdit: false, exTab: "today", exWeek: null, gardenPhase: null, gardenHour: null, readOff: 0, curDay: null, suggest: null, timer: null, showQ: true, photo: null, welcomeShown: false, foodResList: [], foodSearchTimer: null};
+  calY: null, calM: null, jDate: null, routineTab: "active", routineEdit: false, skinTab: "morning", skinEdit: false, exTab: "today", exWeek: null, gardenPhase: null, gardenHour: null, readOff: 0, curDay: null, suggest: null, timer: null, showQ: true, photo: null, welcomeShown: false, foodResList: [], foodSearchTimer: null, moreNav: false};
 
 function load() {
   let p = null;
@@ -1318,21 +1334,45 @@ const NAV = [
   {p:"home",e:"🏠",t:"Ana Sayfa"},{p:"routines",e:"🌷",t:"Rutinler"},{p:"nutrition",e:"🥗",t:"Beslenme"},
   {p:"school",e:"📚",t:"Okulum"},{p:"garden",e:"🌳",t:"Bahçem"},{p:"progress",e:"📈",t:"İlerlemem"},{p:"journal",e:"📖",t:"Günlüğüm"}
 ];
-const NAV_EXTRA = [{p:"water",e:"💧",t:"Su Takibi"},{p:"skincare",e:"🧴",t:"Cilt Bakım Rutini"},{p:"exercise",e:"🏃",t:"Egzersiz"},{p:"settings",e:"⚙️",t:"Ayarlar"}];
+const NAV_EXTRA = [{p:"water",e:"💧",t:"Su Takibi"},{p:"skincare",e:"🧴",t:"Cilt Bakım Rutini"},{p:"exercise",e:"🧘‍♀️",t:"Egzersiz"},{p:"settings",e:"⚙️",t:"Ayarlar"}];
+const NAV_MOBILE_MAIN = [
+  {p:"home",e:"🏠",t:"Ana"},{p:"routines",e:"🌷",t:"Rutinler"},{p:"nutrition",e:"🥗",t:"Beslenme"},{p:"school",e:"📚",t:"Okulum"}
+];
+const NAV_MOBILE_MORE = [
+  {p:"water",e:"💧",t:"Su Takibi"},{p:"skincare",e:"🧴",t:"Cilt Bakımı"},{p:"exercise",e:"🧘‍♀️",t:"Egzersiz"},
+  {p:"garden",e:"🌳",t:"Bahçem"},{p:"progress",e:"📈",t:"İlerlemem"},{p:"journal",e:"📖",t:"Günlüğüm"},{p:"settings",e:"⚙️",t:"Ayarlar"}
+];
+function renderMoreNavSheet() {
+  const old = $("#moreNavSheet"); if (old) old.remove();
+  if (!UI.moreNav) return;
+  const exIcon = curProfileInfo().gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
+  const sh = document.createElement("div");
+  sh.className = "more-sheet-bg"; sh.id = "moreNavSheet";
+  sh.innerHTML = `<div class="more-sheet" role="dialog" aria-modal="true" aria-label="Tüm sayfalar">
+    <div class="row between"><b style="font-family:var(--serif);font-size:19px;color:#6a4659">Tüm Bölümler 🌷</b><button type="button" class="btn icon soft" data-act="closeMoreNav" aria-label="Kapat">✕</button></div>
+    <div class="more-grid">${NAV_MOBILE_MORE.map(n => `<button type="button" class="more-tile ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}"><span class="mi">${n.p === "exercise" ? exIcon : n.e}</span><span>${n.t}</span></button>`).join("")}</div>
+  </div>`;
+  sh.addEventListener("click", e => { if (e.target === sh) { UI.moreNav = false; renderMoreNavSheet(); } });
+  document.body.appendChild(sh);
+}
 function renderNav() {
   const L = levelInfo();
+  const exIcon = curProfileInfo().gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
   $("#sidebar").innerHTML = `<div class="brand"><div class="logo">🌷</div><div><b>Bloom</b><span>Tuğba'nın Dünyası</span></div></div>
     ${UI.timer ? `<button class="btn lav sm mb-s" id="sideTimerBtn" data-act="goStudyTimer" style="margin:0 8px 8px;justify-content:center">⏱ Odak sayacı: 00:00</button>` : ""}
     ${NAV.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span>${n.t}</button>`).join("")}
     <div class="nav-sep"></div>
-    ${NAV_EXTRA.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span>${n.t}</button>`).join("")}
+    ${NAV_EXTRA.map(n => `<button type="button" class="nav-item ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.p === "exercise" ? exIcon : n.e}</span>${n.t}</button>`).join("")}
     <div class="side-level"><div class="row between"><b style="font-family:var(--serif);color:#8a4766">Seviye ${L.level}</b><span class="tiny muted">${S.xp.total} XP</span></div>
       <div class="progress thin mt-s"><i style="width:${L.pct}%"></i></div><div class="tiny muted mt-s">Sonraki seviyeye ${L.toNext} XP 🌸</div>
       <div class="tiny muted mt-s">${stageInfo().e} ${stageInfo().name}</div></div>`;
-  $("#bottomNav").innerHTML = NAV.map(n => `<button type="button" class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span><span>${n.t.replace("Ana Sayfa","Ana").replace("İlerlemem","İlerleme").replace("Günlüğüm","Günlük")}</span></button>`).join("");
+  const isMoreActive = NAV_MOBILE_MORE.some(n => n.p === UI.page);
+  $("#bottomNav").innerHTML = NAV_MOBILE_MAIN.map(n => `<button type="button" class="bn ${UI.page === n.p ? "active" : ""}" data-act="go" data-page="${n.p}" ${UI.page === n.p ? 'aria-current="page"' : ""}><span class="ni" aria-hidden="true">${n.e}</span><span>${n.t}</span></button>`).join("")
+    + `<button type="button" class="bn ${isMoreActive || UI.moreNav ? "active" : ""}" data-act="toggleMoreNav"><span class="ni" aria-hidden="true">⋯</span><span>Menü</span></button>`;
   $$('.topbar [data-act="go"]').forEach(b => b.classList.toggle("active", b.dataset.page === UI.page));
   const tb = $("#topTimerBtn");
   if (tb) tb.classList.toggle("hidden", !UI.timer);
+  renderMoreNavSheet();
 }
 let lastPage = null;
 function render() {
@@ -1346,7 +1386,7 @@ function render() {
   renderNav();
   if (UI.timer) updateTimer();
 }
-function go(p) { UI.page = p; if (p !== "school") UI.course = null; closeModal(); render(); }
+function go(p) { UI.page = p; UI.moreNav = false; if (p !== "school") UI.course = null; closeModal(); render(); }
 
 /* ---------------- ORTAK PARÇALAR ---------------- */
 function checkRow({id, text, time = "", done, isNext = false, act = "toggleTask", attrs = "", del = ""}) {
@@ -1613,7 +1653,7 @@ const AGE_ROUTINE_GROUPS = [
   {k:"50+",   age:55, e:"🌺", t:"50+ Yaş (Zindelik & Yaşam)"}
 ];
 function pageRoutines() {
-  const k = today(), d = dayR(k), st = dayStats(k);
+  const k = today(), d = dayR(k), st = dayStats(k), dt = dayTypeMeta();
   const nxt = nextRoutineTaskFor(k);
   const nextId = nxt && nxt.task ? nxt.task.id : null;
   const schoolActive = isSchool(k);
@@ -1623,29 +1663,48 @@ function pageRoutines() {
   const prof = curProfileInfo();
   const activeGk = ageGroupKeyFor(prof.age);
   const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
-  const schoolHeading = prof.schoolTitle || `🎒 Okul / İş Günü Sabah Rutini (${activeGk} Yaş)`;
-  const offHeading = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
+  const schoolHeading = prof.schoolTitle || `${dt.activeChip} Sabah Rutini (${activeGk} Yaş)`;
+  const offHeading = prof.offTitle || `${dt.offChip} Rutini (${activeGk} Yaş)`;
   const eveningHeading = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
-  const activeMorningHeading = schoolActive ? "🎒 Okul / İş Günü Sabah Rutini" : "🏡 Boş Gün / Dinlenme Günü Rutini";
+  const activeMorningHeading = schoolActive ? `${dt.activeChip} Sabah Rutini` : `${dt.offChip} Rutini`;
   const activeMorningSub = schoolActive ? schoolHeading : offHeading;
-  const altMorningHeading = schoolActive ? "🏡 Boş Gün / Dinlenme Günü Rutini" : "🎒 Okul / İş Günü Sabah Rutini";
+  const altMorningHeading = schoolActive ? `${dt.offChip} Rutini` : `${dt.activeChip} Sabah Rutini`;
   const altMorningSub = schoolActive ? offHeading : schoolHeading;
-  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Yaşına ve gün tipine (Okul/İş günü veya Boş/Dinlenme günü) göre özel rutinlerin hazır; dilediğin adımı ekleyip çıkarabilirsin.</p></div>
-    <div class="row"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn ${UI.routineEdit ? "" : "soft"}" data-act="routineEdit">${UI.routineEdit ? "✓ Düzenlemeyi bitir" : "✏️ Tabloda düzenle"}</button></div></div>
+  const rTab = UI.routineEdit ? "edit" : (UI.routineTab === "passive" ? "passive" : "active");
+
+  return `<div class="page-head"><div><h1>Rutinlerim 🌷</h1><p>Bugün aktif olan rutinin ile diğer gün şablonu birbirinden ayrı tutulur; karışıklık olmadan odaklanabilirsin.</p></div>
+    <div class="row"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button></div></div>
     <div class="card mb tint-pink"><div class="row between"><div class="stack" style="gap:8px">
-      <div class="lbl">Bugünün Gün Tipi</div><div class="row"><span class="chip ${schoolActive ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">🎒 Okul / İş Günü Rutini</span><span class="chip ${!schoolActive ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">🏡 Boş Gün / Dinlenme Rutini</span></div></div>
+      <div class="lbl">Bugünün Gün Tipi</div><div class="row"><span class="chip ${schoolActive ? "on" : ""}" data-act="setSchool" data-v="1" data-k="${k}">${dt.activeChip}</span><span class="chip ${!schoolActive ? "on" : ""}" data-act="setSchool" data-v="0" data-k="${k}">${dt.offChip}</span></div></div>
       <div class="stack" style="gap:8px"><div class="lbl">Enerji Modu</div><div class="row">${Object.entries(MODES).map(([m, o]) => `<span class="chip ${d.mode === m ? "on" : ""}" data-act="setMode" data-m="${m}" data-k="${k}">${o.e} ${o.t}</span>`).join("")}</div></div></div>
       <div class="divider"></div>
-      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel} · Okul günü, Boş gün ve Akşam rutinleri birlikte güncellenir)</div>
-      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.filter(g => g.k === activeGk).map(g => `<span class="chip on" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaş grubuna göre ortalama rutin seç (${gLabel})</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
       ${nxt ? `<div class="row between mt" style="padding:10px 14px;border-radius:14px;background:rgba(255,255,255,.78);border:1px solid var(--pink3)"><div class="small"><b>⏰ Sıradaki Adımın (${esc(nxt.label)}):</b> ${esc(nxt.task.text)}${nxt.task.time ? ` <span class="tag lav">${esc(nxt.task.time)}</span>` : ""}</div><button class="btn sm" data-act="toggleTask" data-id="${nxt.task.id}">✓ Tamamla</button></div>` : `<div class="note-soft mt">✨ Bugünkü tüm sabah ve akşam rutin adımlarını tamamladın!</div>`}
       <div class="note-soft mt-s">${MODES[d.mode].d}</div></div>
-    ${UI.routineEdit ? routineEditor() : `<div class="grid">
-      <div class="card c6"><h3>${activeMorningHeading} <span class="tag lav">${schoolActive ? "Aktif: Okul / İş Günü" : "Aktif: Boş / Dinlenme Günü"}</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
+    <div class="tabs">
+      <div class="tab ${rTab === "active" ? "active" : ""}" data-act="routineTab" data-t="active">☀️ Bugünün Aktif Rutini</div>
+      <div class="tab ${rTab === "passive" ? "active" : ""}" data-act="routineTab" data-t="passive">🗓️ Diğer Gün Planı <span class="tag" style="margin-left:4px">Pasif</span></div>
+      <div class="tab ${rTab === "edit" ? "active" : ""}" data-act="routineTab" data-t="edit">✏️ Tümünü Düzenle</div>
+    </div>
+    ${rTab === "edit" ? routineEditor() : rTab === "passive" ? `<div class="grid">
+      <div class="card c12 ${schoolActive ? "tint-sage" : "tint-lav"}">
+        <div class="row between" style="margin-bottom:8px">
+          <div>
+            <h3 style="margin-bottom:2px">${altMorningHeading} <span class="tag cream">Pasif Şablon · Bugün Aktif Değil</span></h3>
+            <div class="small muted"><b>${esc(altMorningSub)}</b> · ${schoolActive ? "Tatil, hafta sonu veya dinlenme günlerinde otomatik olarak bu plan devreye girer." : "Okul, ders veya iş günlerinde otomatik olarak bu plan devreye girer."}</div>
+          </div>
+          <button class="btn sm ${schoolActive ? "sage" : "lav"}" data-act="setSchool" data-v="${schoolActive ? "0" : "1"}" data-k="${k}">${schoolActive ? "🏡 Bugünü Boş / Dinlenme Günü Yap" : "🎒 Bugünü Aktif Gün Yap"}</button>
+        </div>
+        <div class="check-list">${altList.map(t => `<div class="check-item" style="cursor:default;opacity:.88"><span class="cbox" style="font-size:12px;border-style:dashed">${schoolActive ? "🏡" : "🎒"}</span><span class="ct">${esc(t.text)}</span>${t.time ? `<span class="time">${esc(t.time)}</span>` : ""}<button type="button" class="btn icon sm soft" data-act="rDel" data-list="${altKey}" data-id="${t.id}" title="Kaldır">✕</button></div>`).join("") || emptyBox("🌿", "Bu rutin şablonunda görev yok.")}</div>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${altKey}"><input name="text" placeholder="${schoolActive ? "Boş/dinlenme günü" : "Okul/iş günü"} şablonuna yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
+      </div>
+    </div>` : `<div class="grid">
+      <div class="card c6"><h3>${activeMorningHeading} <span class="tag sage">Aktif Plan</span><span class="sp"></span><span class="small muted">${st.mDone}/${st.m.length}</span></h3>
         <div class="small muted" style="margin:-4px 0 10px"><b>${esc(activeMorningSub)}</b></div>
         <div class="progress lav mb"><i style="width:${st.m.length ? st.mDone / st.m.length * 100 : 0}%"></i></div>
         <div class="check-list">${st.m.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], isNext: t.id === nextId, del: t.med ? "" : `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="${mKey}" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌱", "Bu modda sabah görevi yok.")}</div>
-        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${mKey}"><input name="text" placeholder="${schoolActive ? "Okul/iş günü" : "Boş/dinlenme günü"} rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
+        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${mKey}"><input name="text" placeholder="Sabah rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.m.length && st.mDone === st.m.length ? `<div class="note-soft mt">☀️ Sabah rutinin tamam! Güzel bir başlangıç yaptın.</div>` : ""}</div>
       <div class="card c6"><h3>🌙 Akşam &amp; Uyku Öncesi Rutini<span class="sp"></span><span class="small muted">${st.eDone}/${st.e.length}</span></h3>
         <div class="small muted" style="margin:-4px 0 10px"><b>${esc(eveningHeading)}</b></div>
@@ -1653,17 +1712,6 @@ function pageRoutines() {
         <div class="check-list">${st.e.map(t => checkRow({id: t.id, text: t.text, time: t.time, done: d.checks[t.id], isNext: t.id === nextId, del: `<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="evening" data-id="${t.id}" title="Kaldır">✕</button>`})).join("") || emptyBox("🌙", "Bu modda akşam görevi yok.")}</div>
         <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="evening"><input name="text" placeholder="Akşam rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
         ${st.e.length && st.eDone === st.e.length ? `<div class="note-soft mt">🌙 Akşam rutinin tamam. Tatlı rüyalar Tuğba.</div>` : ""}</div>
-      <div class="card c12 ${schoolActive ? "tint-sage" : "tint-lav"}">
-        <div class="row between" style="margin-bottom:8px">
-          <div>
-            <h3 style="margin-bottom:2px">${altMorningHeading} <span class="tag">${altList.length} adım</span></h3>
-            <div class="small muted"><b>${esc(altMorningSub)}</b> · ${schoolActive ? "Tatil, hafta sonu ve dinlenme günlerinde bu rutin otomatik devreye girer." : "Okul, ders ve iş günlerinde bu rutin otomatik devreye girer."}</div>
-          </div>
-          <button class="btn sm ${schoolActive ? "sage" : "lav"}" data-act="setSchool" data-v="${schoolActive ? "0" : "1"}" data-k="${k}">${schoolActive ? "🏡 Bugünü Boş / Dinlenme Günü Yap" : "🎒 Bugünü Okul / İş Günü Yap"}</button>
-        </div>
-        <div class="check-list">${altList.map(t => `<div class="check-item" style="cursor:default"><span class="cbox" style="font-size:12px">${schoolActive ? "🏡" : "🎒"}</span><span class="ct">${esc(t.text)}</span>${t.time ? `<span class="time">${esc(t.time)}</span>` : ""}<button type="button" class="btn icon sm soft x" data-act="rDel" data-list="${altKey}" data-id="${t.id}" title="Kaldır">✕</button></div>`).join("") || emptyBox("🌿", "Bu rutin listesinde görev yok.")}</div>
-        <form class="inline-form mt" data-form="rAdd"><input type="hidden" name="list" value="${altKey}"><input name="text" placeholder="${schoolActive ? "Boş/dinlenme günü" : "Okul/iş günü"} rutinine yeni adım ekle…" maxlength="80" required><button class="btn sm" type="submit">+ Ekle</button></form>
-      </div>
       <div class="card c6"><h3>🎯 Günlük hedefler</h3>${goalsBlock(k)}</div>
       <div class="card c6"><h3>👟 Bugün hareket</h3>${moveBlock(k)}</div>
     </div>`}`;
@@ -1676,7 +1724,7 @@ function routineEditor() {
   const offTitle = prof.offTitle || `🏡 Boş Gün & Dinlenme Rutini (${activeGk} Yaş)`;
   const eveningTitle = prof.eveningTitle || `🌙 Akşam & Uyku Öncesi Rutini (${activeGk} Yaş)`;
   const block = (key, title, sub) => `<div class="card c12"><h3>${title}</h3><p class="small muted" style="margin:-4px 0 10px">${esc(sub)}</p>
-    <div class="table-wrap"><table class="t"><thead><tr><th>Görev</th><th>Saat</th><th>Ne zaman görünsün?</th><th></th></tr></thead><tbody>
+    <div class="table-wrap r-edit-table"><table class="t"><thead><tr><th>Görev</th><th>Saat</th><th>Ne zaman görünsün?</th><th></th></tr></thead><tbody>
     ${S.routines[key].map((t, i) => `<tr><td><input value="${esc(t.text)}" data-chg="rText" data-list="${key}" data-id="${t.id}" maxlength="80"></td>
       <td style="width:120px"><input type="time" value="${esc(t.time || "")}" data-chg="rTime" data-list="${key}" data-id="${t.id}"></td>
       <td style="width:220px"><select data-chg="rLvl" data-list="${key}" data-id="${t.id}">${[1,2,3].map(l => `<option value="${l}" ${(t.lvl || 3) === l ? "selected" : ""}>${LVL_LABEL[l]}</option>`).join("")}</select></td>
@@ -1684,6 +1732,20 @@ function routineEditor() {
       <button class="btn icon sm soft" data-act="rMove" data-list="${key}" data-id="${t.id}" data-dir="1" ${i === S.routines[key].length - 1 ? "disabled" : ""} title="Aşağı">↓</button>
       <button class="btn icon sm danger" data-act="rDel" data-list="${key}" data-id="${t.id}" title="Sil">🗑</button></td></tr>`).join("")}
     </tbody></table></div>
+    <div class="r-edit-cards">${S.routines[key].map((t, i) => `<div class="r-edit-card">
+      <input value="${esc(t.text)}" data-chg="rText" data-list="${key}" data-id="${t.id}" maxlength="80" aria-label="Görev adı">
+      <div class="row" style="gap:8px;flex-wrap:nowrap">
+        <input type="time" value="${esc(t.time || "")}" data-chg="rTime" data-list="${key}" data-id="${t.id}" style="width:118px">
+        <select data-chg="rLvl" data-list="${key}" data-id="${t.id}" class="grow">${[1,2,3].map(l => `<option value="${l}" ${(t.lvl || 3) === l ? "selected" : ""}>${LVL_LABEL[l]}</option>`).join("")}</select>
+      </div>
+      <div class="row between"><span class="tiny muted">Adım #${i + 1}</span>
+        <div class="row" style="gap:6px">
+          <button type="button" class="btn icon sm soft" data-act="rMove" data-list="${key}" data-id="${t.id}" data-dir="-1" ${i === 0 ? "disabled" : ""} title="Yukarı">↑</button>
+          <button type="button" class="btn icon sm soft" data-act="rMove" data-list="${key}" data-id="${t.id}" data-dir="1" ${i === S.routines[key].length - 1 ? "disabled" : ""} title="Aşağı">↓</button>
+          <button type="button" class="btn icon sm danger" data-act="rDel" data-list="${key}" data-id="${t.id}" title="Sil">🗑</button>
+        </div>
+      </div>
+    </div>`).join("")}</div>
     <form class="row mt" data-form="rAdd" style="flex-wrap:nowrap"><input type="hidden" name="list" value="${key}"><input name="text" placeholder="Yeni görev…" maxlength="80" required><input type="time" name="time" style="width:120px"><button class="btn sm" type="submit">+ Ekle</button></form></div>`;
   return `<div class="grid">${block("school", "🎒 1. Okul / İş Günü Sabah Rutini", schoolTitle + " · Ders, kampüs ve mesai günlerinde aktif olur.")}${block("off", "🏡 2. Boş Gün / Dinlenme Günü Rutini", offTitle + " · Tatil, hafta sonu ve dinlenme günlerinde aktif olur.")}${block("evening", "🌙 3. Akşam & Uyku Öncesi Rutini", eveningTitle + " · Günü kapatma, hazırlık, cilt bakımı ve uyku düzeni.")}
     <div class="card c12 tint-lav"><h3>💊 Vitamin / ilaç takibi</h3><p class="small muted mb">Yalnızca buraya eklediklerin sabah rutininde görünür.</p>
@@ -1709,7 +1771,7 @@ function pageWater() {
       <div class="divider"></div>
       <form class="row" data-form="waterGoal" style="flex-wrap:nowrap"><div class="field grow"><label>Günlük su hedefi (ml)</label><input type="number" name="goal" min="500" max="6000" step="50" value="${goal}"></div><button class="btn soft" type="submit" style="align-self:flex-end">Kaydet</button></form></div>
     <div class="card c12"><h3>🕒 Bugünkü kayıtlar</h3>
-      ${(d.water || []).length ? `<div class="row">${d.water.map((w, i) => `<span class="tag blue" style="padding:6px 12px">💧 ${w.ml} ml · ${esc(w.t)} <span style="cursor:pointer;margin-left:4px" data-act="delWater" data-i="${i}" title="Sil">✕</span></span>`).join("")}</div>` : emptyBox("💧", "Bugün henüz su eklemedin. Bir bardakla başlamaya ne dersin?")}</div></div>`;
+      ${(d.water || []).length ? `<div class="row">${d.water.map((w, i) => `<span class="tag blue" style="padding:6px 8px 6px 12px">💧 ${w.ml} ml · ${esc(w.t)} <button type="button" class="btn icon sm soft water-del-btn" data-act="delWater" data-i="${i}" title="Sil" aria-label="Su kaydını sil">✕</button></span>`).join("")}</div>` : emptyBox("💧", "Bugün henüz su eklemedin. Bir bardakla başlamaya ne dersin?")}</div></div>`;
 }
 </script>
 <script>
@@ -3666,222 +3728,16 @@ const LEGACY_EXERCISE_PRESETS = {
     }
   }
 };
-const AGE_EXERCISE_PRESETS = {
-  "10-17": {
-    n:"Gençler İçin Dengeli Hareket", e:"🎒",
-    d:"Kısa yürüyüş, eğlenceli hareket ve esnemeyi dinlenme günleriyle dengeler.",
-    week:[
-      {name:"Keyifli tempolu yürüyüş",type:"yuruyus",min:20,note:"Rahat konuşma temposu"},
-      {name:"Dans veya sevdiğin aktif oyun",type:"kardiyo",min:20,note:"Eğlenceli ve zorlamayan tempo"},
-      null,
-      {name:"Mat pilates ve esneme",type:"pilates",min:20,note:"Kontrollü, rahat hareketler"},
-      {name:"Açık havada yürüyüş",type:"yuruyus",min:25,note:"Kendini iyi hissettiğin tempo"},
-      {name:"Yumuşak yoga",type:"yoga",min:20,note:"Nefes ve mobilite"},
-      null
-    ]
-  },
-  "18-24": {
-    n:"Genç Yetişkin Dengeli Programı", e:"🎓",
-    d:"Yürüyüş, pilates, kuvvet ve mobiliteyi haftaya dengeli yayar.",
-    week:[
-      {name:"Tempolu yürüyüş",type:"yuruyus",min:30,note:"Orta tempo"},
-      {name:"Full body pilates",type:"pilates",min:30,note:"Kontrollü core ve duruş çalışması"},
-      {name:"Direnç bandı çalışması",type:"direnc",min:25,sets:"2x10",note:"Hafif-orta direnç"},
-      null,
-      {name:"Yürüyüş veya bisiklet",type:"bisiklet",min:30,note:"Konforlu tempo"},
-      {name:"Yoga ve esneme",type:"yoga",min:25,note:"Aktif toparlanma"},
-      null
-    ]
-  },
-  "25-34": {
-    n:"Aktif Yaşam Dengeli Programı", e:"💼",
-    d:"İş temposuna uyarlanabilen kuvvet, yürüyüş ve toparlanma günleri.",
-    week:[
-      {name:"Tempolu yürüyüş",type:"yuruyus",min:30,note:"Orta tempo"},
-      {name:"Pilates ve core",type:"pilates",min:30,note:"Kontrollü tekrarlar"},
-      {name:"Direnç bandı çalışması",type:"direnc",min:30,sets:"3x10",note:"Hafif-orta direnç"},
-      null,
-      {name:"Bisiklet veya tempolu yürüyüş",type:"bisiklet",min:30,note:"Konforlu tempo"},
-      {name:"Mobilite ve yoga",type:"yoga",min:25,note:"Toparlanma ve esneklik"},
-      null
-    ]
-  },
-  "35-49": {
-    n:"Denge ve Mobilite Programı", e:"🌿",
-    d:"Düşük darbeli hareket, kuvvet ve esnekliği dinlenme aralarıyla birleştirir.",
-    week:[
-      {name:"Rahat tempolu yürüyüş",type:"yuruyus",min:25,note:"Konuşabileceğin tempo"},
-      {name:"Mat pilates ve denge",type:"pilates",min:25,note:"Kontrollü hareketler"},
-      null,
-      {name:"Hafif direnç bandı",type:"direnc",min:20,sets:"2x10",note:"Rahat aralıkta çalış"},
-      {name:"Yumuşak yoga ve mobilite",type:"yoga",min:20,note:"Eklem dostu akış"},
-      {name:"Açık havada yürüyüş",type:"yuruyus",min:30,note:"Kendi rahat tempon"},
-      null
-    ]
-  },
-  "50+": {
-    n:"50+ İçin Nazik Hareket Programı", e:"🌺",
-    d:"Düşük darbeli yürüyüş, esneme ve hafif kuvvet egzersizleri içerir.",
-    week:[
-      {name:"Rahat tempolu yürüyüş",type:"yuruyus",min:20,note:"Güvenli ve rahat parkur"},
-      {name:"Sandalyede esneme ve mobilite",type:"esneme",min:15,note:"Ağrısız hareket aralığında"},
-      null,
-      {name:"Hafif direnç bandı ve denge",type:"direnc",min:15,sets:"2x8",note:"Destek alarak, rahat tempoda"},
-      {name:"Yumuşak yoga",type:"yoga",min:20,note:"Nazik nefes ve esneme"},
-      {name:"Kısa açık hava yürüyüşü",type:"yuruyus",min:25,note:"Kendini iyi hissettiğin tempo"},
-      null
-    ]
-  }
-};
-const EXERCISE_PRESET_STYLES = {
-  balanced: {n:"Dengeli Haftalık Program", e:"⚖️"},
-  strength: {n:"Kuvvet & Kardiyo", e:"💪"},
-  gentle: {n:"Nazik Hareket & Mobilite", e:"🌿"}
-};
-const EXERCISE_AGE_MINUTES = {
-  "10-17": {aerobic:20, strength:15, mobility:15},
-  "18-24": {aerobic:30, strength:25, mobility:20},
-  "25-34": {aerobic:30, strength:25, mobility:20},
-  "35-49": {aerobic:25, strength:20, mobility:20},
-  "50+": {aerobic:20, strength:15, mobility:15}
-};
-const EXERCISE_ACTIVITIES = {
-  walking: {name:"Rahat tempolu yürüyüş", type:"yuruyus", kind:"aerobic", note:"Kendini iyi hissettiğin tempo"},
-  cardio: {name:"Düşük darbeli kardiyo", type:"kardiyo", kind:"aerobic", note:"Konforlu tempo"},
-  active: {name:"Dans veya sevdiğin aktif oyun", type:"kardiyo", kind:"aerobic", note:"Eğlenceli ve zorlamayan tempo"},
-  pilates: {name:"Mat pilates ve core", type:"pilates", kind:"mobility", note:"Kontrollü hareketler"},
-  upperStrength: {name:"Üst beden kuvvet çalışması", type:"direnc", kind:"strength", sets:"2x10", note:"Hafif-orta direnç"},
-  lowerStrength: {name:"Alt beden kuvvet çalışması", type:"direnc", kind:"strength", sets:"2x10", note:"Hafif-orta direnç"},
-  fullStrength: {name:"Tüm beden kuvvet çalışması", type:"direnc", kind:"strength", sets:"2x10", note:"Kontrollü tekrarlar"},
-  strength: {name:"Direnç bandı ve kuvvet", type:"direnc", kind:"strength", sets:"2x10", note:"Hafif-orta direnç"},
-  bodyweight: {name:"Vücut ağırlığıyla temel kuvvet", type:"direnc", kind:"strength", note:"Teknik ve rahat hareket aralığı"},
-  lightStrength: {name:"Hafif direnç bandı ve denge", type:"direnc", kind:"strength", sets:"2x8", note:"Destek alarak, rahat tempoda"},
-  core: {name:"Core ve gövde kontrolü", type:"pilates", kind:"strength", note:"Kontrollü core çalışması"},
-  mobility: {name:"Esneme ve eklem mobilitesi", type:"esneme", kind:"mobility", note:"Ağrısız hareket aralığında"},
-  balance: {name:"Denge ve nazik esneme", type:"esneme", kind:"mobility", note:"Gerekirse sabit bir destek kullan"},
-  yoga: {name:"Yumuşak yoga ve nefes", type:"yoga", kind:"mobility", note:"Nazik nefes ve esneme"}
-};
-const EXERCISE_GENDER_SCHEDULES = {
-  female: {
-    balanced:["walking","pilates","upperStrength",null,"lowerStrength","cardio",null],
-    strength:["walking","lowerStrength","upperStrength",null,"fullStrength","cardio",null],
-    gentle:["walking","pilates",null,"mobility","lightStrength","walking",null]
-  },
-  male: {
-    balanced:["cardio","fullStrength","core",null,"fullStrength","walking",null],
-    strength:["fullStrength","cardio","core",null,"fullStrength","walking",null],
-    gentle:["walking","mobility",null,"lightStrength","yoga","walking",null]
-  },
-  other: {
-    balanced:null,
-    strength:["walking","fullStrength","core",null,"strength","cardio",null],
-    gentle:["walking","mobility",null,"pilates","walking","yoga",null]
-  }
-};
-const LEGACY_DEFAULT_EXERCISE_PLAN = {
-  1:[{name:"Tempolu yürüyüş",type:"yuruyus",min:30,note:"Hafif ve ferah tempo"}],
-  2:[{name:"Pilates & alt beden",type:"pilates",min:25,note:"Dolaşım ve duruş odaklı"}],
-  3:[{name:"Yumuşak yürüyüş & esneme",type:"yuruyus",min:25,note:"Bacak rahatlatıcı akış"}],
-  4:[{name:"Yoga & mobilite",type:"yoga",min:20,note:"Nefes, bel ve omuz rahatlatma"}],
-  5:[{name:"Pilates / hafif direnç",type:"pilates",min:25,sets:"3x12",note:"Bant veya vücut ağırlığı"}],
-  6:[{name:"Keyifli yürüyüş / yüzme",type:"yuruyus",min:35,note:"Hafta sonu taze hava"}],
-  7:[]
-};
-function normalizedExerciseGender(gender) {
-  return ["female","male","other"].includes(gender) ? gender : "other";
-}
-function exerciseProfileKey(profile) {
-  return `${ageGroupKeyFor(profile && profile.age)}:${normalizedExerciseGender(profile && profile.gender)}`;
-}
-function exerciseRoleForAge(role, ageGroup) {
-  if (ageGroup === "10-17") {
-    if (["upperStrength","lowerStrength","fullStrength","strength","lightStrength"].includes(role)) return "bodyweight";
-    if (role === "cardio") return "active";
-  }
-  if (ageGroup === "50+") {
-    if (role === "cardio") return "walking";
-    if (["upperStrength","lowerStrength","fullStrength","strength","bodyweight"].includes(role)) return "lightStrength";
-    if (role === "core") return "balance";
-  }
-  return role;
-}
-function exercisePresetForProfile(age, gender, style = "balanced") {
-  const ageGroup = ageGroupKeyFor(age);
-  const normalizedGender = normalizedExerciseGender(gender);
-  const presetStyle = EXERCISE_PRESET_STYLES[style] ? style : "balanced";
-  const basePreset = AGE_EXERCISE_PRESETS[ageGroup];
-  const schedule = EXERCISE_GENDER_SCHEDULES[normalizedGender][presetStyle];
-  let plan;
-  if (!schedule) {
-    plan = Object.fromEntries(basePreset.week.map((exercise, index) => [
-      index + 1,
-      exercise ? [Object.assign({}, exercise)] : []
-    ]));
-  } else {
-    const minutes = EXERCISE_AGE_MINUTES[ageGroup];
-    plan = Object.fromEntries(schedule.map((scheduledRole, index) => {
-      if (!scheduledRole) return [index + 1, []];
-      const role = exerciseRoleForAge(scheduledRole, ageGroup);
-      const activity = EXERCISE_ACTIVITIES[role];
-      const duration = minutes[activity.kind] * (presetStyle === "gentle" ? 0.8 : 1);
-      return [index + 1, [Object.assign({}, activity, {min: Math.max(10, Math.round(duration / 5) * 5)})]];
-    }));
-  }
-  const ageLabel = AGE_ROUTINE_GROUPS.find(group => group.k === ageGroup)?.t.split(" (")[0] || ageGroup;
-  const genderLabel = normalizedGender === "female" ? "Kadın" : normalizedGender === "male" ? "Erkek" : "Belirtme";
-  return {
-    n:`${ageLabel} · ${genderLabel} · ${EXERCISE_PRESET_STYLES[presetStyle].n}`,
-    e:EXERCISE_PRESET_STYLES[presetStyle].e,
-    d:`${ageGroup} yaş grubu ve ${genderLabel.toLocaleLowerCase("tr-TR")} profiline göre ${EXERCISE_PRESET_STYLES[presetStyle].n.toLocaleLowerCase("tr-TR")} önerisi.`,
-    plan
-  };
-}
-function exercisePlanSignature(plan) {
-  return JSON.stringify([1,2,3,4,5,6,7].map(day => (plan && plan[day] || []).map(item => item && [
-    item.name, item.type, +item.min, item.sets || "", item.note || ""
-  ])));
-}
-function isLegacyExercisePlan(plan) {
-  const signature = exercisePlanSignature(plan);
-  const legacyAgePlans = Object.values(AGE_EXERCISE_PRESETS).map(preset => Object.fromEntries(
-    preset.week.map((exercise, index) => [index + 1, exercise ? [exercise] : []])
-  ));
-  return [LEGACY_DEFAULT_EXERCISE_PLAN, ...Object.values(LEGACY_EXERCISE_PRESETS).map(preset => preset.plan), ...legacyAgePlans]
-    .some(candidate => exercisePlanSignature(candidate) === signature);
-}
-function createExercisePlan(preset) {
-  return Object.fromEntries([1,2,3,4,5,6,7].map(day => [
-    day,
-    (preset.plan[day] || []).map(item => exItem(uid(), item.name, item.type, item.min, item.sets || "", item.note || ""))
-  ]));
-}
-function syncExercisePlanWithProfile(profile) {
-  if (!S || !S.exercise) return false;
-  const profileKey = exerciseProfileKey(profile);
-  const storedKey = String(S.exercise.profileKey || "");
-  const storedParts = storedKey.split(":");
-  const storedStyle = EXERCISE_PRESET_STYLES[storedParts[storedParts.length - 1]] ? storedParts[storedParts.length - 1] : "balanced";
-  if (storedKey === `auto:${profileKey}:${storedStyle}`) return false;
-  const mayAdapt = storedKey.startsWith("auto:") || (!storedKey && isLegacyExercisePlan(S.exercise.plan));
-  if (!mayAdapt) return false;
-  S.exercise.plan = createExercisePlan(exercisePresetForProfile(profile.age, profile.gender, storedStyle));
-  S.exercise.profileKey = `auto:${profileKey}:${storedStyle}`;
-  return true;
-}
 function exerciseIcon() {
-  const gender = normalizedExerciseGender(curProfileInfo().gender);
-  return gender === "female" ? "🧘‍♀️" : gender === "male" ? "🏋️‍♂️" : "🧘";
+  const g = (curProfileInfo().gender || "female");
+  return g === "female" ? "🧘‍♀️" : g === "male" ? "🏋️‍♂️" : "🧘";
 }
-const EXERCISE_TYPE_GENDER_ICONS = {
-  yuruyus:{female:"🚶‍♀️",male:"🚶‍♂️",other:"🚶"},
-  pilates:{female:"🧘‍♀️",male:"🧘‍♂️",other:"🧘"},
-  yuzme:{female:"🏊‍♀️",male:"🏊‍♂️",other:"🏊"},
-  kardiyo:{female:"🏃‍♀️",male:"🏃‍♂️",other:"🏃"}
-};
 const exType = k => {
-  const type = EX_TYPES[k] || EX_TYPES.yuruyus;
-  const gender = normalizedExerciseGender(curProfileInfo().gender);
-  return Object.assign({}, type, {e: (EXERCISE_TYPE_GENDER_ICONS[k] || {})[gender] || type.e});
+  const base = EX_TYPES[k] || EX_TYPES.yuruyus;
+  const isMale = curProfileInfo().gender === "male";
+  if (!isMale) return base;
+  const maleIcons = { yuruyus: "🚶‍♂️", pilates: "🤸‍♂️", yoga: "🧘‍♂️", esneme: "🌿", direnc: "🏋️‍♂️", yuzme: "🏊‍♂️", kardiyo: "🏃‍♂️", bisiklet: "🚴‍♂️" };
+  return Object.assign({}, base, { e: maleIcons[k] || base.e });
 };
 const exKcal = (type, min) => Math.round((+min || 0) * exType(type).kcalMin);
 const exLogsOn = k => (S.exercise.logs || []).filter(l => l.date === k);
@@ -3906,9 +3762,15 @@ function pageExercise() {
   const weekMin = weekLogs.reduce((a, l) => a + (+l.min || 0), 0);
   const activeDays = wd.filter(dk => weekLogs.some(l => l.date === dk)).length;
   const weekBurn = weekLogs.reduce((a, l) => a + exKcal(l.type, l.min), 0);
-  const goalPct = Math.min(100, Math.round(weekMin / 150 * 100));
-  return `<div class="page-head"><div><h1>Egzersizim ${exerciseIcon()}</h1><p>Haftalık programını oluştur, günlük hareketini kaydet ve haftalık tablonda gör.</p></div>
-      <div class="row" style="gap:8px"><button class="btn soft" data-act="exPlanForm">+ Programa ekle</button><button class="btn" data-act="exLogForm">+ Egzersiz kaydet</button></div></div>
+  const prof = curProfileInfo();
+  const activeGk = prof.groupKey || ageGroupKeyFor(prof.age);
+  const gLabel = prof.gender === "male" ? "Erkek 🌿" : prof.gender === "other" ? "Kişisel ✨" : "Kadın 🌸";
+  const exBadge = prof.exLabel || `${activeGk} Yaş Egzersiz Programı`;
+  const targetMin = +prof.weeklyGoalMin || 150;
+  const goalPct = Math.min(100, Math.round(weekMin / targetMin * 100));
+  const headEmoji = prof.gender === "male" ? "🏋️‍♂️" : "🧘‍♀️";
+  return `<div class="page-head"><div><h1>Egzersizim ${headEmoji}</h1><p>Yaşına ve cinsiyetine göre haftalık egzersiz programın hazır; günlük hareketini kaydet ve tablonda gör.</p></div>
+      <div class="row" style="gap:8px"><button class="btn soft" data-act="changeUserName">👤 Yaş &amp; Cinsiyet (${prof.age || 21} · ${gLabel})</button><button class="btn soft" data-act="exPlanForm">+ Programa ekle</button><button class="btn" data-act="exLogForm">+ Egzersiz kaydet</button></div></div>
     <div class="card mb tint-sage">
       <div class="stats">
         <div class="stat"><b>${todayMin} dk</b><span>bugün hareket</span></div>
@@ -3916,8 +3778,11 @@ function pageExercise() {
         <div class="stat"><b>${activeDays}/7</b><span>aktif gün</span></div>
         <div class="stat"><b>~${weekBurn}</b><span>tahmini kcal 🌿</span></div>
       </div>
-      <div class="row between mt small"><span class="muted">Haftalık nazik akış hedefi (150 dk)</span><b>%${goalPct}</b></div>
+      <div class="row between mt small"><span class="muted">Haftalık hareket hedefi (${targetMin} dk · ${esc(exBadge)})</span><b>%${goalPct}</b></div>
       <div class="progress sage thin mt-s"><i style="width:${goalPct}%"></i></div>
+      <div class="divider"></div>
+      <div class="lbl" style="margin-bottom:6px">✨ Yaşa &amp; cinsiyete göre haftalık egzersiz programı seç (${esc(exBadge)} · ${gLabel})</div>
+      <div class="row" style="gap:6px">${AGE_ROUTINE_GROUPS.map(g => `<span class="chip ${activeGk === g.k ? "on" : ""}" data-act="applyAgeRoutine" data-age="${g.age}">${g.e} ${g.t}</span>`).join("")}</div>
     </div>
     <div class="tabs">
       <div class="tab ${tab === "today" ? "active" : ""}" data-act="exTab" data-t="today">☀️ Bugün</div>
@@ -4316,8 +4181,11 @@ document.addEventListener("click", ev => {
     }
     case "suggestPlan": if (UI.suggest) openModal("Yemek planına ekle 🗓️", suggestPlanFormHTML(UI.suggest)); break;
 
-    case "routineEdit": UI.routineEdit = !UI.routineEdit; render(); break;
-    case "openRoutineEdit": UI.page = "routines"; UI.routineEdit = true; render(); break;
+    case "toggleMoreNav": UI.moreNav = !UI.moreNav; renderMoreNavSheet(); break;
+    case "closeMoreNav": UI.moreNav = false; renderMoreNavSheet(); break;
+    case "routineTab": UI.routineTab = ds.t || "active"; UI.routineEdit = (ds.t === "edit"); render(); break;
+    case "routineEdit": UI.routineEdit = !UI.routineEdit; UI.routineTab = UI.routineEdit ? "edit" : "active"; render(); break;
+    case "openRoutineEdit": UI.page = "routines"; UI.routineEdit = true; UI.routineTab = "edit"; render(); break;
     case "rMove": {
       const arr = S.routines[ds.list], idx = arr.findIndex(x => x.id === ds.id), to = idx + (+ds.dir);
       if (idx >= 0 && to >= 0 && to < arr.length) { [arr[idx], arr[to]] = [arr[to], arr[idx]]; save(); render(); }
@@ -4332,6 +4200,7 @@ document.addEventListener("click", ev => {
       if (typeof window.__bloomGetRecommendedRoutines === "function") {
         const rec = window.__bloomGetRecommendedRoutines(targetAge, gender);
         const skRec = typeof window.__bloomGetRecommendedSkincare === "function" ? window.__bloomGetRecommendedSkincare(targetAge, gender) : null;
+        const exRec = typeof window.__bloomGetRecommendedExercise === "function" ? window.__bloomGetRecommendedExercise(targetAge, gender) : null;
         const nextProf = {
           name,
           age: targetAge,
@@ -4342,12 +4211,15 @@ document.addEventListener("click", ev => {
           offTitle: rec.offTitle,
           eveningTitle: rec.eveningTitle,
           skinLabel: skRec ? skRec.skinLabel : "",
+          exLabel: exRec ? exRec.exLabel : "",
+          weeklyGoalMin: exRec ? exRec.weeklyGoalMin : 150,
           skinApplied: true,
+          exerciseApplied: true,
           distinctDayRoutinesV1: true,
           updatedAt: Date.now()
         };
         try { localStorage.setItem("bloom_user_profile", JSON.stringify(nextProf)); } catch (e) {}
-        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec);
+        window.__bloomApplyOnboardingProfile(nextProf, rec.school, rec.off, rec.evening, skRec, false, exRec);
       }
       break;
     }
@@ -5396,13 +5268,19 @@ window.__bloomApplySkincareProfile = function(profile, skRec) {
   save();
   render();
 };
-window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec, silent = false) {
+window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, eveningItems, skRec, silent = false, exRec = null) {
   if (!S) S = load();
   if (!skRec && typeof window.__bloomGetRecommendedSkincare === "function") {
     skRec = window.__bloomGetRecommendedSkincare(profile.age, profile.gender);
   }
+  if (!exRec && typeof window.__bloomGetRecommendedExercise === "function") {
+    exRec = window.__bloomGetRecommendedExercise(profile.age, profile.gender);
+  }
   if (skRec && skRec.skinLabel) profile.skinLabel = skRec.skinLabel;
+  if (exRec && exRec.exLabel) profile.exLabel = exRec.exLabel;
+  if (exRec && exRec.weeklyGoalMin) profile.weeklyGoalMin = exRec.weeklyGoalMin;
   profile.skinApplied = true;
+  profile.exerciseApplied = true;
   profile.distinctDayRoutinesV1 = true;
   S.profile = profile;
   syncExercisePlanWithProfile(profile);
@@ -5433,12 +5311,19 @@ window.__bloomApplyOnboardingProfile = function(profile, schoolItems, offItems, 
   if (skRec && Array.isArray(skRec.evening) && skRec.evening.length) {
     S.skincare.evening = skRec.evening.map(x => Object.assign({}, x));
   }
+  if (exRec && exRec.plan && typeof exRec.plan === "object") {
+    [1,2,3,4,5,6,7].forEach(d1 => {
+      if (Array.isArray(exRec.plan[d1])) {
+        S.exercise.plan[d1] = exRec.plan[d1].map(x => Object.assign({}, x));
+      }
+    });
+  }
   save();
   render();
   const welcomeHeading = $("#welcomeScreen h1");
   if (welcomeHeading) welcomeHeading.textContent = `Hoş geldin${profile.name ? ` ${profile.name}` : ""} 🌿`;
   if (!silent) {
-    toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) okul günü, boş gün ve cilt bakım rutinleri yüklendi! 🌷`);
+    toast(`${profile.age} yaş (${profile.gender === "male" ? "Erkek" : profile.gender === "other" ? "Kişisel" : "Kadın"}) rutinleri, cilt bakımı ve egzersiz programı yüklendi! 🌷`);
   }
 };
 window.__bloomBack = function() {
@@ -5451,6 +5336,6 @@ window.__bloomBack = function() {
 applyTheme(selectedTheme());
 init();
 </script>
-  <script src="onboarding.js?v=2.7.0"></script>
+  <script src="onboarding.js?v=2.8.0"></script>
 </body>
 </html>
